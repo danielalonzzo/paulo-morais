@@ -326,13 +326,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // --- Social FAB Toggle (Mobile) ---
+    // --- Social FAB Toggle (Mobile & Tablets) ---
     const fabContainer = document.querySelector('.fab-container');
     const fabTrigger = document.querySelector('.fab-trigger');
 
     if (fabTrigger && fabContainer) {
         fabTrigger.addEventListener('click', (e) => {
-            if (window.innerWidth <= 900) {
+            // Expand range to include Tablets (iPad Pro up to 1366px)
+            if (window.innerWidth <= 1400) {
                 e.preventDefault();
                 e.stopPropagation();
                 fabContainer.classList.toggle('active');

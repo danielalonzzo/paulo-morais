@@ -1052,6 +1052,8 @@ section#sobre.about-section .about-card p {
     position: relative;
     height: 600px;
     /* Fixed height to match the vertical rectangle shape */
+    touch-action: pan-y;
+    /* Allow vertical scroll while capturing horizontal swipes */
 }
 
 .testimonial-card-gold {
