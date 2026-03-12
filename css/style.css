@@ -3550,6 +3550,10 @@ body.loaded #preloader {
         padding: 40px 0;
     }
 
+    .auth-main {
+        padding: 180px 0 80px !important;
+    }
+
     .hero-content {
         padding: 0 15px;
     }
@@ -3715,8 +3719,7 @@ body.loaded #preloader {
 
     /* Osteopatia Page */
     .osteopatia-hero-section {
-        padding-top: 320px;
-        /* Aumentado para que o header não tape o conteúdo */
+        padding-top: 180px;
     }
 
     .yellow-section-title {
