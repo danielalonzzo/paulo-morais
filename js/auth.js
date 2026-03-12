@@ -42,6 +42,13 @@ document.addEventListener('DOMContentLoaded', () => {
     // Check if we are on the profile page
     if (!document.querySelector('.auth-card-container')) return;
 
+    // Remove auto-focus from any field on load (prevents browser auto-selection)
+    setTimeout(() => {
+        if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA')) {
+            document.activeElement.blur();
+        }
+    }, 500); // 500ms delay to ensure browser finishes its "auto-focus" logic
+
     const loginForm = document.getElementById('login-form');
     const registerForm = document.getElementById('register-form');
     const authCard = document.getElementById('auth-card');

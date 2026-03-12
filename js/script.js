@@ -353,35 +353,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Gallery Auto-Scroll (Mobile) ---
-    const setupGalleryCarousel = () => {
-        const gallery = document.querySelector('.gallery-grid');
-        if (!gallery || window.innerWidth > 900) return;
-
-        let isScrolling = false;
-        let interval = setInterval(() => {
-            if (isScrolling) return;
-
-            const scrollWidth = gallery.scrollWidth;
-            const currentScroll = gallery.scrollLeft;
-            const containerWidth = gallery.offsetWidth;
-
-            if (currentScroll + containerWidth >= scrollWidth - 10) {
-                gallery.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-                gallery.scrollBy({ left: containerWidth * 0.8, behavior: 'smooth' });
-            }
-        }, 4000);
-
-        gallery.addEventListener('touchstart', () => isScrolling = true);
-        gallery.addEventListener('touchend', () => {
-            setTimeout(() => isScrolling = false, 2000);
-        });
-    };
-
-    if (window.innerWidth <= 900) {
-        setupGalleryCarousel();
-    }
+    // Gallery carousel desactivado — galería usa grid nativo en mobile
 });
 
 /* --- YouTube High Res Force --- */
