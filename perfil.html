@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil | Inicio de sessão - Paulo Morais</title>
+    <meta name="description" content="Faça o login ou registe-se no perfil de Paulo Morais - Your Own Workout.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- SEO Meta Tags -->
+    <link rel="canonical" href="https://pmorais.pt/perfil.html">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://pmorais.pt/perfil.html">
+    <meta property="og:title" content="Perfil | Inicio de sessão - Paulo Morais">
+    <meta property="og:description" content="Faça o login ou registe-se no perfil de Paulo Morais - Your Own Workout.">
+    <meta property="og:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
+</head>
+
+<body class="page-auth">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <img src="images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <div class="shimmer-effect"></div>
+        </div>
+    </div>
+
+    <!-- Sticky Social Bar -->
+    <!-- Social FAB -->
+    <div class="fab-container">
+        <div class="fab-trigger">
+            <i data-lucide="plus"></i>
+        </div>
+        <div class="fab-options">
+            <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
+                rel="noopener noreferrer">
+                <i data-lucide="message-circle"></i>
+            </a>
+            <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn instagram" title="Instagram"
+                target="_blank" rel="noopener noreferrer">
+                <i data-lucide="instagram"></i>
+            </a>
+            <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email">
+                <i data-lucide="mail"></i>
+            </a>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+            </a>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
+                    <li><a href="perfil.html" class="active">Perfil</a></li>
+                    <li><a href="osteopatia.html">OSTEOPATIA</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
+                <i data-lucide="menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="auth-main">
+        <div class="container auth-card-container">
+            <!-- Auth Card -->
+            <div id="auth-card" class="auth-card glass-panel fade-in">
+                <div class="auth-card-header">
+                    <h1 class="auth-title-card">Bem-vindo</h1>
+                    <p class="auth-subtitle">Aceda à sua área pessoal de treino.</p>
+                </div>
+
+                <!-- Tabs -->
+                <div class="auth-tabs">
+                    <button id="tab-login" class="tab-btn active">Iniciar Sessão</button>
+                    <button id="tab-register" class="tab-btn">Criar Conta</button>
+                </div>
+
+                <div class="auth-form-body">
+                    <!-- Login Form -->
+                    <form id="login-form" class="auth-form active">
+                        <div class="form-group">
+                            <label for="login-email">Email</label>
+                            <input type="email" id="login-email" placeholder="seu@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="login-password">Palavra-passe</label>
+                            <input type="password" id="login-password" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-actions">
+                            <label class="checkbox-container">
+                                <input type="checkbox">
+                                <span>Lembrar-me</span>
+                            </label>
+                            <a href="#" class="forgot-link">Esqueci-me da palavra-passe</a>
+                        </div>
+                        <button type="submit" id="btn-login" class="btn btn-primary btn-block">Entrar</button>
+                    </form>
+
+                    <!-- Register Form -->
+                    <form id="register-form" class="auth-form hidden">
+                        <div class="form-group">
+                            <label for="reg-name">Nome Completo</label>
+                            <input type="text" id="reg-name" placeholder="Seu Nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-email">Email</label>
+                            <input type="email" id="reg-email" placeholder="seu@email.com" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="reg-password">Palavra-passe</label>
+                            <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
+                        </div>
+                        <button type="submit" id="btn-register" class="btn btn-primary btn-block">Criar Conta</button>
+                    </form>
+
+                </div>
+            </div>
+
+            <!-- Dashboard (Hidden by default) -->
+            <div id="user-dashboard" class="user-dashboard hidden fade-in">
+                <h2 id="user-welcome">Olá!</h2>
+                <div id="dashboard-main-actions" class="dashboard-actions">
+                    <button id="btn-show-wizard" class="btn btn-primary">Completar Perfil</button>
+                    <button id="btn-logout" class="btn btn-outline">Terminar Sessão</button>
+                </div>
+
+                <!-- Client Calendar Booking Section (Static Preview) -->
+                <div id="calendar-section" class="calendar-section border-top-fade">
+                    <div class="calendar-header">
+                        <h3>O teu horário</h3>
+                        <div class="week-navigation">
+                            <button class="nav-btn" disabled><i data-lucide="chevron-left"></i></button>
+                            <span class="current-week">19 Fev - 25 Fev</span>
+                            <button class="nav-btn"><i data-lucide="chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="calendar-legend">
+                        <span class="legend-item">
+                            <div class="legend-box available"></div> Disponível
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box booked"></div> Ocupado
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box selected"></div> A tua reserva
+                        </span>
+                    </div>
+
+                    <div class="weekly-grid-scroll-wrapper">
+                        <div class="weekly-grid" id="client-weekly-grid">
+                            <!-- JS will dynamically inject the columns and time slots here based on Firebase data -->
+                        </div>
+                    </div>
+
+                    <div class="calendar-footer">
+                        <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;">Confirmar Reserva
+                            (12:00 - Seg)</button>
+                    </div>
+                </div>
+
+                <!-- Admin Calendar Section (Static Preview) -->
+                <div id="admin-calendar-section" class="calendar-section admin-mode border-top-fade mt-5">
+                    <div class="calendar-header">
+                        <h3>Gestão de Disponibilidade (Admin)</h3>
+                        <div class="week-navigation">
+                            <span class="current-week" style="margin: 0;">19 Fev - 25 Fev</span>
+                        </div>
+                    </div>
+                    <p class="admin-instruction">Selecione os blocos onde deseja abrir disponibilidade na agenda.</p>
+
+                    <div class="weekly-grid-scroll-wrapper">
+                        <div class="weekly-grid" id="admin-weekly-grid">
+                            <!-- JS will dynamically inject the columns and time slots here (Admin Mode) -->
+                        </div>
+                    </div>
+
+                    <div class="admin-footer">
+                        <button id="btn-publish-week" class="btn btn-primary-black" style="width: 100%;"><i
+                                data-lucide="send" style="width: 18px; height: 18px; margin-right: 8px;"></i> Publicar
+                            Semana</button>
+                    </div>
+                </div>
+
+                <!-- Profile Wizard (Hidden by default) -->
+                <div id="profile-wizard" class="profile-wizard hidden fade-in">
+                    <hr class="divider">
+                    <h3>O seu Perfil de Saúde</h3>
+                    <p class="wizard-desc">Complete estes dados para que o Paulo possa personalizar o seu treino.</p>
+
+                    <form id="profile-form" class="auth-form">
+                        <div class="form-group">
+                            <label for="prof-age">Idade</label>
+                            <input type="number" id="prof-age" placeholder="Ex: 35">
+                        </div>
+                        <div class="form-group">
+                            <label for="prof-conditions">Condições de Saúde / Lesões</label>
+                            <textarea id="prof-conditions" placeholder="Descreva brevemente..."></textarea>
+                        </div>
+                        <div class="wizard-buttons">
+                            <button type="submit" id="btn-save-profile" class="btn btn-primary">Guardar
+                                Alterações</button>
+                            <button type="button" id="btn-cancel-wizard" class="btn btn-outline">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Simple Footer -->
+    <footer>
+        <div class="footer-container-new">
+            <div class="footer-col branding-col">
+                <a href="index.html" class="footer-logo-link">
+                    <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                </a>
+                <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
+                <p class="brand-sub">O verdadeiro treino personalizado que se adapta à tua vida.</p>
+            </div>
+
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
+                    <li><a href="osteopatia.html">Osteopatia</a></li>
+                    <li><a href="perfil.html">Perfil</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li>
+                        <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
+                            rel="noopener noreferrer" class="complaint-book-elysium">
+                            <img src="images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                        </a>
+                    </li>
+                    <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
+                    <li><a href="termos-e-condicoes.html">Termos e Condições</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <ul class="footer-links-list social-text-links">
+                    <li><a href="https://www.instagram.com/pt.paulomorais" target="_blank"
+                            rel="noopener noreferrer">Instagram</a>
+                    </li>
+                    <li><a href="https://wa.me/351960471537" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                    <li><a href="mailto:pt@pmorais.pt?subject=Informação">Email</a></li>
+                    <li><a href="osteopatia.html#contacto">Entre em contacto connosco</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bar-elysium">
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Elysium λ
+                    Development & Research</a></div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="js/auth.js"></script>
+    <script src="js/script.js"></script>
+</body>
+
+</html>

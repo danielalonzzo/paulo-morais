@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://pmorais.pt/sitemap.xml
