@@ -1419,11 +1419,21 @@ footer {
     }
 
     header {
-        padding: 15px 0 !important;
+        padding: 25px 0;
+        transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+        padding: 12px 0 !important;
     }
 
     .logo-img {
-        height: 60px !important;
+        height: 100px !important;
+        transition: height 0.3s ease;
+    }
+
+    header.scrolled .logo-img {
+        height: 55px !important;
     }
 
     .mobile-menu-toggle {
