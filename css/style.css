@@ -2709,6 +2709,20 @@ header.scrolled .mobile-menu-toggle svg {
     justify-content: center;
 }
 
+.ipad-frame-container::after {
+    content: '';
+    position: absolute;
+    bottom: -15px; /* Positioned slightly below */
+    left: 50%;
+    transform: translateX(-50%);
+    width: 85%;
+    height: 12px;
+    background: radial-gradient(ellipse at center, rgba(230, 174, 23, 0.45) 0%, transparent 80%);
+    filter: blur(6px);
+    z-index: 0; /* Behind the iPad image which has z-index 1 */
+    pointer-events: none;
+}
+
 .ipad-frame-image {
     display: block;
     width: 100%;
