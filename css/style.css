@@ -3139,6 +3139,117 @@ header.scrolled .mobile-menu-toggle svg {
     margin-top: 10px;
 }
 
+
+
+.contact-form-wrapper.dark-form {
+    background-color: var(--color-surface);
+    color: #fff;
+    border-radius: 40px 0 0 40px; /* Match cta-wrapper corners */
+}
+
+
+@media (max-width: 992px) {
+    .contact-form-wrapper.dark-form {
+        border-radius: 0 0 40px 40px;
+    }
+}
+
+.contact-form-wrapper.dark-form .contact-form-title {
+    color: #fff;
+    margin-bottom: 30px;
+}
+
+.contact-form-wrapper.dark-form .form-group label {
+    color: var(--color-text-dim);
+    margin-bottom: 10px;
+}
+
+.contact-form-wrapper.dark-form .form-group input,
+.contact-form-wrapper.dark-form .form-group textarea {
+    background-color: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #fff;
+    padding: 15px 20px;
+    border-radius: 12px;
+}
+
+.contact-form-wrapper.dark-form .form-group input:focus,
+.contact-form-wrapper.dark-form .form-group textarea:focus {
+    border-color: var(--color-primary);
+    background-color: rgba(255, 255, 255, 0.06);
+    box-shadow: 0 0 15px rgba(230, 174, 23, 0.1);
+}
+
+.checkbox-container-legal {
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    user-select: none;
+    display: block;
+}
+
+.checkbox-container-legal input {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+    height: 0;
+    width: 0;
+}
+
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 22px;
+    width: 22px;
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 6px;
+    transition: all 0.2s ease;
+}
+
+.checkbox-container-legal:hover input ~ .checkmark {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-primary);
+}
+
+.checkbox-container-legal input:checked ~ .checkmark {
+    background-color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.checkmark:after {
+    content: "";
+    position: absolute;
+    display: none;
+}
+
+.checkbox-container-legal input:checked ~ .checkmark:after {
+    display: block;
+}
+
+.checkbox-container-legal .checkmark:after {
+    left: 8px;
+    top: 4px;
+    width: 5px;
+    height: 10px;
+    border: solid #000;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.contact-form-wrapper.dark-form .label-text {
+    color: var(--color-text-dim);
+    line-height: 1.4;
+}
+
+.contact-form-wrapper.dark-form .label-text a {
+    color: var(--color-primary);
+    text-decoration: underline;
+}
+
 .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -4215,19 +4326,251 @@ body.loaded #preloader {
     }
 }
 
-/* Responsive Overrides */
-@media (max-width: 768px) {
-    .calendar-section {
-        padding: 20px 15px;
+
+/* Final Navigation CTA */
+.index-final-cta {
+    padding: 100px 0;
+    background-color: var(--color-bg);
+}
+
+.cta-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    background-color: var(--color-surface);
+    padding: 80px;
+    border-radius: 40px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.cta-box {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+.cta-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+
+.cta-box h2 {
+    font-size: 3rem;
+    margin-bottom: 20px;
+    color: #fff;
+    line-height: 1;
+}
+
+.box-subtitle {
+    font-size: 1.2rem;
+    color: var(--color-primary);
+    margin-bottom: 30px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.cta-box p {
+    color: var(--color-text-dim);
+    margin-bottom: 30px;
+    width: 100%;
+    line-height: 1.7;
+    font-size: 1.1rem;
+}
+
+
+.shadow-gold {
+    box-shadow: 0 30px 100px rgba(230, 174, 23, 0.15);
+}
+
+.cta-divider {
+    width: 1px;
+    height: 350px;
+    background: linear-gradient(to bottom, transparent, rgba(230, 174, 23, 0.3), transparent);
+    flex-shrink: 0;
+}
+
+
+@media (max-width: 992px) {
+    .cta-wrapper {
+        flex-direction: column;
+        padding: 60px 30px;
+        gap: 50px;
+        text-align: center;
+        align-items: center;
     }
 
-    .calendar-header {
-        flex-direction: column;
-        align-items: flex-start;
+    .cta-box {
+        align-items: center;
+        width: 100%;
+    }
+
+    .cta-box h2 {
+        font-size: 2.5rem;
+    }
+
+    .box-subtitle {
+        font-size: 1.1rem;
+        margin-bottom: 25px;
+    }
+
+    .cta-divider {
+        width: 80%;
+        height: 1px;
+        background: linear-gradient(to right, transparent, rgba(230, 174, 23, 0.3), transparent);
+    }
+}
+
+@media (max-width: 576px) {
+    .cta-wrapper {
+        padding: 50px 20px;
+        border-radius: 30px;
+    }
+
+    .cta-box h2 {
+        font-size: 2.2rem;
+    }
+
+    .cta-box p {
+        font-size: 1rem;
+        line-height: 1.6;
+    }
+}
+
+/* Contact Form + Image Integration for CTA Wrapper */
+.cta-wrapper.no-padding-mobile {
+    padding: 0 !important;
+}
+
+.cta-wrapper.no-padding-mobile .contact-form-wrapper {
+    flex: 1.2;
+    padding: 80px;
+}
+
+
+.cta-wrapper.no-padding-mobile .contact-image-wrapper {
+    flex: 1;
+    min-height: 100%;
+    overflow: hidden;
+    position: relative;
+    border-radius: 0 40px 40px 0;
+}
+
+.cta-wrapper.no-padding-mobile .contact-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: 70% center;
+    display: block;
+    transition: transform 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.cta-wrapper.no-padding-mobile:hover .contact-image-wrapper img {
+    transform: scale(1.08);
+}
+
+.cta-wrapper.no-padding-mobile .contact-image-wrapper::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to right, rgba(11, 11, 11, 0.4), transparent);
+    pointer-events: none;
+    transition: opacity 0.5s ease;
+}
+
+.cta-wrapper.no-padding-mobile:hover .contact-image-wrapper::after {
+    opacity: 0.6;
+}
+
+@media (max-width: 992px) {
+    .cta-wrapper.no-padding-mobile {
+        flex-direction: column !important;
+    }
+
+    .cta-wrapper.no-padding-mobile .contact-image-wrapper {
+        order: -1;
+        min-height: 350px;
+        width: 100%;
+        border-radius: 40px 40px 0 0;
+    }
+    
+    .cta-wrapper.no-padding-mobile .contact-image-wrapper::after {
+        background: linear-gradient(to bottom, rgba(11, 11, 11, 0.4), transparent);
+    }
+
+    .cta-wrapper.no-padding-mobile .contact-form-wrapper {
+        padding: 50px 30px;
+        width: 100%;
+    }
+
+    .cta-wrapper.no-padding-mobile .cta-divider {
+        display: none;
+    }
+}
+
+@media (max-width: 768px) {
+    .form-row {
         gap: 15px;
     }
+    
+    .contact-form-wrapper.dark-form .contact-form-title {
+        font-size: 2rem;
+        text-align: center;
+    }
+    
+    .contact-form-logo {
+        margin: 0 auto 20px !important;
+    }
+    
+    .form-submit-btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+/* Premium Testimonials Section */
+.shadow-gold-soft {
+    box-shadow: 0 40px 120px rgba(230, 174, 23, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
 
-    .calendar-legend {
-        flex-wrap: wrap;
+.divider-testimonial {
+    height: 450px;
+    background: linear-gradient(to bottom, transparent, rgba(255, 255, 255, 0.1), transparent);
+}
+
+.testimonials-left h2 {
+    font-size: 3.5rem;
+    line-height: 1.1;
+    margin-bottom: 25px;
+    font-weight: 800;
+}
+
+.testimonials-right {
+    height: 600px !important;
+}
+
+@media (max-width: 992px) {
+    .divider-testimonial {
+        display: none;
+    }
+    
+    .testimonials-left h2 {
+        font-size: 2.5rem;
+    }
+    
+    .testimonials-right {
+        height: 500px !important;
+        margin-top: 20px;
     }
 }
