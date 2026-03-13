@@ -713,9 +713,34 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
 /* About Split Card */
 section#sobre.about-section {
     padding: 40px 0 120px !important;
-    /* Reducido a 40px para acercar a la sección de Partners */
     background-color: #0B0B0B;
-    /* Fondo de la sección en negro cálido */
+    position: relative;
+    overflow: hidden;
+    z-index: 1;
+}
+
+section#sobre.about-section::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 90%;
+    height: 90%;
+    background: radial-gradient(circle at center, rgba(230, 174, 23, 0.1) 0%, transparent 50%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    animation: bg-gold-flow 15s ease-in-out infinite;
+}
+
+@keyframes bg-gold-flow {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.4; }
+    50% { transform: translate(-49%, -51%) scale(1.1); opacity: 0.8; }
+}
+
+section#sobre.about-section .container {
+    position: relative;
+    z-index: 2;
 }
 
 section#sobre.about-section .about-card {
@@ -781,7 +806,7 @@ section#sobre.about-section .about-card h3 {
 section#sobre.about-section .divider-small {
     width: 50px;
     height: 3px;
-    background-color: #0B0B0B !important;
+    background-color: #111111 !important;
     margin-bottom: 30px;
 }
 
@@ -1938,16 +1963,17 @@ header.scrolled .mobile-menu-toggle svg {
 }
 
 .auth-card {
-    background: #ffffff;
-    border-radius: 30px;
-    padding: 50px;
+    background: var(--color-surface);
+    border-radius: 40px;
+    padding: 80px;
     width: 100%;
-    max-width: 480px;
-    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.2);
+    max-width: 600px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 30px 100px rgba(230, 174, 23, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
     transition: all 0.5s ease;
-    color: #000;
+    color: #fff;
 }
 
 .auth-card-header {
@@ -1956,14 +1982,14 @@ header.scrolled .mobile-menu-toggle svg {
 }
 
 .auth-title-card {
-    font-size: 2.2rem;
+    font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 10px;
-    color: #000;
+    color: #fff;
 }
 
 .auth-subtitle {
-    color: #666;
+    color: var(--color-text-dim);
     font-size: 0.95rem;
 }
 
@@ -1971,7 +1997,7 @@ header.scrolled .mobile-menu-toggle svg {
 .auth-tabs {
     display: flex;
     margin-bottom: 30px;
-    border-bottom: 2px solid #f0f0f0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .tab-btn {
@@ -1989,7 +2015,7 @@ header.scrolled .mobile-menu-toggle svg {
 }
 
 .tab-btn.active {
-    color: #000;
+    color: #fff;
 }
 
 .tab-btn.active::after {
@@ -2022,7 +2048,7 @@ header.scrolled .mobile-menu-toggle svg {
 }
 
 .forgot-link {
-    color: #666;
+    color: var(--color-text-dim);
     text-decoration: underline;
     display: inline-block !important;
     /* Override previous cleanup */
@@ -2095,19 +2121,21 @@ header.scrolled .mobile-menu-toggle svg {
     margin-bottom: 25px;
 }
 
-.form-group label {
+.auth-form .form-group label {
     display: block;
     font-size: 0.9rem;
-    font-weight: 600;
+    font-weight: 400;
     margin-bottom: 10px;
+    color: #fff !important;
 }
 
 .form-group input {
     width: 100%;
     padding: 15px 20px;
-    border: 1px solid #eee;
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 15px;
-    background-color: #fff;
+    background-color: rgba(255, 255, 255, 0.03);
+    color: #fff;
     font-family: inherit;
     transition: var(--transition-smooth);
 }
@@ -2262,7 +2290,7 @@ header.scrolled .mobile-menu-toggle svg {
 .about-hero-section {
     padding: 350px 0 100px;
     /* Aumentado a 350px para dar más espacio bajo el header */
-    background-color: #0B0B0B;
+    background-color: #111111;
     display: flex;
     justify-content: center;
 }
@@ -2292,7 +2320,7 @@ header.scrolled .mobile-menu-toggle svg {
 .header-line {
     width: 60px;
     height: 5px;
-    background-color: #0B0B0B;
+    background-color: #111111;
     margin: 15px 0 30px;
 }
 
@@ -2327,9 +2355,29 @@ header.scrolled .mobile-menu-toggle svg {
     max-width: 500px;
     aspect-ratio: 4/5;
     border-radius: 40px;
-    overflow: hidden;
+    /* overflow: hidden removed to allow shadow visibility */
     position: relative;
-    box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4);
+    z-index: 1;
+}
+
+.about-hero-photo::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, rgba(200, 200, 200, 0.15) 0%, transparent 60%);
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    z-index: -1;
+    animation: bg-silver-flow 12s ease-in-out infinite;
+    border-radius: 50%;
+}
+
+@keyframes bg-silver-flow {
+    0%, 100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0.3; }
+    50% { transform: translate(-51%, -49%) scale(1.1); opacity: 0.7; }
 }
 
 .about-hero-photo img {
@@ -2337,6 +2385,7 @@ header.scrolled .mobile-menu-toggle svg {
     height: 100%;
     object-fit: cover;
     display: block;
+    border-radius: 40px; /* Applied directly to img since overflow is hidden is removed */
 }
 
 .about-split-right {
@@ -2458,7 +2507,7 @@ header.scrolled .mobile-menu-toggle svg {
     display: block;
     width: 40px;
     height: 3px;
-    background-color: #0B0B0B;
+    background-color: #111111;
     margin-top: 5px;
 }
 
@@ -4388,7 +4437,60 @@ body.loaded #preloader {
 
 
 .shadow-gold {
-    box-shadow: 0 30px 100px rgba(230, 174, 23, 0.15);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), -5px 10px 50px rgba(230, 174, 23, 0.2);
+    animation: gold-shadow-breath 10s ease-in-out infinite;
+}
+
+@keyframes gold-shadow-breath {
+    0%, 100% {
+        box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.4),
+            -5px 10px 50px rgba(230, 174, 23, 0.2);
+    }
+    50% {
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            7px 20px 80px rgba(230, 174, 23, 0.45);
+    }
+}
+
+.shadow-silver {
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4), 5px 10px 50px rgba(200, 200, 200, 0.15);
+    animation: silver-shadow-breath 10s ease-in-out infinite;
+}
+
+@keyframes silver-shadow-breath {
+    0%, 100% {
+        box-shadow: 
+            0 10px 40px rgba(0, 0, 0, 0.4),
+            5px 10px 50px rgba(200, 200, 200, 0.15);
+    }
+    50% {
+        box-shadow: 
+            0 20px 60px rgba(0, 0, 0, 0.5),
+            -7px 20px 80px rgba(200, 200, 200, 0.35);
+    }
+}
+
+/* Efecto dorado más intenso para Perfil */
+.shadow-gold-extreme {
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.5), 0 10px 60px rgba(230, 174, 23, 0.25);
+    animation: gold-extreme-breath 8s ease-in-out infinite;
+}
+
+@keyframes gold-extreme-breath {
+    0%, 100% {
+        box-shadow: 
+            0 15px 50px rgba(0, 0, 0, 0.5),
+            0 10px 60px rgba(230, 174, 23, 0.25);
+        transform: scale(1);
+    }
+    50% {
+        box-shadow: 
+            0 30px 80px rgba(0, 0, 0, 0.6),
+            0 20px 150px rgba(230, 174, 23, 0.5);
+        transform: scale(1.01);
+    }
 }
 
 .cta-divider {
