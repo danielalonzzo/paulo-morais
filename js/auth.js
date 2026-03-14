@@ -153,6 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     name: name,
                     email: email,
                     role: "client",
+                    profileCompleted: false,
                     createdAt: new Date().toISOString()
                 });
 
@@ -236,10 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, { merge: true });
 
                 alert("Perfil actualizado com sucesso!");
-                profileWizard.classList.add('hidden');
-                dashboardActions.classList.remove('hidden');
-
-                // Refresh name/data
+                // No longer just hide/show here, let loadUserProfile handle the source of truth
                 loadUserProfile(user);
             } catch (error) {
                 console.error("Error updating profile:", error);
@@ -266,6 +264,28 @@ async function loadUserProfile(user) {
                 // Populate wizard fields if they exist
                 if (profAge && data.age) profAge.value = data.age;
                 if (profConditions && data.conditions) profConditions.value = data.conditions;
+
+                const calendarSection = document.getElementById('calendar-section');
+                const dashboardActions = document.getElementById('dashboard-main-actions');
+                const profileWizard = document.getElementById('profile-wizard');
+                const cancelWizardBtn = document.getElementById('btn-cancel-wizard');
+
+                if (data.role === 'admin') {
+                    if (calendarSection) calendarSection.classList.add('hidden');
+                    if (dashboardActions) dashboardActions.classList.remove('hidden');
+                    if (profileWizard) profileWizard.classList.add('hidden');
+                } else if (data.profileCompleted) {
+                    if (calendarSection) calendarSection.classList.remove('hidden');
+                    if (dashboardActions) dashboardActions.classList.remove('hidden');
+                    if (profileWizard) profileWizard.classList.add('hidden');
+                    if (cancelWizardBtn) cancelWizardBtn.classList.remove('hidden');
+                } else {
+                    // Profile NOT completed and is client
+                    if (calendarSection) calendarSection.classList.add('hidden');
+                    if (dashboardActions) dashboardActions.classList.add('hidden');
+                    if (profileWizard) profileWizard.classList.remove('hidden');
+                    if (cancelWizardBtn) cancelWizardBtn.classList.add('hidden'); // Hide cancel if mandatory
+                }
 
                 // If profile is already completed, change button text
                 const btnShowWizard = document.getElementById('btn-show-wizard');

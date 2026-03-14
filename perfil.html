@@ -149,7 +149,7 @@
                 </div>
 
                 <!-- Client Calendar Booking Section -->
-                <div id="calendar-section" class="calendar-section border-top-fade">
+                <div id="calendar-section" class="calendar-section border-top-fade hidden">
                     <div class="calendar-header">
                         <h3 class="premium-title">O TUE HORÁRIO</h3>
                         <div class="week-navigation">
@@ -185,6 +185,14 @@
 
 
 
+                    <!-- Multi-Booking Summary (Client) -->
+                    <div id="booking-summary-container" class="booking-summary-container hidden fade-in">
+                        <h4 class="summary-title">Resumo da Reserva</h4>
+                        <div id="booking-summary-list" class="summary-list">
+                            <!-- JS will inject items here -->
+                        </div>
+                    </div>
+
                     <div class="calendar-footer">
                         <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;" disabled>Confirmar Reserva</button>
                     </div>
@@ -215,6 +223,11 @@
                         <div class="weekly-grid" id="admin-weekly-grid">
                             <!-- JS will dynamically inject the columns and time slots here (Admin Mode) -->
                         </div>
+                    </div>
+
+                    <!-- Admin User Legend -->
+                    <div id="admin-user-legend" class="admin-user-legend hidden">
+                        <!-- JS will inject user legend items here -->
                     </div>
 
                     <div class="admin-footer">

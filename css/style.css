@@ -4195,6 +4195,20 @@ body.loaded #preloader {
     margin-bottom: 60px;
     font-size: 0.95rem;
     color: var(--color-text-dim);
+    flex-wrap: wrap; /* Added for responsiveness */
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.legend-box {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    flex-shrink: 0;
 }
 
 .legend-box.available {
@@ -4352,6 +4366,110 @@ body.loaded #preloader {
 .admin-mode .time-slot.active.service-osteo {
     background: var(--color-osteo);
     color: #000;
+}
+
+/* Admin Booked States (Paulo's View) */
+.time-slot.admin-booked {
+    border-width: 2px !important;
+    font-weight: 700;
+    transition: var(--transition-smooth);
+    position: relative;
+    padding: 5px !important;
+    height: auto !important;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.2;
+}
+
+/* Service Borders for Admin */
+.time-slot.admin-booked.service-treino {
+    border-color: #E7AE19 !important; /* Gold */
+}
+
+.time-slot.admin-booked.service-osteopatia {
+    border-color: #FFFFFF !important; /* White */
+}
+
+.time-slot.admin-booked .client-name {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    margin-top: 4px;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+/* Multi-Booking Summary (Client) */
+.booking-summary-container {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 25px;
+    margin-bottom: 30px;
+}
+
+.summary-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--color-primary);
+    margin-bottom: 15px;
+    text-transform: uppercase;
+}
+
+.summary-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    font-size: 0.9rem;
+}
+
+.summary-item .remove-slot {
+    background: none;
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    font-size: 1.2rem;
+    padding: 0 5px;
+}
+
+/* Admin User Legend */
+.admin-user-legend {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 15px;
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.user-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--color-text-dim);
+}
+
+.user-color-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
 }
 
 .time-slot.available:hover {
