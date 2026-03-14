@@ -133,37 +133,52 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId) {
                 if (data && data.slots && data.slots[slotId] && data.slots[slotId].status === 'booked') {
                     btn.className = 'time-slot admin-booked';
                     btn.innerHTML = `${hourStr}<br><span class="client-name">${data.slots[slotId].bookedName || 'Ocupado'}</span>`;
-                    btn.disabled = true; // Prevent unpublishing
+                    btn.disabled = true;
                 } else {
                     btn.className = 'time-slot admin-selectable';
-                    // Active if already saved
-                    if (selectedAdminSlots.has(slotId)) {
-                        btn.classList.add('active');
+                    
+                    // Initial state from loaded data
+                    if (data && data.slots && data.slots[slotId]) {
+                        const sType = data.slots[slotId].serviceType || 'treino';
+                        btn.classList.add('active', `service-${sType}`);
+                        btn.dataset.serviceType = sType;
                     }
 
-                    // Toggle purely visual for admin before publishing
+                    // Toggle Cycle: None -> Treino -> Osteo -> None
                     btn.onclick = () => {
-                        btn.classList.toggle('active');
+                        if (!btn.classList.contains('active')) {
+                            btn.classList.add('active', 'service-treino');
+                            btn.dataset.serviceType = 'treino';
+                        } else if (btn.classList.contains('service-treino')) {
+                            btn.classList.remove('service-treino');
+                            btn.classList.add('service-osteo');
+                            btn.dataset.serviceType = 'osteopatia';
+                        } else {
+                            btn.classList.remove('active', 'service-osteo');
+                            delete btn.dataset.serviceType;
+                        }
                     }
                 }
             } else {
                 // Client Logic
                 if (data && data.slots && data.slots[slotId]) {
                     const slotInfo = data.slots[slotId];
+                    const sType = slotInfo.serviceType || 'treino';
+                    const serviceClass = `service-${sType === 'osteopatia' ? 'osteo' : 'treino'}`;
+
                     if (slotInfo.status === 'booked') {
                         if (slotInfo.bookedBy === user.uid) {
-                            btn.className = 'time-slot selected'; // Mine!
+                            btn.className = `time-slot selected ${serviceClass}`;
                         } else {
-                            btn.className = 'time-slot booked'; // Taken by someone else
+                            btn.className = 'time-slot booked';
                             btn.disabled = true;
                         }
                     } else {
                         // available
-                        btn.className = 'time-slot available';
-                        btn.onclick = () => selectClientSlot(db, user, weekId, slotId, btn);
+                        btn.className = `time-slot available ${serviceClass}`;
+                        btn.onclick = () => selectClientSlot(db, user, weekId, slotId, btn, sType);
                     }
                 } else {
-                    // Paulo hasn't opened this slot
                     btn.className = 'time-slot empty';
                     btn.disabled = true;
                 }
@@ -199,7 +214,8 @@ function setupAdminPublishButton(db, weekId, gridWrapper) {
             slotsMap[slotId] = {
                 status: 'available',
                 bookedBy: null,
-                bookedName: null
+                bookedName: null,
+                serviceType: b.dataset.serviceType || 'treino'
             };
         });
 
@@ -209,7 +225,7 @@ function setupAdminPublishButton(db, weekId, gridWrapper) {
             const existingSnap = await getDoc(docRef);
             if (existingSnap.exists()) {
                 const existingData = existingSnap.data();
-                // Merge existing booked slots back into the map so Paulo doesn't delete someone's booking
+                // Merge existing booked slots back into the map
                 Object.keys(existingData.slots || {}).forEach(k => {
                     if (existingData.slots[k].status === 'booked') {
                         slotsMap[k] = existingData.slots[k];
@@ -233,32 +249,25 @@ function setupAdminPublishButton(db, weekId, gridWrapper) {
         newBtn.innerHTML = '<i data-lucide="send" style="width: 18px; height: 18px; margin-right: 8px;"></i> Publicar Semana';
         if (window.lucide) window.lucide.createIcons();
     });
-}
-
-function selectClientSlot(db, user, weekId, slotId, btn) {
-    // Toggle the selection state instead of replacing
-    btn.classList.toggle('selected');
-    btn.classList.toggle('active-selection');
-
+}function selectClientSlot(db, user, weekId, slotId, btn, serviceType) {
     const container = document.getElementById('calendar-section');
-    const selectedButtons = container.querySelectorAll('.time-slot.selected');
     const confirmBtn = document.getElementById('btn-confirm-booking');
+
+    // Deselect all others
+    const allSlots = container.querySelectorAll('.time-slot');
+    allSlots.forEach(s => s.classList.remove('active-selection'));
+
+    // Select this one
+    btn.classList.add('active-selection');
 
     if (!confirmBtn) return;
 
-    if (selectedButtons.length === 0) {
-        confirmBtn.disabled = true;
-        confirmBtn.textContent = "Confirmar Reserva";
-        return;
-    }
-
     confirmBtn.disabled = false;
-    if (selectedButtons.length === 1) {
-        let uiDateText = selectedButtons[0].dataset.slotId.split('T');
-        confirmBtn.textContent = `Confirmar Reserva (${uiDateText[1]} - ${uiDateText[0]})`;
-    } else {
-        confirmBtn.textContent = `Confirmar ${selectedButtons.length} Reservas`;
-    }
+
+    // Use pre-assigned service name in UI
+    const serviceName = serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino';
+    let uiTime = slotId.split('T')[1];
+    confirmBtn.textContent = `Reservar ${serviceName} (${uiTime})`;
 
     confirmBtn.onclick = async () => {
         confirmBtn.disabled = true;
@@ -267,24 +276,22 @@ function selectClientSlot(db, user, weekId, slotId, btn) {
             const docRef = doc(db, "weekly_schedules", weekId);
             const updateField = {};
 
-            // Loop through all currently selected slots to build the update merge packet
-            selectedButtons.forEach(b => {
-                let thisSlotId = b.dataset.slotId;
-                updateField[`slots.${thisSlotId}`] = {
-                    status: 'booked',
-                    bookedBy: user.uid,
-                    bookedName: user.email // Or fetch user name from db
-                };
-            });
+            updateField[`slots.${slotId}`] = {
+                status: 'booked',
+                bookedBy: user.uid,
+                bookedName: user.email,
+                serviceType: serviceType,
+                timestamp: new Date().toISOString()
+            };
 
             await setDoc(docRef, updateField, { merge: true });
-            alert(`Reserva(s) confirmada(s) con suceso! (${selectedButtons.length} horários)`);
+            
+            alert(`Reserva de ${serviceName} confirmada com sucesso!`);
         } catch (e) {
             console.error(e);
-            alert("Alguém foi mais rápido ou ocorreu um erro.");
+            alert("Erro ao confirmar a reserva.");
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = `Reservar ${serviceName} (${uiTime})`;
         }
-        // Cleanup UI will automatically happen due to onSnapshot receiving the new data!
-        confirmBtn.textContent = "Confirmar Reserva";
-        confirmBtn.disabled = true;
     }
 }

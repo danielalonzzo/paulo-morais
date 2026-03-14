@@ -148,10 +148,10 @@
                     <button id="btn-logout" class="btn btn-outline">Terminar Sessão</button>
                 </div>
 
-                <!-- Client Calendar Booking Section (Static Preview) -->
+                <!-- Client Calendar Booking Section -->
                 <div id="calendar-section" class="calendar-section border-top-fade">
                     <div class="calendar-header">
-                        <h3>O teu horário</h3>
+                        <h3 class="premium-title">O TUE HORÁRIO</h3>
                         <div class="week-navigation">
                             <button class="nav-btn" disabled><i data-lucide="chevron-left"></i></button>
                             <span class="current-week">19 Fev - 25 Fev</span>
@@ -161,7 +161,13 @@
 
                     <div class="calendar-legend">
                         <span class="legend-item">
-                            <div class="legend-box available"></div> Disponível
+                            <div class="legend-box available"></div> Livre
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box treino"></div> Treino
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box osteo"></div> Osteopatia
                         </span>
                         <span class="legend-item">
                             <div class="legend-box booked"></div> Ocupado
@@ -173,13 +179,14 @@
 
                     <div class="weekly-grid-scroll-wrapper">
                         <div class="weekly-grid" id="client-weekly-grid">
-                            <!-- JS will dynamically inject the columns and time slots here based on Firebase data -->
+                            <!-- JS will dynamically inject the columns and time slots here -->
                         </div>
                     </div>
 
+
+
                     <div class="calendar-footer">
-                        <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;">Confirmar Reserva
-                            (12:00 - Seg)</button>
+                        <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;" disabled>Confirmar Reserva</button>
                     </div>
                 </div>
 
@@ -191,7 +198,18 @@
                             <span class="current-week" style="margin: 0;">19 Fev - 25 Fev</span>
                         </div>
                     </div>
-                    <p class="admin-instruction">Selecione os blocos onde deseja abrir disponibilidade na agenda.</p>
+                    <div class="calendar-legend mb-3">
+                        <span class="legend-item">
+                            <div class="legend-box available"></div> Indisponível
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box treino"></div> Treino (Dourado)
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box osteo"></div> Osteopatia (Prata)
+                        </span>
+                    </div>
+                    <p class="admin-instruction">Clique nos blocos para alternar entre: Treino -> Osteopatía -> Indisponível.</p>
 
                     <div class="weekly-grid-scroll-wrapper">
                         <div class="weekly-grid" id="admin-weekly-grid">
