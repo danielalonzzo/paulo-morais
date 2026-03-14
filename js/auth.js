@@ -3,9 +3,8 @@
  * A European company
  */
 // Import the functions you need from the SDKs you need
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { auth, db } from './firebase-config.js';
 import {
-    getAuth,
     signInWithEmailAndPassword,
     createUserWithEmailAndPassword,
     sendPasswordResetEmail,
@@ -13,29 +12,11 @@ import {
     signOut
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 import {
-    getFirestore,
     doc,
     setDoc,
     getDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initCalendarMode } from './calendar.js';
-
-// Firebase configuration
-const firebaseConfig = {
-    apiKey: "AIzaSyCROYGriQ-5RWiLVCRwGz9KaDUKE6zNR2w",
-    authDomain: "paulo-morais.firebaseapp.com",
-    databaseURL: "https://paulo-morais-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "paulo-morais",
-    storageBucket: "paulo-morais.firebasestorage.app",
-    messagingSenderId: "431406968000",
-    appId: "1:431406968000:web:a759ddc6912639d7c69125",
-    measurementId: "G-GYWR102Y9N"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
 
 // UI Elements & State Management
 document.addEventListener('DOMContentLoaded', () => {
@@ -90,11 +71,19 @@ document.addEventListener('DOMContentLoaded', () => {
             authCard.classList.add('hidden');
             userDashboard.classList.remove('hidden');
 
-            // Load user data
-            loadUserProfile(user);
+            // IMMEDIATE ADMIN CHECK (for fast button visibility)
+            const ADMIN_EMAIL = "pt@pmorais.pt";
+            const btnShowProfiles = document.getElementById('btn-show-profiles');
+            if (user.email === ADMIN_EMAIL && btnShowProfiles) {
+                btnShowProfiles.classList.remove('hidden');
+                btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+            }
+
+            // Load user data and wait for it to get the role
+            const userData = await loadUserProfile(user);
 
             // Initialize Calendar System depending on Role
-            initCalendarMode(user, db);
+            initCalendarMode(user, db, userData?.role);
         } else {
             // User is signed out
             console.log('User signed out');
@@ -209,6 +198,11 @@ document.addEventListener('DOMContentLoaded', () => {
         btnShowWizard.addEventListener('click', () => {
             profileWizard.classList.remove('hidden');
             dashboardActions.classList.add('hidden');
+            
+            // Scroll to the wizard
+            setTimeout(() => {
+                profileWizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
         });
     }
 
@@ -216,32 +210,111 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCancelWizard.addEventListener('click', () => {
             profileWizard.classList.add('hidden');
             dashboardActions.classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
 
     if (profileForm) {
+        // Handle conditional validation for Observations
+        const healthIssuesSelect = document.getElementById('prof-health-issues');
+        const physicalLimitsSelect = document.getElementById('prof-physical-limits');
+        const birthdateInput = document.getElementById('prof-birthdate');
+        const ageDisplay = document.getElementById('prof-age-display');
+        const obsHint = document.getElementById('obs-hint');
+        const obsLabel = document.getElementById('label-obs');
+
+        const calculateAge = (birthday) => {
+            const ageDifMs = Date.now() - new Date(birthday).getTime();
+            const ageDate = new Date(ageDifMs);
+            return Math.abs(ageDate.getUTCFullYear() - 1970);
+        };
+
+        if (birthdateInput) {
+            birthdateInput.addEventListener('change', () => {
+                if (birthdateInput.value) {
+                    const age = calculateAge(birthdateInput.value);
+                    ageDisplay.textContent = `(${age} anos)`;
+                } else {
+                    ageDisplay.textContent = "";
+                }
+            });
+        }
+
+        const phoneInput = document.getElementById('prof-phone');
+        if (phoneInput) {
+            phoneInput.addEventListener('input', (e) => {
+                let value = e.target.value;
+                if (!value.startsWith('+')) {
+                    e.target.value = '+351 ' + value.replace(/^\D+/g, '');
+                }
+            });
+        }
+
+        const updateObsState = () => {
+            const hasIssues = healthIssuesSelect.value === 'sim' || physicalLimitsSelect.value === 'sim';
+            if (hasIssues) {
+                obsLabel.textContent = "Observações *";
+                obsHint.classList.remove('hidden');
+            } else {
+                obsLabel.textContent = "Observações";
+                obsHint.classList.add('hidden');
+            }
+        };
+
+        if (healthIssuesSelect) healthIssuesSelect.addEventListener('change', updateObsState);
+        if (physicalLimitsSelect) physicalLimitsSelect.addEventListener('change', updateObsState);
+
         profileForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const user = auth.currentUser;
             if (!user) return;
 
-            const age = document.getElementById('prof-age').value;
-            const conditions = document.getElementById('prof-conditions').value;
+            const birthdate = birthdateInput.value;
+            const age = birthdate ? calculateAge(birthdate) : null;
+            const phone = document.getElementById('prof-phone').value;
+            const weight = document.getElementById('prof-weight').value;
+            const height = document.getElementById('prof-height').value;
+            const fatMass = document.getElementById('prof-fat').value;
+            const muscleMass = document.getElementById('prof-muscle').value;
+            const healthIssues = healthIssuesSelect.value;
+            const physicalLimits = physicalLimitsSelect.value;
+            const observations = document.getElementById('prof-obs').value;
+
+            // Mandatory Validation
+            if (!birthdate || !weight || !height || !healthIssues || !physicalLimits) {
+                alert("Por favor, preencha todos os campos obrigatórios (*)");
+                return;
+            }
+
+            // Conditional Validation for Observations
+            if ((healthIssues === 'sim' || physicalLimits === 'sim') && !observations.trim()) {
+                alert("Por favor, descreva os seus problemas de saúde o limitações nas Observações.");
+                document.getElementById('prof-obs').focus();
+                return;
+            }
 
             try {
                 await setDoc(doc(db, "users", user.uid), {
-                    age: age,
-                    conditions: conditions,
+                    birthdate,
+                    age,
+                    phone,
+                    weight,
+                    height,
+                    fatMass,
+                    muscleMass,
+                    healthIssues,
+                    physicalLimits,
+                    observations,
                     profileCompleted: true,
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
 
                 alert("Perfil actualizado com sucesso!");
-                // No longer just hide/show here, let loadUserProfile handle the source of truth
                 loadUserProfile(user);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 console.error("Error updating profile:", error);
-                alert("Erro ao actualizar el perfil.");
+                alert("Erro ao actualizar o perfil.");
             }
         });
     }
@@ -249,8 +322,32 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function loadUserProfile(user) {
     const userWelcome = document.getElementById('user-welcome');
-    const profAge = document.getElementById('prof-age');
-    const profConditions = document.getElementById('prof-conditions');
+    
+    // Form fields - fetch them inside to ensure they are current
+    const profName = document.getElementById('prof-name');
+    const profEmail = document.getElementById('prof-email');
+    const profBirthdate = document.getElementById('prof-birthdate');
+    const profAgeDisplay = document.getElementById('prof-age-display');
+    const profPhone = document.getElementById('prof-phone');
+    const profWeight = document.getElementById('prof-weight');
+    const profHeight = document.getElementById('prof-height');
+    const profFat = document.getElementById('prof-fat');
+    const profMuscle = document.getElementById('prof-muscle');
+    const profHealth = document.getElementById('prof-health-issues');
+    const profPhysical = document.getElementById('prof-physical-limits');
+    const profObs = document.getElementById('prof-obs');
+    const obsLabel = document.getElementById('label-obs');
+    const obsHint = document.getElementById('obs-hint');
+
+    const calculateAge = (birthday) => {
+        const ageDifMs = Date.now() - new Date(birthday).getTime();
+        const ageDate = new Date(ageDifMs);
+        return Math.abs(ageDate.getUTCFullYear() - 1970);
+    };
+
+    // Preliminary population from Auth object (faster)
+    if (profEmail) profEmail.value = user.email || "";
+    if (profName && user.displayName) profName.value = user.displayName;
 
     if (userWelcome) {
         try {
@@ -259,29 +356,81 @@ async function loadUserProfile(user) {
 
             if (docSnap.exists()) {
                 const data = docSnap.data();
-                userWelcome.textContent = `Olá, ${data.name || user.email}!`;
+                userWelcome.textContent = `Olá, ${data.name || user.displayName || user.email}!`;
 
-                // Populate wizard fields if they exist
-                if (profAge && data.age) profAge.value = data.age;
-                if (profConditions && data.conditions) profConditions.value = data.conditions;
+                // Populate Fields from Firestore (Source of truth)
+                if (profName) profName.value = data.name || user.displayName || "";
+                if (profEmail) profEmail.value = data.email || user.email || "";
+                
+                if (profBirthdate && data.birthdate) {
+                    profBirthdate.value = data.birthdate;
+                    // Update age display
+                    if (profAgeDisplay) {
+                        const age = calculateAge(data.birthdate);
+                        profAgeDisplay.textContent = `(${age} anos)`;
+                    }
+                    // If profile is already completed, lock the birthdate
+                    if (data.profileCompleted) {
+                        profBirthdate.readOnly = true;
+                    }
+                }
+                
+                if (profPhone && data.phone) profPhone.value = data.phone;
+                if (profWeight && data.weight) profWeight.value = data.weight;
+                if (profHeight && data.height) profHeight.value = data.height;
+                if (profFat && data.fatMass) profFat.value = data.fatMass;
+                if (profMuscle && data.muscleMass) profMuscle.value = data.muscleMass;
+                if (profHealth && data.healthIssues) profHealth.value = data.healthIssues;
+                if (profPhysical && data.physicalLimits) profPhysical.value = data.physicalLimits;
+                if (profObs && data.observations) profObs.value = data.observations;
+
+                // Update observation hint after loading
+                if (obsLabel && obsHint) {
+                    const hasIssues = data.healthIssues === 'sim' || data.physicalLimits === 'sim';
+                    if (hasIssues) {
+                        obsLabel.textContent = "Observações *";
+                        obsHint.classList.remove('hidden');
+                    }
+                }
 
                 const calendarSection = document.getElementById('calendar-section');
+                const adminCalendarSection = document.getElementById('admin-calendar-section');
                 const dashboardActions = document.getElementById('dashboard-main-actions');
                 const profileWizard = document.getElementById('profile-wizard');
                 const cancelWizardBtn = document.getElementById('btn-cancel-wizard');
 
-                if (data.role === 'admin') {
+                const btnShowProfiles = document.getElementById('btn-show-profiles');
+                const ADMIN_EMAIL = "pt@pmorais.pt";
+
+                if (data.role === 'admin' || user.email === ADMIN_EMAIL) {
+                    // AUTO-FIX: Ensure Paulo has the admin role in Firestore
+                    if (data.role !== 'admin' && user.email === ADMIN_EMAIL) {
+                        try {
+                            await setDoc(doc(db, "users", user.uid), { role: 'admin' }, { merge: true });
+                            console.log("Admin role auto-fixed for Paulo.");
+                        } catch (e) {
+                            console.warn("Could not auto-fix admin role. Possibly rules restricted.", e);
+                        }
+                    }
+
                     if (calendarSection) calendarSection.classList.add('hidden');
+                    if (adminCalendarSection) adminCalendarSection.classList.remove('hidden');
                     if (dashboardActions) dashboardActions.classList.remove('hidden');
                     if (profileWizard) profileWizard.classList.add('hidden');
+                    if (btnShowProfiles) {
+                        btnShowProfiles.classList.remove('hidden');
+                        btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+                    }
                 } else if (data.profileCompleted) {
                     if (calendarSection) calendarSection.classList.remove('hidden');
+                    if (adminCalendarSection) adminCalendarSection.classList.add('hidden');
                     if (dashboardActions) dashboardActions.classList.remove('hidden');
                     if (profileWizard) profileWizard.classList.add('hidden');
                     if (cancelWizardBtn) cancelWizardBtn.classList.remove('hidden');
                 } else {
                     // Profile NOT completed and is client
                     if (calendarSection) calendarSection.classList.add('hidden');
+                    if (adminCalendarSection) adminCalendarSection.classList.add('hidden');
                     if (dashboardActions) dashboardActions.classList.add('hidden');
                     if (profileWizard) profileWizard.classList.remove('hidden');
                     if (cancelWizardBtn) cancelWizardBtn.classList.add('hidden'); // Hide cancel if mandatory
@@ -292,13 +441,29 @@ async function loadUserProfile(user) {
                 if (data.profileCompleted && btnShowWizard) {
                     btnShowWizard.textContent = "Editar Perfil";
                 }
+                return data;
             } else {
-                userWelcome.textContent = `Olá, ${user.email}!`;
+                userWelcome.textContent = `Olá, ${user.displayName || user.email}!`;
+                if (profName && user.displayName) profName.value = user.displayName;
+                if (profEmail) profEmail.value = user.email || "";
+
+                // Fallback for Admin account if no document exists yet
+                const ADMIN_EMAIL = "pt@pmorais.pt";
+                if (user.email === ADMIN_EMAIL) {
+                    const btnShowProfiles = document.getElementById('btn-show-profiles');
+                    if (btnShowProfiles) {
+                        btnShowProfiles.classList.remove('hidden');
+                        btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+                    }
+                }
+                return null;
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
+            return null;
         }
     }
+    return null;
 }
 
 // Error Message Translation Helper

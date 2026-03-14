@@ -1,0 +1,151 @@
+import { auth, db } from './firebase-config.js';
+import { 
+    collection, 
+    getDocs, 
+    doc, 
+    getDoc, 
+    query, 
+    where 
+} from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+const ADMIN_EMAIL = "pt@pmorais.pt";
+const profilesGrid = document.getElementById('profiles-grid');
+const modal = document.getElementById('modal-details');
+const modalName = document.getElementById('modal-name');
+const modalContainer = document.getElementById('modal-data-container');
+const btnCloseModal = document.getElementById('btn-close-modal');
+
+// Check Auth & Admin
+onAuthStateChanged(auth, async (user) => {
+    try {
+        if (!user) {
+            console.log("No user found, redirecting...");
+            window.location.href = 'perfil.html';
+            return;
+        }
+
+        console.log("User authenticated:", user.email);
+
+        // Verify Admin Role in Firestore
+        const userDoc = await getDoc(doc(db, "users", user.uid));
+        const userData = userDoc.data();
+
+        console.log("User data from Firestore:", userData);
+
+        if (userData?.role !== 'admin' && user.email !== ADMIN_EMAIL) {
+            alert("Acesso restrito a administradores.");
+            window.location.href = 'perfil.html';
+            return;
+        }
+
+        // If Admin, load profiles
+        loadProfiles();
+    } catch (err) {
+        console.error("Auth/Admin check error:", err);
+        profilesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Erro de autenticação/permissão: ${err.message}</p>`;
+    }
+});
+
+async function loadProfiles() {
+    try {
+        const querySnapshot = await getDocs(collection(db, "users"));
+        profilesGrid.innerHTML = "";
+        
+        const users = [];
+        querySnapshot.forEach((doc) => {
+            users.push({ id: doc.id, ...doc.data() });
+        });
+
+        // Filter out admins and Paulo himself
+        const clients = users.filter(u => u.role !== 'admin' && u.email !== ADMIN_EMAIL).sort((a,b) => (a.name || "").localeCompare(b.name || ""));
+
+        if (clients.length === 0) {
+            profilesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.5;">Nenhum aluno registado.</p>`;
+            return;
+        }
+
+        clients.forEach(userData => {
+            const card = document.createElement('div');
+            card.className = 'user-card';
+            card.innerHTML = `
+                <div>
+                    <h4>${userData.name || "Sem Nome"}</h4>
+                    <p>${userData.email}</p>
+                </div>
+                <div class="card-footer-link">
+                    VER FICHA COMPLETA <i data-lucide="external-link" style="width: 14px;"></i>
+                </div>
+            `;
+
+            card.onclick = () => showUserDetails(userData);
+            profilesGrid.appendChild(card);
+        });
+
+        if (window.lucide) window.lucide.createIcons();
+
+    } catch (error) {
+        console.error("Error loading profiles:", error);
+        let errorMsg = error.message;
+        if (error.code === 'permission-denied') {
+            errorMsg = "Permissão negada. Verifique se a sua conta tem privilégios de administrador no Firestore.";
+        }
+        profilesGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center;">
+                <p style="color: #ff6b6b; font-weight: 600;">Ocorreu um erro ao carregar os dados.</p>
+                <p style="opacity: 0.7; font-size: 0.9rem;">${errorMsg}</p>
+            </div>
+        `;
+    }
+}
+
+function showUserDetails(data) {
+    modalName.textContent = data.name || "Sem Nome";
+    modalContainer.innerHTML = "";
+
+    const details = [
+        { label: "Email", value: data.email },
+        { label: "Telemóvel", value: data.phone || "---" },
+        { label: "Data de Nascimento", value: data.birthdate || "---" },
+        { label: "Idade", value: data.age ? `${data.age} anos` : "---" },
+        { label: "Peso", value: data.weight ? `${data.weight} kg` : "---" },
+        { label: "Altura", value: data.height ? `${data.height} cm` : "---" },
+        { label: "Massa Gorda", value: data.fatMass ? `${data.fatMass} %` : "---" },
+        { label: "Massa Muscular", value: data.muscleMass ? `${data.muscleMass} kg` : "---" },
+        { label: "Problemas de Saúde", value: data.healthIssues || "---" },
+        { label: "Limitações Físicas", value: data.physicalLimits || "---" }
+    ];
+
+    details.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'detail-group';
+        div.innerHTML = `
+            <span class="detail-label">${item.label}</span>
+            <span class="detail-value">${item.value}</span>
+        `;
+        modalContainer.appendChild(div);
+    });
+
+    if (data.observations) {
+        const obsBox = document.createElement('div');
+        obsBox.className = 'observations-box';
+        obsBox.innerHTML = `
+            <span class="observations-title">Observações</span>
+            <p style="margin: 0; line-height: 1.6; opacity: 0.8;">${data.observations}</p>
+        `;
+        modalContainer.appendChild(obsBox);
+    }
+
+    modal.classList.add('active');
+}
+
+// Modal closing
+if (btnCloseModal) {
+    btnCloseModal.onclick = () => modal.classList.remove('active');
+}
+
+window.onclick = (event) => {
+    if (event.target == modal) {
+        modal.classList.remove('active');
+    }
+}

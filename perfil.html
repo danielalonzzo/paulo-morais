@@ -145,6 +145,7 @@
                 <h2 id="user-welcome">Olá!</h2>
                 <div id="dashboard-main-actions" class="dashboard-actions">
                     <button id="btn-show-wizard" class="btn btn-primary">Completar Perfil</button>
+                    <button id="btn-show-profiles" class="btn btn-outline hidden">Perfis</button>
                     <button id="btn-logout" class="btn btn-outline">Terminar Sessão</button>
                 </div>
 
@@ -172,9 +173,6 @@
                         <span class="legend-item">
                             <div class="legend-box booked"></div> Ocupado
                         </span>
-                        <span class="legend-item">
-                            <div class="legend-box selected"></div> A tua reserva
-                        </span>
                     </div>
 
                     <div class="weekly-grid-scroll-wrapper">
@@ -199,9 +197,9 @@
                 </div>
 
                 <!-- Admin Calendar Section (Static Preview) -->
-                <div id="admin-calendar-section" class="calendar-section admin-mode border-top-fade mt-5">
+                <div id="admin-calendar-section" class="calendar-section admin-mode border-top-fade mt-5 hidden">
                     <div class="calendar-header">
-                        <h3>Gestão de Disponibilidade (Admin)</h3>
+                        <h3 class="premium-title">GESTÃO DE DISPONIBILIDADE (ADMIN)</h3>
                         <div class="week-navigation">
                             <span class="current-week" style="margin: 0;">19 Fev - 25 Fev</span>
                         </div>
@@ -244,14 +242,75 @@
                     <p class="wizard-desc">Complete estes dados para que o Paulo possa personalizar o seu treino.</p>
 
                     <form id="profile-form" class="auth-form">
-                        <div class="form-group">
-                            <label for="prof-age">Idade</label>
-                            <input type="number" id="prof-age" placeholder="Ex: 35">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prof-name">Nome</label>
+                                <input type="text" id="prof-name" readonly>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-email">Email</label>
+                                <input type="email" id="prof-email" readonly>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="prof-conditions">Condições de Saúde / Lesões</label>
-                            <textarea id="prof-conditions" placeholder="Descreva brevemente..."></textarea>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prof-birthdate">Data de Nascimento * <span id="prof-age-display" class="age-badge"></span></label>
+                                <input type="date" id="prof-birthdate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-phone">Telemóvel</label>
+                                <input type="tel" id="prof-phone" value="+351 " placeholder="+351 912 345 678">
+                            </div>
                         </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prof-weight">Peso (kg) *</label>
+                                <input type="number" step="0.1" id="prof-weight" placeholder="Ex: 75.5" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-height">Altura (cm) *</label>
+                                <input type="number" id="prof-height" placeholder="Ex: 175" required>
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prof-fat">Massa Gorda (%)</label>
+                                <input type="number" step="0.1" id="prof-fat" placeholder="Ex: 15.2">
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-muscle">Massa Muscular (kg)</label>
+                                <input type="number" step="0.1" id="prof-muscle" placeholder="Ex: 38.0">
+                            </div>
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="prof-health-issues">Problemas de Saúde *</label>
+                                <select id="prof-health-issues" required>
+                                    <option value="" disabled selected>Selecionar...</option>
+                                    <option value="não">Não</option>
+                                    <option value="sim">Sim</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="prof-physical-limits">Limitações físicas *</label>
+                                <select id="prof-physical-limits" required>
+                                    <option value="" disabled selected>Selecionar...</option>
+                                    <option value="não">Não</option>
+                                    <option value="sim">Sim</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="prof-obs" id="label-obs">Observações</label>
+                            <textarea id="prof-obs" placeholder="Descreva problemas de saúde ou limitações, se aplicável..."></textarea>
+                            <small id="obs-hint" class="form-hint hidden">Por favor, descreva os seus problemas de saúde ou limitações físicas.</small>
+                        </div>
+
                         <div class="wizard-buttons">
                             <button type="submit" id="btn-save-profile" class="btn btn-primary">Guardar
                                 Alterações</button>

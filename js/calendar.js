@@ -16,7 +16,7 @@ currentWeekStart.setHours(0, 0, 0, 0);
 
 let selectedClientSlots = []; // Global array to track multiple selections
 
-export function initCalendarMode(user, db) {
+export function initCalendarMode(user, db, role = null) {
     const calendarSection = document.getElementById('calendar-section');
     const adminSection = document.getElementById('admin-calendar-section');
 
@@ -31,7 +31,10 @@ export function initCalendarMode(user, db) {
 
     if (!calendarSection || !adminSection) return;
 
-    if (user.email === ADMIN_EMAIL) {
+    // Determine if user is admin
+    const isAdmin = role === 'admin' || user.email === ADMIN_EMAIL;
+
+    if (isAdmin) {
         adminSection.classList.remove('hidden');
         calendarSection.classList.add('hidden');
         renderAdminGrid(db, user);
