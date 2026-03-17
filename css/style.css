@@ -4402,6 +4402,10 @@ body.loaded #preloader {
     color: var(--color-text-dim);
 }
 
+.time-slot.available:hover {
+    transform: translateY(-5px);
+}
+
 /* Service Colors */
 .time-slot.service-treino {
     background: rgba(230, 174, 23, 0.1);
@@ -4440,6 +4444,7 @@ body.loaded #preloader {
     background: var(--color-treino);
     color: #000;
     box-shadow: 0 0 20px rgba(230, 174, 23, 0.4);
+    border-color: var(--color-treino);
 }
 
 .time-slot.service-osteo {
@@ -4449,10 +4454,13 @@ body.loaded #preloader {
 }
 
 .time-slot.service-osteo:hover,
-.time-slot.service-osteo.active-selection {
-    background: var(--color-osteo);
-    color: #000;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+.time-slot.service-osteo.active-selection,
+.time-slot.service-osteopatia:hover,
+.time-slot.service-osteopatia.active-selection {
+    background: var(--color-osteo) !important;
+    color: #000 !important;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4) !important;
+    border-color: var(--color-osteo) !important;
 }
 
 /* Admin Multi-State Selection Styles */
@@ -4570,13 +4578,6 @@ body.loaded #preloader {
     border-radius: 50%;
 }
 
-.time-slot.available:hover {
-    background: var(--color-primary);
-    color: #000;
-    transform: translateY(-5px);
-    box-shadow: 0 15px 30px rgba(230, 174, 23, 0.3);
-    border-color: var(--color-primary);
-}
 
 .time-slot.selected {
     background: var(--color-primary);
@@ -4703,10 +4704,23 @@ body.loaded #preloader {
     color: var(--color-primary);
 }
 
+.time-slot.admin-selectable.service-osteo:hover,
+.time-slot.admin-selectable.service-osteopatia:hover {
+    border-color: var(--color-osteo) !important;
+    color: var(--color-osteo) !important;
+}
+
 .time-slot.admin-selectable.active {
     background-color: rgba(230, 185, 105, 0.15);
     border: 1px solid var(--color-primary);
     color: var(--color-primary);
+}
+
+.time-slot.admin-selectable.active.service-osteo,
+.time-slot.admin-selectable.active.service-osteopatia {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-color: var(--color-osteo) !important;
+    color: var(--color-osteo) !important;
 }
 
 .time-slot.admin-booked {

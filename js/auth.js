@@ -82,8 +82,8 @@ document.addEventListener('DOMContentLoaded', () => {
             // Load user data and wait for it to get the role
             const userData = await loadUserProfile(user);
 
-            // Initialize Calendar System depending on Role
-            initCalendarMode(user, db, userData?.role);
+            // Initialize Calendar System depending on Role and Profile Completion
+            initCalendarMode(user, db, userData?.role, userData?.profileCompleted);
         } else {
             // User is signed out
             console.log('User signed out');
@@ -310,7 +310,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, { merge: true });
 
                 alert("Perfil actualizado com sucesso!");
-                loadUserProfile(user);
+                const updatedData = await loadUserProfile(user);
+                // Refresh calendar state
+                initCalendarMode(user, db, updatedData?.role, updatedData?.profileCompleted);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 console.error("Error updating profile:", error);

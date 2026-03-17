@@ -16,7 +16,7 @@ currentWeekStart.setHours(0, 0, 0, 0);
 
 let selectedClientSlots = []; // Global array to track multiple selections
 
-export function initCalendarMode(user, db, role = null) {
+export function initCalendarMode(user, db, role = null, profileCompleted = false) {
     const calendarSection = document.getElementById('calendar-section');
     const adminSection = document.getElementById('admin-calendar-section');
 
@@ -39,9 +39,14 @@ export function initCalendarMode(user, db, role = null) {
         calendarSection.classList.add('hidden');
         renderAdminGrid(db, user);
     } else {
-        calendarSection.classList.remove('hidden');
+        // Only show client calendar if profile is completed
+        if (profileCompleted) {
+            calendarSection.classList.remove('hidden');
+            renderClientGrid(db, user);
+        } else {
+            calendarSection.classList.add('hidden');
+        }
         adminSection.classList.add('hidden');
-        renderClientGrid(db, user);
     }
 }
 
