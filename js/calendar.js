@@ -33,17 +33,21 @@ export function initCalendarMode(user, db, role = null, profileCompleted = false
 
     // Determine if user is admin
     const isAdmin = role === 'admin' || user.email === ADMIN_EMAIL;
+    console.log("initCalendarMode - isAdmin:", isAdmin, "profileCompleted:", profileCompleted);
 
     if (isAdmin) {
+        console.log("Showing admin calendar");
         adminSection.classList.remove('hidden');
         calendarSection.classList.add('hidden');
         renderAdminGrid(db, user);
     } else {
         // Only show client calendar if profile is completed
         if (profileCompleted) {
+            console.log("Showing client calendar (profile completed)");
             calendarSection.classList.remove('hidden');
             renderClientGrid(db, user);
         } else {
+            console.log("Hiding client calendar (profile NOT completed)");
             calendarSection.classList.add('hidden');
         }
         adminSection.classList.add('hidden');

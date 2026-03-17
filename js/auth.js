@@ -81,9 +81,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Load user data and wait for it to get the role
             const userData = await loadUserProfile(user);
+            console.log("User data loaded for:", user.email, userData);
 
             // Initialize Calendar System depending on Role and Profile Completion
-            initCalendarMode(user, db, userData?.role, userData?.profileCompleted);
+            const isCompleted = !!userData?.profileCompleted;
+            console.log("Initializing calendar. Profile completed:", isCompleted);
+            initCalendarMode(user, db, userData?.role, isCompleted);
         } else {
             // User is signed out
             console.log('User signed out');
@@ -445,9 +448,23 @@ async function loadUserProfile(user) {
                 }
                 return data;
             } else {
+                console.log("No user document found. Showing wizard.");
                 userWelcome.textContent = `Olá, ${user.displayName || user.email}!`;
                 if (profName && user.displayName) profName.value = user.displayName;
                 if (profEmail) profEmail.value = user.email || "";
+
+                // FORCE visibility for new users without document yet
+                const calendarSection = document.getElementById('calendar-section');
+                const adminCalendarSection = document.getElementById('admin-calendar-section');
+                const dashboardActions = document.getElementById('dashboard-main-actions');
+                const profileWizard = document.getElementById('profile-wizard');
+                const cancelWizardBtn = document.getElementById('btn-cancel-wizard');
+
+                if (calendarSection) calendarSection.classList.add('hidden');
+                if (adminCalendarSection) adminCalendarSection.classList.add('hidden');
+                if (dashboardActions) dashboardActions.classList.add('hidden');
+                if (profileWizard) profileWizard.classList.remove('hidden');
+                if (cancelWizardBtn) cancelWizardBtn.classList.add('hidden');
 
                 // Fallback for Admin account if no document exists yet
                 const ADMIN_EMAIL = "pt@pmorais.pt";
