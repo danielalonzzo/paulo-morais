@@ -144,7 +144,7 @@
                 <h2 id="user-welcome">Olá!</h2>
                 <div id="dashboard-main-actions" class="dashboard-actions">
                     <button id="btn-show-wizard" class="btn btn-primary"><i data-lucide="user-cog"></i> <span class="btn-text">Editar Perfil</span></button>
-                    <a href="historial.html" class="btn btn-outline" style="text-decoration: none;"><i data-lucide="calendar"></i> <span class="btn-text">Historial</span></a>
+                    <a href="historico.html" class="btn btn-outline" style="text-decoration: none;"><i data-lucide="calendar"></i> <span class="btn-text">Histórico</span></a>
                     <button id="btn-show-profiles" class="btn btn-admin-premium hidden"><i data-lucide="users"></i> <span class="btn-text">Perfis</span></button>
                     <button id="btn-show-forms" class="btn btn-admin-premium hidden"><i data-lucide="file-text"></i> <span class="btn-text">Formulários</span></button>
                     <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out"></i> <span class="btn-text">Terminar Sessão</span></button>
@@ -163,16 +163,16 @@
 
                     <div class="calendar-legend">
                         <span class="legend-item">
-                            <div class="legend-box available"></div> Livre
+                            <div class="legend-box available"></div> Indisponível
                         </span>
                         <span class="legend-item">
-                            <div class="legend-box treino"></div> Treino
+                            <div class="legend-box treino"></div> Treino Personalizado
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box grupal"></div> Em Grupo
                         </span>
                         <span class="legend-item">
                             <div class="legend-box osteo"></div> Osteopatia
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box booked"></div> Ocupado
                         </span>
                     </div>
 
@@ -207,13 +207,16 @@
                     </div>
                     <div class="calendar-legend mb-3">
                         <span class="legend-item">
-                            <div class="legend-box available"></div> Indisponível
+                            <div class="legend-box treino"></div> Treino Personalizado (Um clique)
                         </span>
                         <span class="legend-item">
-                            <div class="legend-box treino"></div> Treino
+                            <div class="legend-box grupal"></div> Em Grupo (Dois cliques)
                         </span>
                         <span class="legend-item">
-                            <div class="legend-box osteo"></div> Osteopatia
+                            <div class="legend-box osteo"></div> Osteopatia (Três cliques)
+                        </span>
+                        <span class="legend-item">
+                            <div class="legend-box available"></div> Indisponível (Quatro cliques)
                         </span>
                     </div>
 
@@ -325,6 +328,16 @@
             </div>
         </div>
     </main>
+
+    <!-- Group Booking Popup (Admin) -->
+    <div id="group-booking-popup" class="group-booking-popup">
+        <div class="group-booking-card">
+            <h4 id="popup-title">Treino Grupal</h4>
+            <p class="popup-subtitle" id="popup-subtitle"></p>
+            <div class="user-list" id="popup-user-list"></div>
+            <button class="close-popup-btn" id="popup-close-btn">Fechar</button>
+        </div>
+    </div>
 
     <!-- Simple Footer -->
     <footer>

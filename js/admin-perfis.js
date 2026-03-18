@@ -149,7 +149,7 @@ function showUserDetails(data) {
         });
 
         historyBox.innerHTML = `
-            <span class="history-title">Historial de Reservas <i data-lucide="history" style="width:16px;"></i></span>
+            <span class="history-title">Histórico de Reservas <i data-lucide="history" style="width:16px;"></i></span>
             <div class="history-list">
                 ${sortedHistory.map(item => `
                     <div class="history-item">

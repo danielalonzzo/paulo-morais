@@ -17,6 +17,7 @@
     --color-accent: #ffffff;
     --color-osteo: #ffffff;
     --color-treino: var(--color-primary);
+    --color-grupal: #0A6FE8;
 
     /* Typography */
     --font-heading: 'Patron', sans-serif;
@@ -4320,6 +4321,12 @@ body.loaded #preloader {
     box-shadow: 0 0 10px rgba(230, 174, 23, 0.4);
 }
 
+.legend-box.grupal {
+    background: var(--color-grupal);
+    border: none;
+    box-shadow: 0 0 10px rgba(10, 111, 232, 0.5);
+}
+
 .legend-box.osteo {
     background: var(--color-osteo);
     border: none;
@@ -4447,6 +4454,26 @@ body.loaded #preloader {
     border-color: var(--color-treino);
 }
 
+.time-slot.service-grupal {
+    background: rgba(10, 111, 232, 0.1);
+    border-color: var(--color-grupal);
+    color: var(--color-grupal);
+}
+
+.time-slot.service-grupal:hover,
+.time-slot.service-grupal.active-selection {
+    background: var(--color-grupal);
+    color: #fff;
+    box-shadow: 0 0 20px rgba(10, 111, 232, 0.4);
+    border-color: var(--color-grupal);
+}
+
+.time-slot.selected.service-grupal {
+    background: var(--color-grupal);
+    color: #fff;
+    box-shadow: 0 0 25px rgba(10, 111, 232, 0.6);
+}
+
 .time-slot.service-osteo {
     background: rgba(255, 255, 255, 0.05);
     border-color: var(--color-osteo);
@@ -4467,6 +4494,11 @@ body.loaded #preloader {
 .admin-mode .time-slot.active.service-treino {
     background: var(--color-treino);
     color: #000;
+}
+
+.admin-mode .time-slot.active.service-grupal {
+    background: var(--color-grupal);
+    color: #fff;
 }
 
 .admin-mode .time-slot.active.service-osteo {
@@ -4493,6 +4525,10 @@ body.loaded #preloader {
 /* Service Borders for Admin */
 .time-slot.admin-booked.service-treino {
     border-color: #E7AE19 !important; /* Gold */
+}
+
+.time-slot.admin-booked.service-grupal {
+    border-color: var(--color-grupal) !important; /* Blue */
 }
 
 .time-slot.admin-booked.service-osteopatia {
@@ -4726,7 +4762,8 @@ body.loaded #preloader {
 
 .time-slot.cancelling,
 .time-slot.selected.service-osteo.cancelling,
-.time-slot.selected.service-treino.cancelling {
+.time-slot.selected.service-treino.cancelling,
+.time-slot.selected.service-grupal.cancelling {
     background: #ff0000 !important;
     border-color: #b30000 !important;
     color: #fff !important;
@@ -4770,6 +4807,11 @@ body.loaded #preloader {
     color: var(--color-primary);
 }
 
+.time-slot.admin-selectable.service-grupal:hover {
+    border-color: var(--color-grupal) !important;
+    color: var(--color-grupal) !important;
+}
+
 .time-slot.admin-selectable.service-osteo:hover,
 .time-slot.admin-selectable.service-osteopatia:hover {
     border-color: var(--color-osteo) !important;
@@ -4780,6 +4822,12 @@ body.loaded #preloader {
     background-color: var(--color-treino);
     border: 1px solid var(--color-treino);
     color: #000;
+}
+
+.time-slot.admin-selectable.active.service-grupal {
+    background-color: var(--color-grupal) !important;
+    border-color: var(--color-grupal) !important;
+    color: #fff !important;
 }
 
 .time-slot.admin-selectable.active.service-osteo,
@@ -4810,6 +4858,175 @@ body.loaded #preloader {
     text-overflow: ellipsis;
     max-width: 95%;
     margin-top: 2px;
+}
+
+/* Group Count Badge */
+.group-count {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.9;
+    margin-top: 2px;
+    display: block;
+    text-align: center;
+}
+
+/* Group slot clickable in admin */
+.time-slot.admin-booked-group {
+    cursor: pointer !important;
+    border-width: 2px !important;
+    font-weight: 700;
+    transition: var(--transition-smooth);
+    position: relative;
+    padding: 5px !important;
+    height: auto !important;
+    min-height: 50px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    line-height: 1.2;
+    background-color: var(--color-grupal);
+    border-color: var(--color-grupal) !important;
+    color: #fff;
+}
+
+.time-slot.admin-booked-group:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 0 25px rgba(10, 111, 232, 0.5);
+}
+
+/* Group Booking Popup */
+.group-booking-popup {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(8px);
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+}
+
+.group-booking-popup.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.group-booking-card {
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(10, 111, 232, 0.3);
+    border-radius: 24px;
+    padding: 35px;
+    max-width: 420px;
+    width: 90%;
+    max-height: 70vh;
+    overflow-y: auto;
+    box-shadow: 0 0 40px rgba(10, 111, 232, 0.15);
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+}
+
+.group-booking-popup.active .group-booking-card {
+    transform: scale(1);
+}
+
+.group-booking-card h4 {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-grupal);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.group-booking-card .popup-subtitle {
+    font-size: 0.85rem;
+    color: var(--color-text-dim);
+    margin-bottom: 20px;
+}
+
+.group-booking-card .user-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.group-booking-card .user-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 15px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    font-size: 0.9rem;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.group-booking-card .user-item .user-name-popup {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.group-booking-card .user-item .user-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--color-grupal);
+    flex-shrink: 0;
+}
+
+.group-booking-card .user-item .remove-user-btn {
+    background: rgba(255, 68, 68, 0.15);
+    border: none;
+    color: #ff4444;
+    cursor: pointer;
+    border-radius: 8px;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+}
+
+.group-booking-card .user-item .remove-user-btn:hover {
+    background: rgba(255, 68, 68, 0.3);
+    transform: scale(1.1);
+}
+
+.group-booking-card .close-popup-btn {
+    margin-top: 20px;
+    width: 100%;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: var(--color-text-dim);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.group-booking-card .close-popup-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+}
+
+.group-booking-card .empty-group {
+    text-align: center;
+    color: var(--color-text-dim);
+    padding: 20px;
+    font-size: 0.9rem;
 }
 
 .calendar-footer,

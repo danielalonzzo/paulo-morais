@@ -108,9 +108,18 @@ function renderAdminGrid(db, user) {
         
         const userNames = {};
         if (scheduleData && scheduleData.slots) {
-            const uids = [...new Set(Object.values(scheduleData.slots)
-                .filter(s => s.status === 'booked' && s.bookedBy)
-                .map(s => s.bookedBy))];
+            // Collect UIDs from both personal bookings and group bookings
+            const uidSet = new Set();
+            Object.values(scheduleData.slots).forEach(s => {
+                if (s.status === 'booked' && s.bookedBy) {
+                    uidSet.add(s.bookedBy);
+                }
+                // Group bookings
+                if (s.bookedUsers && Array.isArray(s.bookedUsers)) {
+                    s.bookedUsers.forEach(bu => uidSet.add(bu.uid));
+                }
+            });
+            const uids = [...uidSet];
             
             // Parallel fetch
             await Promise.all(uids.map(async (uid) => {
@@ -149,6 +158,13 @@ function renderAdminUserLegend(data, legendEl, userNames = {}) {
         if (slot.status === 'booked' && slot.bookedBy) {
             const resolvedName = userNames[slot.bookedBy] || slot.bookedName;
             bookedUsers[slot.bookedBy] = formatDisplayName(resolvedName);
+        }
+        // Group bookings
+        if (slot.bookedUsers && Array.isArray(slot.bookedUsers)) {
+            slot.bookedUsers.forEach(bu => {
+                const resolvedName = userNames[bu.uid] || bu.name;
+                bookedUsers[bu.uid] = formatDisplayName(resolvedName);
+            });
         }
     });
 
@@ -201,80 +217,123 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
             btn.dataset.slotId = slotId;
 
             if (isAdmin) {
-                if (data && data.slots && data.slots[slotId] && data.slots[slotId].status === 'booked') {
+                if (data && data.slots && data.slots[slotId]) {
                     const slotInfo = data.slots[slotId];
-                    const sType = slotInfo.serviceType || 'treino';
-                    btn.className = `time-slot admin-booked service-${sType}`;
-                    btn.style.backgroundColor = getUserColor(slotInfo.bookedBy);
-                    btn.style.color = "#fff";
                     
-                    const rawName = userNames[slotInfo.bookedBy] || slotInfo.bookedName;
-                    const displayName = formatDisplayName(rawName);
-                    
-                    btn.innerHTML = `${hourStr}<br><span class="client-name">${displayName}</span>`;
-                    
-                    // Add X button for Admin cancellation
-                    const cancelBtn = document.createElement('button');
-                    cancelBtn.className = 'cancel-booking-btn';
-                    cancelBtn.innerHTML = '<i data-lucide="x"></i>';
-                    cancelBtn.title = "Eliminar Reserva";
-                    cancelBtn.onclick = (e) => {
-                        e.stopPropagation();
-                        if (confirm(`Deseja eliminar a reserva de "${displayName}"?`)) {
-                            cancelAdminBooking(db, weekId, slotId, slotInfo);
+                    // Check for group bookings (grupal with bookedUsers)
+                    if (slotInfo.serviceType === 'grupal' && slotInfo.bookedUsers && slotInfo.bookedUsers.length > 0) {
+                        // Group booked slot — show count and make clickable
+                        const count = slotInfo.bookedUsers.length;
+                        btn.className = 'time-slot admin-booked-group';
+                        btn.innerHTML = `${hourStr}<br><span class="group-count">${count} reserva${count !== 1 ? 's' : ''}</span>`;
+                        
+                        btn.onclick = (e) => {
+                            e.stopPropagation();
+                            openGroupPopup(slotId, slotInfo, db, weekId, userNames);
+                        };
+                    } else if (slotInfo.status === 'booked' && slotInfo.bookedBy) {
+                        // Personal booking (treino/osteopatia)
+                        const sType = slotInfo.serviceType || 'treino';
+                        btn.className = `time-slot admin-booked service-${sType}`;
+                        btn.style.backgroundColor = getUserColor(slotInfo.bookedBy);
+                        btn.style.color = "#fff";
+                        
+                        const rawName = userNames[slotInfo.bookedBy] || slotInfo.bookedName;
+                        const displayName = formatDisplayName(rawName);
+                        
+                        btn.innerHTML = `${hourStr}<br><span class="client-name">${displayName}</span>`;
+                        
+                        // Add X button for Admin cancellation
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.className = 'cancel-booking-btn';
+                        cancelBtn.innerHTML = '<i data-lucide="x"></i>';
+                        cancelBtn.title = "Eliminar Reserva";
+                        cancelBtn.onclick = (e) => {
+                            e.stopPropagation();
+                            if (confirm(`Deseja eliminar a reserva de "${displayName}"?`)) {
+                                cancelAdminBooking(db, weekId, slotId, slotInfo);
+                            }
+                        };
+                        btn.appendChild(cancelBtn);
+                        btn.style.pointerEvents = 'auto'; // Ensure it's interactive
+                        btn.onclick = (e) => e.stopPropagation();
+                    } else {
+                        // Available slot — admin selectable (toggle cycle)
+                        btn.className = 'time-slot admin-selectable';
+                        const sType = slotInfo.serviceType || 'treino';
+                        if (slotInfo.status === 'available' || slotInfo.serviceType) {
+                            btn.classList.add('active', `service-${sType}`);
+                            btn.dataset.serviceType = sType;
+                            
+                            // If grupal slot with no bookings yet, show "0 reservas"
+                            if (sType === 'grupal') {
+                                const count = (slotInfo.bookedUsers && slotInfo.bookedUsers.length) || 0;
+                                btn.innerHTML = `${hourStr}<br><span class="group-count">${count} reservas</span>`;
+                            }
                         }
-                    };
-                    btn.appendChild(cancelBtn);
-                    btn.style.pointerEvents = 'auto'; // Ensure it's interactive
-                    btn.onclick = (e) => e.stopPropagation();
+                        btn.onclick = () => adminCycleSlot(btn, hourStr);
+                    }
                 } else {
+                    // Empty slot — admin selectable
                     btn.className = 'time-slot admin-selectable';
-                    if (data && data.slots && data.slots[slotId]) {
-                        const sType = data.slots[slotId].serviceType || 'treino';
-                        btn.classList.add('active', `service-${sType}`);
-                        btn.dataset.serviceType = sType;
-                    }
-                    btn.onclick = () => {
-                        if (!btn.classList.contains('active')) {
-                            // Cycle: Indisponível -> Treino
-                            btn.className = 'time-slot admin-selectable active service-treino';
-                            btn.dataset.serviceType = 'treino';
-                        } else if (btn.classList.contains('service-treino')) {
-                            // Cycle: Treino -> Osteo
-                            btn.className = 'time-slot admin-selectable active service-osteo';
-                            btn.dataset.serviceType = 'osteopatia';
-                        } else {
-                            // Cycle: Osteo -> Indisponível
-                            btn.className = 'time-slot admin-selectable';
-                            delete btn.dataset.serviceType;
-                        }
-                    }
+                    btn.onclick = () => adminCycleSlot(btn, hourStr);
                 }
             } else {
+                // CLIENT VIEW
                 if (data && data.slots && data.slots[slotId]) {
                     const slotInfo = data.slots[slotId];
                     const sType = slotInfo.serviceType || 'treino';
-                    const serviceClass = `service-${sType === 'osteopatia' ? 'osteo' : 'treino'}`;
-
-                    if (slotInfo.status === 'booked') {
-                        if (slotInfo.bookedBy === user.uid) {
-                            btn.className = `time-slot selected ${serviceClass}`;
-                            // Toggle Cancellation selection
+                    
+                    if (sType === 'grupal') {
+                        // GROUP TRAINING — Client view
+                        const bookedUsers = slotInfo.bookedUsers || [];
+                        const userAlreadyBooked = bookedUsers.some(bu => bu.uid === user.uid);
+                        const count = bookedUsers.length;
+                        
+                        if (userAlreadyBooked) {
+                            // User already reserved this group slot
+                            btn.className = 'time-slot selected service-grupal';
+                            btn.innerHTML = `${hourStr}<br><span class="group-count">${count} reserva${count !== 1 ? 's' : ''}</span>`;
+                            
                             if (selectedClientSlots.some(s => s.id === slotId && s.action === 'cancel')) {
                                 btn.classList.add('active-selection', 'cancelling');
+                                btn.innerHTML = `${hourStr}<br><span style="font-size: 0.7rem; font-weight: 900; opacity: 1; display: block; margin-top: 2px;">CANCELAR</span>`;
                             }
                             btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'cancel', slotInfo);
                         } else {
-                            btn.className = 'time-slot booked';
-                            btn.style.pointerEvents = 'none';
+                            // Available group slot — user can join
+                            btn.className = 'time-slot available service-grupal';
+                            btn.innerHTML = `${hourStr}<br><span class="group-count">${count} reserva${count !== 1 ? 's' : ''}</span>`;
+                            
+                            if (selectedClientSlots.some(s => s.id === slotId && s.action === 'book')) {
+                                btn.classList.add('active-selection');
+                            }
+                            btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'book');
                         }
                     } else {
-                        btn.className = `time-slot available ${serviceClass}`;
-                        // Multi-select persistence
-                        if (selectedClientSlots.some(s => s.id === slotId && s.action === 'book')) {
-                            btn.classList.add('active-selection');
+                        // PERSONAL TRAINING or OSTEOPATIA
+                        const serviceClass = `service-${sType === 'osteopatia' ? 'osteo' : 'treino'}`;
+
+                        if (slotInfo.status === 'booked') {
+                            if (slotInfo.bookedBy === user.uid) {
+                                btn.className = `time-slot selected ${serviceClass}`;
+                                // Toggle Cancellation selection
+                                if (selectedClientSlots.some(s => s.id === slotId && s.action === 'cancel')) {
+                                    btn.classList.add('active-selection', 'cancelling');
+                                }
+                                btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'cancel', slotInfo);
+                            } else {
+                                btn.className = 'time-slot booked';
+                                btn.style.pointerEvents = 'none';
+                            }
+                        } else {
+                            btn.className = `time-slot available ${serviceClass}`;
+                            // Multi-select persistence
+                            if (selectedClientSlots.some(s => s.id === slotId && s.action === 'book')) {
+                                btn.classList.add('active-selection');
+                            }
+                            btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'book');
                         }
-                        btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'book');
                     }
                 } else {
                     btn.className = 'time-slot empty';
@@ -289,6 +348,143 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
 
     if (isAdmin) setupAdminPublishButton(db, weekId, wrapper);
     if (window.lucide) window.lucide.createIcons();
+}
+
+// Admin click cycle: Inactive → Treino (1) → Grupal (2) → Osteo (3) → Clear (4)
+function adminCycleSlot(btn, hourStr) {
+    if (!btn.classList.contains('active')) {
+        // Click 1: Inactive → Treino (yellow)
+        btn.className = 'time-slot admin-selectable active service-treino';
+        btn.dataset.serviceType = 'treino';
+        btn.textContent = hourStr;
+    } else if (btn.classList.contains('service-treino')) {
+        // Click 2: Treino → Grupal (blue)
+        btn.className = 'time-slot admin-selectable active service-grupal';
+        btn.dataset.serviceType = 'grupal';
+        btn.innerHTML = `${hourStr}<br><span class="group-count">0 reservas</span>`;
+    } else if (btn.classList.contains('service-grupal')) {
+        // Click 3: Grupal → Osteo (white)
+        btn.className = 'time-slot admin-selectable active service-osteo';
+        btn.dataset.serviceType = 'osteopatia';
+        btn.textContent = hourStr;
+    } else {
+        // Click 4: Osteo → Clear (inactive)
+        btn.className = 'time-slot admin-selectable';
+        delete btn.dataset.serviceType;
+        btn.textContent = hourStr;
+    }
+}
+
+function openGroupPopup(slotId, slotInfo, db, weekId, userNames) {
+    const popup = document.getElementById('group-booking-popup');
+    const titleEl = document.getElementById('popup-title');
+    const subtitleEl = document.getElementById('popup-subtitle');
+    const listEl = document.getElementById('popup-user-list');
+    const closeBtn = document.getElementById('popup-close-btn');
+
+    if (!popup) return;
+
+    const datePart = slotId.split('T')[0];
+    const timePart = slotId.split('T')[1];
+    titleEl.textContent = 'Treino Grupal';
+    subtitleEl.textContent = `${datePart} às ${timePart}`;
+
+    listEl.innerHTML = '';
+    const bookedUsers = slotInfo.bookedUsers || [];
+
+    if (bookedUsers.length === 0) {
+        listEl.innerHTML = '<div class="empty-group">Nenhum utilizador reservado.</div>';
+    } else {
+        bookedUsers.forEach(bu => {
+            const resolvedName = userNames[bu.uid] || bu.name;
+            const displayName = formatDisplayName(resolvedName);
+            
+            const item = document.createElement('div');
+            item.className = 'user-item';
+            item.innerHTML = `
+                <div class="user-name-popup">
+                    <div class="user-dot"></div>
+                    <span>${displayName}</span>
+                </div>
+                <button class="remove-user-btn" title="Remover utilizador">
+                    <i data-lucide="x" style="width: 14px; height: 14px;"></i>
+                </button>
+            `;
+            
+            // Remove user button
+            item.querySelector('.remove-user-btn').onclick = async () => {
+                if (confirm(`Deseja remover "${displayName}" deste treino grupal?`)) {
+                    await removeUserFromGroup(db, weekId, slotId, bu);
+                    // Popup will refresh via onSnapshot
+                }
+            };
+            
+            listEl.appendChild(item);
+        });
+    }
+
+    // Show popup
+    popup.classList.add('active');
+    if (window.lucide) window.lucide.createIcons();
+
+    // Close handlers
+    const closeHandler = () => {
+        popup.classList.remove('active');
+        closeBtn.removeEventListener('click', closeHandler);
+        popup.removeEventListener('click', bgClickHandler);
+    };
+    
+    const bgClickHandler = (e) => {
+        if (e.target === popup) closeHandler();
+    };
+
+    closeBtn.addEventListener('click', closeHandler);
+    popup.addEventListener('click', bgClickHandler);
+}
+
+async function removeUserFromGroup(db, weekId, slotId, userEntry) {
+    try {
+        const scheduleRef = doc(db, "weekly_schedules", weekId);
+        const snap = await getDoc(scheduleRef);
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+        const slot = data.slots[slotId];
+        if (!slot || !slot.bookedUsers) return;
+
+        const updatedUsers = slot.bookedUsers.filter(bu => bu.uid !== userEntry.uid);
+        
+        await updateDoc(scheduleRef, {
+            [`slots.${slotId}.bookedUsers`]: updatedUsers,
+            [`slots.${slotId}.bookedCount`]: updatedUsers.length
+        });
+
+        // Remove from user's personal booking history
+        if (userEntry.uid) {
+            try {
+                const userRef = doc(db, "users", userEntry.uid);
+                const bookingToRemove = {
+                    status: 'booked',
+                    serviceType: 'grupal',
+                    time: slotId.split('T')[1],
+                    date: slotId.split('T')[0],
+                    bookedBy: userEntry.uid,
+                    bookedName: userEntry.name,
+                    timestamp: userEntry.timestamp
+                };
+                await updateDoc(userRef, {
+                    bookingsHistory: arrayRemove(bookingToRemove)
+                });
+            } catch (e) {
+                console.warn("Could not remove from user history", e);
+            }
+        }
+
+        alert("Utilizador removido com sucesso!");
+    } catch (e) {
+        console.error("Error removing user from group:", e);
+        alert("Erro ao remover utilizador: " + e.message);
+    }
 }
 
 function setupAdminPublishButton(db, weekId, gridWrapper) {
@@ -306,12 +502,23 @@ function setupAdminPublishButton(db, weekId, gridWrapper) {
             const activeButtons = gridWrapper.querySelectorAll('.time-slot.active');
             activeButtons.forEach(b => {
                 const slotId = b.dataset.slotId;
-                slotsMap[slotId] = {
-                    status: 'available',
-                    bookedBy: null,
-                    bookedName: null,
-                    serviceType: b.dataset.serviceType || 'treino'
-                };
+                const sType = b.dataset.serviceType || 'treino';
+                
+                if (sType === 'grupal') {
+                    slotsMap[slotId] = {
+                        status: 'available',
+                        serviceType: 'grupal',
+                        bookedUsers: [],
+                        bookedCount: 0
+                    };
+                } else {
+                    slotsMap[slotId] = {
+                        status: 'available',
+                        bookedBy: null,
+                        bookedName: null,
+                        serviceType: sType
+                    };
+                }
             });
 
             const docRef = doc(db, "weekly_schedules", weekId);
@@ -320,8 +527,14 @@ function setupAdminPublishButton(db, weekId, gridWrapper) {
                 if (existingSnap.exists()) {
                     const existingData = existingSnap.data();
                     Object.keys(existingData.slots || {}).forEach(k => {
-                        if (existingData.slots[k].status === 'booked') {
-                            slotsMap[k] = existingData.slots[k];
+                        const existingSlot = existingData.slots[k];
+                        // Preserve personal bookings
+                        if (existingSlot.status === 'booked') {
+                            slotsMap[k] = existingSlot;
+                        }
+                        // Preserve group bookings that have users
+                        if (existingSlot.serviceType === 'grupal' && existingSlot.bookedUsers && existingSlot.bookedUsers.length > 0) {
+                            slotsMap[k] = existingSlot;
                         }
                     });
                 }
@@ -445,29 +658,72 @@ function updateBookingSummary(db, user, weekId) {
             const bookingsToSave = [];
             const bookingsToRemove = [];
 
+            // We need to handle group bookings specially (can't use batch for arrayUnion on nested)
+            const groupBookActions = [];
+
             selectedClientSlots.forEach(slot => {
                 if (slot.action === 'book') {
-                    const bookingData = {
-                        status: 'booked',
-                        bookedBy: user.uid,
-                        bookedName: userName,
-                        serviceType: slot.serviceType,
-                        timestamp: new Date().toISOString(),
-                        time: slot.time,
-                        date: slot.id.split('T')[0]
-                    };
-                    batch.set(scheduleRef, { slots: { [slot.id]: bookingData } }, { merge: true });
-                    bookingsToSave.push(bookingData);
+                    if (slot.serviceType === 'grupal') {
+                        // Group booking — we'll handle after batch
+                        groupBookActions.push({
+                            slotId: slot.id,
+                            action: 'add',
+                            userData: {
+                                uid: user.uid,
+                                name: userName,
+                                timestamp: new Date().toISOString()
+                            },
+                            bookingHistory: {
+                                status: 'booked',
+                                bookedBy: user.uid,
+                                bookedName: userName,
+                                serviceType: 'grupal',
+                                timestamp: new Date().toISOString(),
+                                time: slot.time,
+                                date: slot.id.split('T')[0]
+                            }
+                        });
+                    } else {
+                        // Personal booking
+                        const bookingData = {
+                            status: 'booked',
+                            bookedBy: user.uid,
+                            bookedName: userName,
+                            serviceType: slot.serviceType,
+                            timestamp: new Date().toISOString(),
+                            time: slot.time,
+                            date: slot.id.split('T')[0]
+                        };
+                        batch.set(scheduleRef, { slots: { [slot.id]: bookingData } }, { merge: true });
+                        bookingsToSave.push(bookingData);
+                    }
                 } else {
-                    // Cancellation: revert to available
-                    const cancelData = {
-                        status: 'available',
-                        bookedBy: null,
-                        bookedName: null,
-                        serviceType: slot.serviceType
-                    };
-                    batch.set(scheduleRef, { slots: { [slot.id]: cancelData } }, { merge: true });
-                    if (slot.slotData) bookingsToRemove.push(slot.slotData);
+                    if (slot.serviceType === 'grupal') {
+                        // Group cancellation
+                        groupBookActions.push({
+                            slotId: slot.id,
+                            action: 'remove',
+                            uid: user.uid,
+                            bookingHistory: {
+                                status: 'booked',
+                                bookedBy: user.uid,
+                                bookedName: userName,
+                                serviceType: 'grupal',
+                                time: slot.time,
+                                date: slot.id.split('T')[0]
+                            }
+                        });
+                    } else {
+                        // Personal cancellation: revert to available
+                        const cancelData = {
+                            status: 'available',
+                            bookedBy: null,
+                            bookedName: null,
+                            serviceType: slot.serviceType
+                        };
+                        batch.set(scheduleRef, { slots: { [slot.id]: cancelData } }, { merge: true });
+                        if (slot.slotData) bookingsToRemove.push(slot.slotData);
+                    }
                 }
             });
 
@@ -481,6 +737,56 @@ function updateBookingSummary(db, user, weekId) {
             }
 
             await batch.commit();
+
+            // Handle group booking actions sequentially (need current data)
+            for (const ga of groupBookActions) {
+                const schedSnap = await getDoc(scheduleRef);
+                const schedData = schedSnap.exists() ? schedSnap.data() : { slots: {} };
+                const currentSlot = schedData.slots[ga.slotId] || { serviceType: 'grupal', bookedUsers: [], bookedCount: 0 };
+                let currentUsers = currentSlot.bookedUsers || [];
+
+                if (ga.action === 'add') {
+                    // Add user to group
+                    if (!currentUsers.some(u => u.uid === user.uid)) {
+                        currentUsers.push(ga.userData);
+                    }
+                    await updateDoc(scheduleRef, {
+                        [`slots.${ga.slotId}.bookedUsers`]: currentUsers,
+                        [`slots.${ga.slotId}.bookedCount`]: currentUsers.length
+                    });
+                    // Add to user history
+                    await updateDoc(userRef, {
+                        bookingsHistory: arrayUnion(ga.bookingHistory)
+                    });
+                } else if (ga.action === 'remove') {
+                    // Remove user from group
+                    currentUsers = currentUsers.filter(u => u.uid !== user.uid);
+                    await updateDoc(scheduleRef, {
+                        [`slots.${ga.slotId}.bookedUsers`]: currentUsers,
+                        [`slots.${ga.slotId}.bookedCount`]: currentUsers.length
+                    });
+                    // Remove from user history (best effort — match by fields)
+                    try {
+                        const userSnap = await getDoc(userRef);
+                        if (userSnap.exists()) {
+                            const history = userSnap.data().bookingsHistory || [];
+                            const match = history.find(h =>
+                                h.serviceType === 'grupal' &&
+                                h.date === ga.bookingHistory.date &&
+                                h.time === ga.bookingHistory.time &&
+                                h.bookedBy === user.uid
+                            );
+                            if (match) {
+                                await updateDoc(userRef, {
+                                    bookingsHistory: arrayRemove(match)
+                                });
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("Could not remove group booking from history", e);
+                    }
+                }
+            }
             
             alert(`Operação concluída com sucesso!`);
             window.location.reload();
@@ -495,7 +801,9 @@ function updateBookingSummary(db, user, weekId) {
 function createSummaryItem(slot, isCancellation = false) {
     const item = document.createElement('div');
     item.className = `summary-item ${isCancellation ? 'cancellation' : ''}`;
-    const sName = slot.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino';
+    let sName = 'Treino Personalizado';
+    if (slot.serviceType === 'osteopatia') sName = 'Osteopatia';
+    else if (slot.serviceType === 'grupal') sName = 'Em Grupo';
     item.innerHTML = `
         <span><strong>${sName}</strong> - ${slot.time} (${slot.id.split('T')[0]})</span>
         <button class="remove-slot" data-slot-id="${slot.id}">&times;</button>
@@ -544,10 +852,14 @@ async function clearUnbookedSlots(db, weekId) {
         
         let clearedCount = 0;
         Object.keys(slots).forEach(sid => {
-            if (slots[sid].status !== 'booked') {
-                updates[`slots.${sid}`] = deleteField();
-                clearedCount++;
-            }
+            const slot = slots[sid];
+            // Don't clear personal bookings
+            if (slot.status === 'booked') return;
+            // Don't clear group slots that have users
+            if (slot.serviceType === 'grupal' && slot.bookedUsers && slot.bookedUsers.length > 0) return;
+            
+            updates[`slots.${sid}`] = deleteField();
+            clearedCount++;
         });
 
         if (clearedCount === 0) {
@@ -562,4 +874,3 @@ async function clearUnbookedSlots(db, weekId) {
         alert("Erro ao limpar horários.");
     }
 }
-

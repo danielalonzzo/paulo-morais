@@ -27,7 +27,7 @@ onAuthStateChanged(auth, async (user) => {
         const userData = userDoc.data();
         const isAdmin = userData?.role === 'admin' || user.email === "pt@pmorais.pt";
         
-        pageTitle.textContent = isAdmin ? "Historial Global de Reservas" : "O Seu Historial";
+        pageTitle.textContent = isAdmin ? "Histórico Global de Reservas" : "O Seu Histórico";
         
         let consolidatedHistory = [];
         
