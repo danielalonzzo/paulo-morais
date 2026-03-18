@@ -523,6 +523,6 @@ function translateError(code) {
         case 'auth/popup-closed-by-user':
             return 'A janela de login foi fechada antes de completar o processo.';
         default:
-            return 'Ocorreu un erro inesperado. Tente novamente.';
+            return 'Ocorreu um erro inesperado. Tente novamente.';
     }
 }

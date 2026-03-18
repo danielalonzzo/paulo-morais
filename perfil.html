@@ -17,7 +17,6 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <!-- Icons (Lucide) -->
     <script src="https://unpkg.com/lucide@latest"></script>
 
     <!-- Custom Style -->
@@ -145,6 +144,7 @@
                 <h2 id="user-welcome">Olá!</h2>
                 <div id="dashboard-main-actions" class="dashboard-actions">
                     <button id="btn-show-wizard" class="btn btn-primary"><i data-lucide="user-cog"></i> <span class="btn-text">Editar Perfil</span></button>
+                    <a href="historial.html" class="btn btn-outline" style="text-decoration: none;"><i data-lucide="calendar"></i> <span class="btn-text">Historial</span></a>
                     <button id="btn-show-profiles" class="btn btn-admin-premium hidden"><i data-lucide="users"></i> <span class="btn-text">Perfis</span></button>
                     <button id="btn-show-forms" class="btn btn-admin-premium hidden"><i data-lucide="file-text"></i> <span class="btn-text">Formulários</span></button>
                     <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out"></i> <span class="btn-text">Terminar Sessão</span></button>
@@ -193,7 +193,7 @@
                     </div>
 
                     <div class="calendar-footer">
-                        <button id="btn-confirm-booking" class="btn btn-primary" style="width: 100%;" disabled>Confirmar Reserva</button>
+                        <button id="btn-confirm-booking" class="btn btn-primary btn-action-main" disabled>Confirmar Reserva</button>
                     </div>
                 </div>
 
@@ -229,12 +229,13 @@
                         <!-- JS will inject user legend items here -->
                     </div>
 
-                    <div class="admin-footer" style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
-                        <button id="btn-publish-week" class="btn btn-primary-black" style="padding: 12px 25px; min-width: 180px;"><i
-                                data-lucide="send" style="width: 16px; height: 16px; margin-right: 8px;"></i> Publicar
-                            Semana</button>
-                        <button id="btn-clear-availability" class="btn btn-outline" style="padding: 12px 25px; min-width: 180px; border-color: rgba(255,255,255,0.2);"><i
-                                data-lucide="trash-2" style="width: 16px; height: 16px; margin-right: 8px;"></i> Limpar Horários</button>
+                    <div class="admin-footer">
+                        <button id="btn-publish-week" class="btn btn-primary-black btn-action-admin">
+                            <i data-lucide="send"></i> Publicar Semana
+                        </button>
+                        <button id="btn-clear-availability" class="btn btn-outline btn-action-admin">
+                            <i data-lucide="trash-2"></i> Limpar Horários
+                        </button>
                     </div>
                 </div>
 

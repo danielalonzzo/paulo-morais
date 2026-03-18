@@ -331,6 +331,7 @@ function setupAdminPublishButton(db, weekId, gridWrapper) {
                     slots: slotsMap
                 }, { merge: true });
                 alert("Semana publicada com sucesso!");
+                window.location.reload();
             } catch (e) {
                 console.error(e);
                 alert("Erro ao publicar");
@@ -359,12 +360,17 @@ function toggleClientSlot(slotId, time, serviceType, btn, db, user, weekId, acti
     if (index > -1) {
         selectedClientSlots.splice(index, 1);
         btn.classList.remove('active-selection', 'cancelling');
+        btn.innerHTML = time;
     } else {
         selectedClientSlots.push({ id: slotId, time, serviceType, action, slotData });
         btn.classList.add('active-selection');
-        if (action === 'cancel') btn.classList.add('cancelling');
+        if (action === 'cancel') {
+            btn.classList.add('cancelling');
+            btn.innerHTML = `${time}<br><span style="font-size: 0.7rem; font-weight: 900; opacity: 1; display: block; margin-top: 2px;">CANCELAR</span>`;
+        }
     }
     updateBookingSummary(db, user, weekId);
+    if (window.lucide) window.lucide.createIcons();
 }
 
 function updateBookingSummary(db, user, weekId) {
@@ -477,9 +483,7 @@ function updateBookingSummary(db, user, weekId) {
             await batch.commit();
             
             alert(`Operação concluída com sucesso!`);
-            selectedClientSlots = [];
-            summaryContainer.classList.add('hidden');
-            renderClientGrid(db, user);
+            window.location.reload();
         } catch (e) {
             console.error(e);
             alert("Erro ao processar as alterações.");

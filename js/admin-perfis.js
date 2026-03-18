@@ -136,7 +136,48 @@ function showUserDetails(data) {
         modalContainer.appendChild(obsBox);
     }
 
+    // Booking History Section
+    if (data.bookingsHistory && data.bookingsHistory.length > 0) {
+        const historyBox = document.createElement('div');
+        historyBox.className = 'history-box';
+        
+        // Sort history by date/time (most recent first)
+        const sortedHistory = [...data.bookingsHistory].sort((a, b) => {
+            const dateA = a.date ? new Date(`${a.date}T${a.time || '00:00'}`) : new Date(0);
+            const dateB = b.date ? new Date(`${b.date}T${b.time || '00:00'}`) : new Date(0);
+            return dateB - dateA;
+        });
+
+        historyBox.innerHTML = `
+            <span class="history-title">Historial de Reservas <i data-lucide="history" style="width:16px;"></i></span>
+            <div class="history-list">
+                ${sortedHistory.map(item => `
+                    <div class="history-item">
+                        <div class="history-main-info">
+                            <span class="history-tag ${item.serviceType === 'osteopatia' ? 'tag-osteo' : 'tag-treino'}">
+                                ${item.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino'}
+                            </span>
+                        </div>
+                        
+                        <div class="history-schedule-meta">
+                            <div class="meta-item">
+                                <i data-lucide="calendar"></i>
+                                <span>${item.date || '---'}</span>
+                            </div>
+                            <div class="meta-item">
+                                <i data-lucide="clock"></i>
+                                <span>${item.time || '---'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('')}
+            </div>
+        `;
+        modalContainer.appendChild(historyBox);
+    }
+
     modal.classList.add('active');
+    if (window.lucide) window.lucide.createIcons();
 }
 
 // Modal closing
