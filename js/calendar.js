@@ -4,7 +4,10 @@ import {
     getDoc,
     onSnapshot,
     writeBatch,
-    arrayUnion
+    arrayUnion,
+    arrayRemove,
+    updateDoc,
+    deleteField
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const ADMIN_EMAIL = "pt@pmorais.pt";
@@ -192,7 +195,8 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
             let hourStr = String(h).padStart(2, '0') + ':00';
             let slotId = `${fullDateStr}T${hourStr}`;
 
-            let btn = document.createElement('button');
+            let btn = document.createElement('div'); // Using div instead of button for better nested interaction
+            btn.className = 'time-slot';
             btn.textContent = hourStr;
             btn.dataset.slotId = slotId;
 
@@ -208,7 +212,21 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
                     const displayName = formatDisplayName(rawName);
                     
                     btn.innerHTML = `${hourStr}<br><span class="client-name">${displayName}</span>`;
-                    btn.disabled = true;
+                    
+                    // Add X button for Admin cancellation
+                    const cancelBtn = document.createElement('button');
+                    cancelBtn.className = 'cancel-booking-btn';
+                    cancelBtn.innerHTML = '<i data-lucide="x"></i>';
+                    cancelBtn.title = "Eliminar Reserva";
+                    cancelBtn.onclick = (e) => {
+                        e.stopPropagation();
+                        if (confirm(`Deseja eliminar a reserva de "${displayName}"?`)) {
+                            cancelAdminBooking(db, weekId, slotId, slotInfo);
+                        }
+                    };
+                    btn.appendChild(cancelBtn);
+                    btn.style.pointerEvents = 'auto'; // Ensure it's interactive
+                    btn.onclick = (e) => e.stopPropagation();
                 } else {
                     btn.className = 'time-slot admin-selectable';
                     if (data && data.slots && data.slots[slotId]) {
@@ -218,14 +236,16 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
                     }
                     btn.onclick = () => {
                         if (!btn.classList.contains('active')) {
-                            btn.classList.add('active', 'service-treino');
+                            // Cycle: Indisponível -> Treino
+                            btn.className = 'time-slot admin-selectable active service-treino';
                             btn.dataset.serviceType = 'treino';
                         } else if (btn.classList.contains('service-treino')) {
-                            btn.classList.remove('service-treino');
-                            btn.classList.add('service-osteo');
+                            // Cycle: Treino -> Osteo
+                            btn.className = 'time-slot admin-selectable active service-osteo';
                             btn.dataset.serviceType = 'osteopatia';
                         } else {
-                            btn.classList.remove('active', 'service-osteo');
+                            // Cycle: Osteo -> Indisponível
+                            btn.className = 'time-slot admin-selectable';
                             delete btn.dataset.serviceType;
                         }
                     }
@@ -239,21 +259,26 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
                     if (slotInfo.status === 'booked') {
                         if (slotInfo.bookedBy === user.uid) {
                             btn.className = `time-slot selected ${serviceClass}`;
+                            // Toggle Cancellation selection
+                            if (selectedClientSlots.some(s => s.id === slotId && s.action === 'cancel')) {
+                                btn.classList.add('active-selection', 'cancelling');
+                            }
+                            btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'cancel', slotInfo);
                         } else {
                             btn.className = 'time-slot booked';
-                            btn.disabled = true;
+                            btn.style.pointerEvents = 'none';
                         }
                     } else {
                         btn.className = `time-slot available ${serviceClass}`;
                         // Multi-select persistence
-                        if (selectedClientSlots.some(s => s.id === slotId)) {
+                        if (selectedClientSlots.some(s => s.id === slotId && s.action === 'book')) {
                             btn.classList.add('active-selection');
                         }
-                        btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId);
+                        btn.onclick = () => toggleClientSlot(slotId, hourStr, sType, btn, db, user, weekId, 'book');
                     }
                 } else {
                     btn.className = 'time-slot empty';
-                    btn.disabled = true;
+                    btn.style.pointerEvents = 'none';
                 }
             }
             slotsContainer.appendChild(btn);
@@ -263,66 +288,81 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
     }
 
     if (isAdmin) setupAdminPublishButton(db, weekId, wrapper);
+    if (window.lucide) window.lucide.createIcons();
 }
 
 function setupAdminPublishButton(db, weekId, gridWrapper) {
     const pubBtn = document.getElementById('btn-publish-week');
-    if (!pubBtn) return;
+    const clearBtn = document.getElementById('btn-clear-availability');
+    
+    if (pubBtn) {
+        const newPubBtn = pubBtn.cloneNode(true);
+        pubBtn.parentNode.replaceChild(newPubBtn, pubBtn);
+        newPubBtn.addEventListener('click', async () => {
+            newPubBtn.disabled = true;
+            newPubBtn.textContent = 'A publicar...';
 
-    const newBtn = pubBtn.cloneNode(true);
-    pubBtn.parentNode.replaceChild(newBtn, pubBtn);
+            const slotsMap = {};
+            const activeButtons = gridWrapper.querySelectorAll('.time-slot.active');
+            activeButtons.forEach(b => {
+                const slotId = b.dataset.slotId;
+                slotsMap[slotId] = {
+                    status: 'available',
+                    bookedBy: null,
+                    bookedName: null,
+                    serviceType: b.dataset.serviceType || 'treino'
+                };
+            });
 
-    newBtn.addEventListener('click', async () => {
-        newBtn.disabled = true;
-        newBtn.textContent = 'A publicar...';
-
-        const slotsMap = {};
-        const activeButtons = gridWrapper.querySelectorAll('.time-slot.active');
-        activeButtons.forEach(b => {
-            const slotId = b.dataset.slotId;
-            slotsMap[slotId] = {
-                status: 'available',
-                bookedBy: null,
-                bookedName: null,
-                serviceType: b.dataset.serviceType || 'treino'
-            };
-        });
-
-        const docRef = doc(db, "weekly_schedules", weekId);
-        try {
-            const existingSnap = await getDoc(docRef);
-            if (existingSnap.exists()) {
-                const existingData = existingSnap.data();
-                Object.keys(existingData.slots || {}).forEach(k => {
-                    if (existingData.slots[k].status === 'booked') {
-                        slotsMap[k] = existingData.slots[k];
-                    }
-                });
+            const docRef = doc(db, "weekly_schedules", weekId);
+            try {
+                const existingSnap = await getDoc(docRef);
+                if (existingSnap.exists()) {
+                    const existingData = existingSnap.data();
+                    Object.keys(existingData.slots || {}).forEach(k => {
+                        if (existingData.slots[k].status === 'booked') {
+                            slotsMap[k] = existingData.slots[k];
+                        }
+                    });
+                }
+                await setDoc(docRef, {
+                    publishedDate: new Date().toISOString(),
+                    publishedByAdmin: true,
+                    slots: slotsMap
+                }, { merge: true });
+                alert("Semana publicada com sucesso!");
+            } catch (e) {
+                console.error(e);
+                alert("Erro ao publicar");
             }
-            await setDoc(docRef, {
-                publishedDate: new Date().toISOString(),
-                publishedByAdmin: true,
-                slots: slotsMap
-            }, { merge: true });
-            alert("Semana publicada com sucesso!");
-        } catch (e) {
-            console.error(e);
-            alert("Erro ao publicar");
-        }
-        newBtn.disabled = false;
-        newBtn.innerHTML = '<i data-lucide="send" style="width: 18px; height: 18px; margin-right: 8px;"></i> Publicar Semana';
-        if (window.lucide) window.lucide.createIcons();
-    });
+            newPubBtn.disabled = false;
+            newPubBtn.innerHTML = '<i data-lucide="send" style="width: 18px; height: 18px; margin-right: 8px;"></i> Publicar Semana';
+            if (window.lucide) window.lucide.createIcons();
+        });
+    }
+
+    if (clearBtn) {
+        const newClearBtn = clearBtn.cloneNode(true);
+        clearBtn.parentNode.replaceChild(newClearBtn, clearBtn);
+        newClearBtn.addEventListener('click', async () => {
+            if (confirm("Tem certeza que deseja remover todos os horários disponíveis (não reservados)? Reservas de clientes não serão afetadas.")) {
+                newClearBtn.disabled = true;
+                await clearUnbookedSlots(db, weekId);
+                newClearBtn.disabled = false;
+            }
+        });
+    }
 }
 
-function toggleClientSlot(slotId, time, serviceType, btn, db, user, weekId) {
+function toggleClientSlot(slotId, time, serviceType, btn, db, user, weekId, action = 'book', slotData = null) {
     const index = selectedClientSlots.findIndex(s => s.id === slotId);
     if (index > -1) {
         selectedClientSlots.splice(index, 1);
-        btn.classList.remove('active-selection');
+        btn.classList.remove('active-selection', 'cancelling');
     } else {
-        selectedClientSlots.push({ id: slotId, time, serviceType });
+        selectedClientSlots.push({ id: slotId, time, serviceType, action, slotData });
         btn.classList.add('active-selection');
+        if (action === 'cancel') btn.classList.add('cancelling');
     }
     updateBookingSummary(db, user, weekId);
 }
@@ -345,18 +385,32 @@ function updateBookingSummary(db, user, weekId) {
     confirmBtn.disabled = false;
     summaryList.innerHTML = "";
 
-    selectedClientSlots.forEach(slot => {
-        const item = document.createElement('div');
-        item.className = 'summary-item';
-        const sName = slot.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino';
-        item.innerHTML = `
-            <span><strong>${sName}</strong> - ${slot.time} (${slot.id.split('T')[0]})</span>
-            <button class="remove-slot" data-slot-id="${slot.id}">&times;</button>
-        `;
-        summaryList.appendChild(item);
-    });
+    const bookings = selectedClientSlots.filter(s => s.action === 'book');
+    const cancellations = selectedClientSlots.filter(s => s.action === 'cancel');
 
-    confirmBtn.textContent = `Confirmar ${selectedClientSlots.length} Reservas`;
+    if (bookings.length > 0) {
+        const title = document.createElement('h5');
+        title.className = 'summary-title';
+        title.textContent = "Novas Reservas";
+        summaryList.appendChild(title);
+        bookings.forEach(slot => {
+            const item = createSummaryItem(slot);
+            summaryList.appendChild(item);
+        });
+    }
+
+    if (cancellations.length > 0) {
+        const title = document.createElement('h5');
+        title.className = 'summary-title cancellation';
+        title.textContent = "Cancelamentos";
+        summaryList.appendChild(title);
+        cancellations.forEach(slot => {
+            const item = createSummaryItem(slot, true);
+            summaryList.appendChild(item);
+        });
+    }
+
+    confirmBtn.textContent = `Confirmar Alterações (${selectedClientSlots.length})`;
     
     summaryList.onclick = (e) => {
         const removeBtn = e.target.closest('.remove-slot');
@@ -372,7 +426,6 @@ function updateBookingSummary(db, user, weekId) {
         confirmBtn.textContent = "A processar...";
         
         try {
-            // Fetch the actual user name from Firestore first
             const userDoc = await getDoc(doc(db, "users", user.uid));
             let userName = user.email || user.displayName || "Utilizador";
             if (userDoc.exists()) {
@@ -384,41 +437,125 @@ function updateBookingSummary(db, user, weekId) {
             const userRef = doc(db, "users", user.uid);
             
             const bookingsToSave = [];
+            const bookingsToRemove = [];
 
             selectedClientSlots.forEach(slot => {
-                const bookingData = {
-                    status: 'booked',
-                    bookedBy: user.uid,
-                    bookedName: userName,
-                    serviceType: slot.serviceType,
-                    timestamp: new Date().toISOString(),
-                    time: slot.time,
-                    date: slot.id.split('T')[0]
-                };
-                
-                batch.set(scheduleRef, {
-                    slots: { [slot.id]: bookingData }
-                }, { merge: true });
-                
-                bookingsToSave.push(bookingData);
+                if (slot.action === 'book') {
+                    const bookingData = {
+                        status: 'booked',
+                        bookedBy: user.uid,
+                        bookedName: userName,
+                        serviceType: slot.serviceType,
+                        timestamp: new Date().toISOString(),
+                        time: slot.time,
+                        date: slot.id.split('T')[0]
+                    };
+                    batch.set(scheduleRef, { slots: { [slot.id]: bookingData } }, { merge: true });
+                    bookingsToSave.push(bookingData);
+                } else {
+                    // Cancellation: revert to available
+                    const cancelData = {
+                        status: 'available',
+                        bookedBy: null,
+                        bookedName: null,
+                        serviceType: slot.serviceType
+                    };
+                    batch.set(scheduleRef, { slots: { [slot.id]: cancelData } }, { merge: true });
+                    if (slot.slotData) bookingsToRemove.push(slot.slotData);
+                }
             });
 
             // Update user's personal booking history
-            batch.set(userRef, {
-                bookingsHistory: arrayUnion(...bookingsToSave)
-            }, { merge: true });
+            if (bookingsToSave.length > 0) {
+                batch.set(userRef, { bookingsHistory: arrayUnion(...bookingsToSave) }, { merge: true });
+            }
+            if (bookingsToRemove.length > 0) {
+                // arrayRemove requires exact object match
+                batch.set(userRef, { bookingsHistory: arrayRemove(...bookingsToRemove) }, { merge: true });
+            }
 
             await batch.commit();
             
-            alert(`Reserva de ${selectedClientSlots.length} horários confirmada com sucesso!`);
+            alert(`Operação concluída com sucesso!`);
             selectedClientSlots = [];
             summaryContainer.classList.add('hidden');
             renderClientGrid(db, user);
         } catch (e) {
             console.error(e);
-            alert("Erro ao confirmar as reservas.");
+            alert("Erro ao processar as alterações.");
             confirmBtn.disabled = false;
         }
     };
+}
+
+function createSummaryItem(slot, isCancellation = false) {
+    const item = document.createElement('div');
+    item.className = `summary-item ${isCancellation ? 'cancellation' : ''}`;
+    const sName = slot.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino';
+    item.innerHTML = `
+        <span><strong>${sName}</strong> - ${slot.time} (${slot.id.split('T')[0]})</span>
+        <button class="remove-slot" data-slot-id="${slot.id}">&times;</button>
+    `;
+    return item;
+}
+
+async function cancelAdminBooking(db, weekId, slotId, slotInfo) {
+    try {
+        const scheduleRef = doc(db, "weekly_schedules", weekId);
+        
+        // 1. Revert slot to available and reset to default service (Treino)
+        await updateDoc(scheduleRef, {
+            [`slots.${slotId}`]: {
+                status: 'available',
+                bookedBy: null,
+                bookedName: null,
+                serviceType: 'treino'
+            }
+        });
+
+        // 2. Remove from user history
+        if (slotInfo.bookedBy) {
+            const userRef = doc(db, "users", slotInfo.bookedBy);
+            await updateDoc(userRef, {
+                bookingsHistory: arrayRemove(slotInfo)
+            });
+        }
+
+        alert("Reserva removida com sucesso!");
+    } catch (e) {
+        console.error("Error cancelling booking:", e);
+        alert("Erro ao remover reserva: " + e.message);
+    }
+}
+
+async function clearUnbookedSlots(db, weekId) {
+    try {
+        const docRef = doc(db, "weekly_schedules", weekId);
+        const snap = await getDoc(docRef);
+        if (!snap.exists()) return;
+
+        const data = snap.data();
+        const slots = data.slots || {};
+        const updates = {};
+        
+        let clearedCount = 0;
+        Object.keys(slots).forEach(sid => {
+            if (slots[sid].status !== 'booked') {
+                updates[`slots.${sid}`] = deleteField();
+                clearedCount++;
+            }
+        });
+
+        if (clearedCount === 0) {
+            alert("Não há horários disponíveis para limpar.");
+            return;
+        }
+
+        await updateDoc(docRef, updates);
+        alert(`${clearedCount} horários disponíveis foram removidos.`);
+    } catch (e) {
+        console.error(e);
+        alert("Erro ao limpar horários.");
+    }
 }
 

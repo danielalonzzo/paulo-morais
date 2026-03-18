@@ -4509,6 +4509,55 @@ body.loaded #preloader {
     width: 100%;
 }
 
+/* Cancellation Button on Slots */
+.cancel-booking-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 18px;
+    height: 18px;
+    background: rgba(255, 68, 68, 0.9);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+    z-index: 5;
+    padding: 0;
+}
+
+.time-slot:hover .cancel-booking-btn {
+    opacity: 1;
+}
+
+.cancel-booking-btn:hover {
+    background: #ff4444;
+    transform: scale(1.1);
+}
+
+.cancel-booking-btn i {
+    width: 12px;
+    height: 12px;
+}
+
+/* Summary List Cancellation Items */
+.summary-item.cancellation {
+    border-left: 3px solid #ff4444;
+}
+
+.summary-item.cancellation span strong {
+    color: #ff4444;
+}
+
+.summary-title.cancellation {
+    color: #ff4444;
+    margin-top: 20px;
+}
+
 /* Multi-Booking Summary (Client) */
 .booking-summary-container {
     background: rgba(255, 255, 255, 0.03);
@@ -4711,16 +4760,16 @@ body.loaded #preloader {
 }
 
 .time-slot.admin-selectable.active {
-    background-color: rgba(230, 185, 105, 0.15);
-    border: 1px solid var(--color-primary);
-    color: var(--color-primary);
+    background-color: var(--color-treino);
+    border: 1px solid var(--color-treino);
+    color: #000;
 }
 
 .time-slot.admin-selectable.active.service-osteo,
 .time-slot.admin-selectable.active.service-osteopatia {
-    background-color: rgba(255, 255, 255, 0.1) !important;
+    background-color: var(--color-osteo) !important;
     border-color: var(--color-osteo) !important;
-    color: var(--color-osteo) !important;
+    color: #000 !important;
 }
 
 .time-slot.admin-booked {
@@ -5068,5 +5117,65 @@ body.loaded #preloader {
     .testimonials-right {
         height: 500px !important;
         margin-top: 20px;
+    }
+}
+
+/* Admin Premium Buttons Styling */
+.btn-admin-premium {
+    background: linear-gradient(135deg, var(--color-primary) 0%, #b88a12 100%);
+    color: #000 !important;
+    border: none !important;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 4px 15px rgba(230, 174, 23, 0.25);
+    font-weight: 800 !important;
+    letter-spacing: 0.5px;
+}
+
+.btn-admin-premium::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.3),
+        transparent
+    );
+    transform: skewX(-25deg);
+    transition: 0.8s;
+}
+
+.btn-admin-premium:hover {
+    transform: translateY(-4px) scale(1.03);
+    box-shadow: 0 12px 30px rgba(230, 174, 23, 0.45);
+    background: linear-gradient(135deg, #f7ca4a 0%, var(--color-primary) 100%);
+}
+
+.btn-admin-premium:hover::before {
+    left: 150%;
+}
+
+.btn-admin-premium i {
+    width: 18px;
+    height: 18px;
+    margin-right: -2px;
+}
+
+@media (max-width: 768px) {
+    .dashboard-actions {
+        flex-direction: column;
+        width: 100%;
+        gap: 12px;
+    }
+    .dashboard-actions .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 18px 20px;
+        font-size: 1rem;
     }
 }

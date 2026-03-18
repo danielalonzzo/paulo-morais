@@ -74,9 +74,16 @@ document.addEventListener('DOMContentLoaded', () => {
             // IMMEDIATE ADMIN CHECK (for fast button visibility)
             const ADMIN_EMAIL = "pt@pmorais.pt";
             const btnShowProfiles = document.getElementById('btn-show-profiles');
-            if (user.email === ADMIN_EMAIL && btnShowProfiles) {
-                btnShowProfiles.classList.remove('hidden');
-                btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+            const btnShowForms = document.getElementById('btn-show-forms');
+            if (user.email === ADMIN_EMAIL) {
+                if (btnShowProfiles) {
+                    btnShowProfiles.classList.remove('hidden');
+                    btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+                }
+                if (btnShowForms) {
+                    btnShowForms.classList.remove('hidden');
+                    btnShowForms.onclick = () => window.location.href = 'formulario.html';
+                }
             }
 
             // Load user data and wait for it to get the role
@@ -405,6 +412,7 @@ async function loadUserProfile(user) {
                 const cancelWizardBtn = document.getElementById('btn-cancel-wizard');
 
                 const btnShowProfiles = document.getElementById('btn-show-profiles');
+                const btnShowForms = document.getElementById('btn-show-forms');
                 const ADMIN_EMAIL = "pt@pmorais.pt";
 
                 if (data.role === 'admin' || user.email === ADMIN_EMAIL) {
@@ -426,6 +434,10 @@ async function loadUserProfile(user) {
                         btnShowProfiles.classList.remove('hidden');
                         btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
                     }
+                    if (btnShowForms) {
+                        btnShowForms.classList.remove('hidden');
+                        btnShowForms.onclick = () => window.location.href = 'formulario.html';
+                    }
                 } else if (data.profileCompleted) {
                     if (calendarSection) calendarSection.classList.remove('hidden');
                     if (adminCalendarSection) adminCalendarSection.classList.add('hidden');
@@ -444,7 +456,12 @@ async function loadUserProfile(user) {
                 // If profile is already completed, change button text
                 const btnShowWizard = document.getElementById('btn-show-wizard');
                 if (data.profileCompleted && btnShowWizard) {
-                    btnShowWizard.textContent = "Editar Perfil";
+                    const wizardText = btnShowWizard.querySelector('.btn-text');
+                    if (wizardText) {
+                        wizardText.textContent = 'Editar Perfil';
+                    } else {
+                        btnShowWizard.textContent = 'Editar Perfil';
+                    }
                 }
                 return data;
             } else {
@@ -470,9 +487,14 @@ async function loadUserProfile(user) {
                 const ADMIN_EMAIL = "pt@pmorais.pt";
                 if (user.email === ADMIN_EMAIL) {
                     const btnShowProfiles = document.getElementById('btn-show-profiles');
+                    const btnShowForms = document.getElementById('btn-show-forms');
                     if (btnShowProfiles) {
                         btnShowProfiles.classList.remove('hidden');
                         btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+                    }
+                    if (btnShowForms) {
+                        btnShowForms.classList.remove('hidden');
+                        btnShowForms.onclick = () => window.location.href = 'formulario.html';
                     }
                 }
                 return null;

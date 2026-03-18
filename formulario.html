@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulários de Contacto - Paulo Morais</title>
+    <link rel="shortcut icon" type="image/png" href="images/logo/logo_amarelo_alpha.png">
+    <link rel="icon" type="image/png" href="images/logo/logo_amarelo_alpha.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" href="images/logo/paulo_morais-08.png" media="(prefers-color-scheme: light)">
+    <meta name="description" content="Gestão de formulários de contacto - Paulo Morais.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons (Lucide) -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css">
+
+    <style>
+        .profiles-container {
+            max-width: var(--container-width);
+            margin: 0 auto 80px;
+            padding: 0 20px;
+            color: #fff;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        .user-card {
+            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 35px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .user-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: rgba(230, 174, 23, 0.4);
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        .user-card h4 {
+            color: #fff;
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 700;
+        }
+
+        .user-card p {
+            font-size: 0.95rem;
+            opacity: 0.5;
+            margin: 0;
+            font-weight: 300;
+        }
+
+        .card-footer-link {
+            margin-top: 25px;
+            font-size: 0.75rem;
+            color: var(--color-primary);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Detail Modal Overlay */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .modal-content {
+            background: #0f0f0f;
+            width: 95%;
+            max-width: 650px;
+            padding: 50px;
+            border-radius: 30px;
+            border: 1px solid rgba(230, 174, 23, 0.2);
+            position: relative;
+            transform: scale(0.95) translateY(30px);
+            transition: all 0.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+            max-height: 85vh;
+            overflow-y: auto;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8);
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1) translateY(0);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 25px;
+            right: 30px;
+            background: rgba(255,255,255,0.05);
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .detail-group {
+            margin-bottom: 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 12px;
+        }
+
+        .detail-label {
+            color: rgba(255,255,255,0.4);
+            font-weight: 500;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .detail-value {
+            font-weight: 600;
+            font-size: 1.05rem;
+            color: #fff;
+        }
+
+        .message-box {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 25px;
+            border-radius: 18px;
+            margin-top: 35px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .message-title {
+            display: block;
+            color: var(--color-primary);
+            font-weight: 800;
+            margin-bottom: 15px;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+
+<body class="bg-dark">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <img src="images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <div class="shimmer-effect"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header" class="scrolled">
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+            </a>
+            <nav class="nav-menu">
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
+                    <li><a href="perfil.html" class="active">Perfil</a></li>
+                    <li><a href="osteopatia.html">OSTEOPATIA</a></li>
+                </ul>
+            </nav>
+            <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
+                <i data-lucide="menu"></i>
+            </div>
+        </div>
+    </header>
+
+    <main class="profiles-container" style="padding-top: 220px;">
+        <h1 class="premium-title" style="margin-bottom: 50px; text-align: center;">Formulários de Contacto</h1>
+        <div id="forms-grid" class="profiles-grid">
+            <div class="text-center w-100" style="grid-column: 1/-1; padding: 100px 0; opacity: 0.5;">
+                <i data-lucide="loader-2" class="spin" style="width: 40px; height: 40px;"></i>
+                <p>A carregar formulários...</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal for Detailed Info -->
+    <div id="modal-details" class="modal-overlay">
+        <div class="modal-content">
+            <button id="btn-close-modal" class="close-modal"><i data-lucide="x"></i></button>
+            <h2 id="modal-name" class="premium-title" style="margin-bottom: 30px; border-bottom: 1px solid var(--color-primary); padding-bottom: 15px; font-size: 1.8rem;">Nome do Remetente</h2>
+            
+            <div id="modal-data-container">
+                <!-- Data will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer-index mt-5">
+        <div class="footer-container-new">
+            <div class="footer-col branding-col">
+                <a href="index.html" class="footer-logo-link">
+                    <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                </a>
+                <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
+                <p class="brand-sub">Gestão de contactos e formulários.</p>
+            </div>
+
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
+                    <li><a href="osteopatia.html">Osteopatia</a></li>
+                    <li><a href="perfil.html">Perfil</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li>
+                        <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
+                            rel="noopener noreferrer" class="complaint-book-elysium">
+                            <img src="images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                        </a>
+                    </li>
+                    <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
+                    <li><a href="termos-e-condicoes.html">Termos e Condições</a></li>
+                </ul>
+            </div>
+
+            <div class="footer-col">
+                <ul class="footer-links-list social-text-links">
+                    <li><a href="https://www.instagram.com/pt.paulomorais" target="_blank"
+                            rel="noopener noreferrer">Instagram</a>
+                    </li>
+                    <li><a href="https://wa.me/351960471537" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                    <li><a href="mailto:pt@pmorais.pt?subject=Informação">Email</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bar-elysium">
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Elysium λ
+                    Development & Research</a></div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="module" src="js/admin-formularios.js"></script>
+    <script src="js/script.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) window.lucide.createIcons();
+        });
+    </script>
+</body>
+
+</html>

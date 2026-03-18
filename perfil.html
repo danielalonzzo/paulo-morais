@@ -144,9 +144,10 @@
             <div id="user-dashboard" class="user-dashboard hidden fade-in">
                 <h2 id="user-welcome">Olá!</h2>
                 <div id="dashboard-main-actions" class="dashboard-actions">
-                    <button id="btn-show-wizard" class="btn btn-primary">Completar Perfil</button>
-                    <button id="btn-show-profiles" class="btn btn-outline hidden">Perfis</button>
-                    <button id="btn-logout" class="btn btn-outline">Terminar Sessão</button>
+                    <button id="btn-show-wizard" class="btn btn-primary"><i data-lucide="user-cog"></i> <span class="btn-text">Editar Perfil</span></button>
+                    <button id="btn-show-profiles" class="btn btn-admin-premium hidden"><i data-lucide="users"></i> <span class="btn-text">Perfis</span></button>
+                    <button id="btn-show-forms" class="btn btn-admin-premium hidden"><i data-lucide="file-text"></i> <span class="btn-text">Formulários</span></button>
+                    <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out"></i> <span class="btn-text">Terminar Sessão</span></button>
                 </div>
 
                 <!-- Client Calendar Booking Section -->
@@ -209,13 +210,13 @@
                             <div class="legend-box available"></div> Indisponível
                         </span>
                         <span class="legend-item">
-                            <div class="legend-box treino"></div> Treino (Dourado)
+                            <div class="legend-box treino"></div> Treino
                         </span>
                         <span class="legend-item">
-                            <div class="legend-box osteo"></div> Osteopatia (Prata)
+                            <div class="legend-box osteo"></div> Osteopatia
                         </span>
                     </div>
-                    <p class="admin-instruction">Clique nos blocos para alternar entre: Treino -> Osteopatía -> Indisponível.</p>
+
 
                     <div class="weekly-grid-scroll-wrapper">
                         <div class="weekly-grid" id="admin-weekly-grid">
@@ -228,10 +229,12 @@
                         <!-- JS will inject user legend items here -->
                     </div>
 
-                    <div class="admin-footer">
-                        <button id="btn-publish-week" class="btn btn-primary-black" style="width: 100%;"><i
-                                data-lucide="send" style="width: 18px; height: 18px; margin-right: 8px;"></i> Publicar
+                    <div class="admin-footer" style="display: flex; gap: 15px; justify-content: center; margin-top: 40px;">
+                        <button id="btn-publish-week" class="btn btn-primary-black" style="padding: 12px 25px; min-width: 180px;"><i
+                                data-lucide="send" style="width: 16px; height: 16px; margin-right: 8px;"></i> Publicar
                             Semana</button>
+                        <button id="btn-clear-availability" class="btn btn-outline" style="padding: 12px 25px; min-width: 180px; border-color: rgba(255,255,255,0.2);"><i
+                                data-lucide="trash-2" style="width: 16px; height: 16px; margin-right: 8px;"></i> Limpar Horários</button>
                     </div>
                 </div>
 
