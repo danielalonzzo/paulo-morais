@@ -187,7 +187,7 @@ function renderAdminUserLegend(data, legendEl, userNames = {}) {
 function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
     wrapper.innerHTML = "";
     const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
-    const startHour = 7;
+    const startHour = 6;
     const endHour = 20;
 
     for (let i = 0; i < 7; i++) {
@@ -208,8 +208,10 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
         slotsContainer.className = 'time-slots';
 
         for (let h = startHour; h <= endHour; h++) {
-            let hourStr = String(h).padStart(2, '0') + ':00';
-            let slotId = `${fullDateStr}T${hourStr}`;
+            for (let m = 0; m < 60; m += 30) {
+                if (h === endHour && m > 0) break;
+                let hourStr = `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                let slotId = `${fullDateStr}T${hourStr}`;
 
             let btn = document.createElement('div'); // Using div instead of button for better nested interaction
             btn.className = 'time-slot';
@@ -340,7 +342,8 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
                     btn.style.pointerEvents = 'none';
                 }
             }
-            slotsContainer.appendChild(btn);
+                slotsContainer.appendChild(btn);
+            }
         }
         col.appendChild(slotsContainer);
         wrapper.appendChild(col);

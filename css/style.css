@@ -4387,12 +4387,12 @@ body.loaded #preloader {
 .time-slots {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
 }
 
 .time-slot {
     width: 100%;
-    padding: 15px 0;
+    padding: 10px 0;
     border-radius: 15px;
     font-size: 1rem;
     font-weight: 700;
