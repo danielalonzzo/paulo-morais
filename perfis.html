@@ -28,7 +28,7 @@
             max-width: var(--container-width);
             margin: 0 auto 80px;
             padding: 0 20px;
-            color: #fff;
+            color: var(--color-text);
         }
 
         .profiles-header {
@@ -36,7 +36,8 @@
             justify-content: space-between;
             align-items: flex-end;
             margin-bottom: 60px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            border-bottom: 1px solid rgba(var(--color-text), 0.08); /* Fallback for older browsers if needed, but standard is fine */
+            border-bottom: 1px solid color-mix(in srgb, var(--color-text), transparent 92%);
             padding-bottom: 30px;
         }
 
@@ -58,8 +59,8 @@
         }
 
         .user-card {
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: color-mix(in srgb, var(--color-text), transparent 95%);
+            border: 1px solid color-mix(in srgb, var(--color-text), transparent 92%);
             border-radius: 20px;
             padding: 35px;
             cursor: pointer;
@@ -84,7 +85,7 @@
         }
 
         .user-card:hover {
-            background: rgba(255, 255, 255, 0.08);
+            background: color-mix(in srgb, var(--color-text), transparent 92%);
             border-color: rgba(230, 174, 23, 0.4);
             transform: translateY(-8px);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
@@ -95,7 +96,7 @@
         }
 
         .user-card h4 {
-            color: #fff;
+            color: var(--color-text);
             margin-bottom: 12px;
             font-size: 1.3rem;
             text-transform: uppercase;
@@ -107,7 +108,7 @@
 
         .user-card p {
             font-size: 0.95rem;
-            opacity: 0.5;
+            color: var(--color-text-dim);
             margin: 0;
             font-weight: 300;
             position: relative;
@@ -152,7 +153,7 @@
         }
 
         .modal-content {
-            background: #0f0f0f;
+            background: var(--color-bg);
             width: 95%;
             max-width: 650px;
             padding: 50px;
@@ -174,12 +175,12 @@
             position: absolute;
             top: 25px;
             right: 30px;
-            background: rgba(255,255,255,0.05);
+            background: color-mix(in srgb, var(--color-text), transparent 95%);
             border: none;
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            color: #fff;
+            color: var(--color-text);
             cursor: pointer;
             display: flex;
             align-items: center;
@@ -198,12 +199,12 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
+            border-bottom: 1px solid color-mix(in srgb, var(--color-text), transparent 95%);
             padding-bottom: 12px;
         }
 
         .detail-label {
-            color: rgba(255,255,255,0.4);
+            color: var(--color-text-dim);
             font-weight: 500;
             font-size: 0.85rem;
             text-transform: uppercase;
@@ -213,7 +214,7 @@
         .detail-value {
             font-weight: 600;
             font-size: 1.05rem;
-            color: #fff;
+            color: var(--color-text);
         }
 
         .observations-box {
@@ -234,6 +235,7 @@
             letter-spacing: 2px;
         }
     </style>
+    <script src="js/theme.js"></script>
 </head>
 
 <body class="bg-dark">
@@ -275,12 +277,15 @@
                 rel="noopener noreferrer">
                 <i data-lucide="message-circle"></i>
             </a>
-            <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn instagram" title="Instagram"
+            <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
                 target="_blank" rel="noopener noreferrer">
-                <i data-lucide="instagram"></i>
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
             <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email">
                 <i data-lucide="mail"></i>
+            </a>
+            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Mudar Tema" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+                <i data-lucide="sun-moon"></i>
             </a>
         </div>
     </div>

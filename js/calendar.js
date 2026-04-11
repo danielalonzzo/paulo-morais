@@ -11,10 +11,12 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
 const ADMIN_EMAIL = "pt@pmorais.pt";
-let currentWeekStart = new Date(); // We will align this to Monday
-// Logic to align to current week's Monday
-const day = currentWeekStart.getDay() || 7;  // 1-7, Mon-Sun
-if (day !== 1) currentWeekStart.setHours(-24 * (day - 1));
+let currentWeekStart = new Date(); // We will align this to Sunday
+// Logic to align to current week's Sunday
+const day = currentWeekStart.getDay(); 
+if (day !== 0) {
+    currentWeekStart.setDate(currentWeekStart.getDate() - day);
+}
 currentWeekStart.setHours(0, 0, 0, 0);
 
 let selectedClientSlots = []; // Global array to track multiple selections
@@ -186,7 +188,7 @@ function renderAdminUserLegend(data, legendEl, userNames = {}) {
 
 function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
     wrapper.innerHTML = "";
-    const days = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+    const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     const startHour = 6;
     const endHour = 20;
 
@@ -197,7 +199,7 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
         let fullDateStr = `${dayDate.getFullYear()}-${String(dayDate.getMonth() + 1).padStart(2, '0')}-${dateNum}`;
 
         let col = document.createElement('div');
-        col.className = `day-column ${i >= 5 ? 'weekend' : ''}`;
+        col.className = `day-column ${(i === 0 || i === 6) ? 'weekend' : ''}`;
 
         let header = document.createElement('div');
         header.className = 'day-header';
