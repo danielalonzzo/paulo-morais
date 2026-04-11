@@ -80,6 +80,17 @@ function applyDynamicTheme() {
 
     // Update logos
     const isLightMode = bgRGB[0] > 127; // Threshold for "Light"
+
+    // Toggle body classes for CSS targeting
+    if (document.body) {
+        if (isLightMode) {
+            document.body.classList.add('light-mode');
+            document.body.classList.remove('dark-mode');
+        } else {
+            document.body.classList.add('dark-mode');
+            document.body.classList.remove('light-mode');
+        }
+    }
     const logos = document.querySelectorAll('.logo-img, .footer-logo-elysium, .logo-img-small, .footer-logo, .contact-form-logo');
     logos.forEach(logo => {
         const currentSrc = logo.getAttribute('src');
@@ -114,6 +125,24 @@ function applyDynamicTheme() {
         }
     });
 
+    // Update iPad video on Osteopatia page
+    const ipadVideo = document.querySelector('.page-osteopatia .ipad-video-iframe video');
+    if (ipadVideo) {
+        const source = ipadVideo.querySelector('source');
+        if (source) {
+            const targetVideoSrc = isLightMode ? 'images/osteopatia/ipadclaro.mp4' : 'images/osteopatia/ipad.mp4';
+            const currentSrc = source.getAttribute('src');
+            
+            if (currentSrc !== targetVideoSrc) {
+                source.setAttribute('src', targetVideoSrc);
+                ipadVideo.load();
+                if (ipadVideo.hasAttribute('autoplay')) {
+                    ipadVideo.play().catch(e => console.log("Playback interrupted or blocked"));
+                }
+            }
+        }
+    }
+
     // Update the icon - FIX: Lucide replaces <i> with <svg>, so we must search for both
     const toggleBtnIcon = document.querySelector('#theme-toggle i, #theme-toggle svg');
     if (toggleBtnIcon) {
@@ -140,7 +169,7 @@ window.toggleThemeMode = function() {
     
     // Simplified Cycle: if currently light (or auto-light), go to dark. Otherwise go to light.
     // This removes the "auto" step from manual cycling.
-    const isActuallyLight = document.querySelector('img.logo-img').src.includes('paulo_morais-08.png');
+    const isActuallyLight = document.body.classList.contains('light-mode');
     
     if (isActuallyLight) {
         newMode = 'dark';

@@ -292,6 +292,10 @@ header.scrolled {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.light-mode header.scrolled {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
 .header-container {
     display: flex;
     justify-content: space-between;
@@ -1407,7 +1411,7 @@ footer {
         left: 0;
         width: 100%;
         height: 100vh;
-        background-color: rgba(0, 0, 0, 0.95);
+        background-color: var(--color-bg);
         display: flex;
         justify-content: center;
         align-items: center;
@@ -1429,10 +1433,10 @@ footer {
         gap: 40px;
         text-align: center;
     }
-
     .nav-menu a {
         font-size: 2rem;
         color: var(--color-text);
+        transition: color 0.3s ease;
     }
 
     header {
@@ -1462,7 +1466,7 @@ footer {
     .mobile-menu-toggle i,
     .mobile-menu-toggle svg {
         color: var(--color-text) !important;
-        stroke: #fff !important;
+        stroke: var(--color-text) !important;
         width: 32px;
         height: 32px;
     }
@@ -1516,7 +1520,8 @@ footer {
         flex-direction: row;
         width: 100%;
         justify-content: center;
-        background: rgba(0, 0, 0, 0.8);
+        background: var(--color-bg);
+        opacity: 0.9;
         padding: 10px;
         backdrop-filter: blur(10px);
     }
@@ -1539,7 +1544,7 @@ footer {
 header.scrolled .mobile-menu-toggle i,
 header.scrolled .mobile-menu-toggle svg {
     color: var(--color-text)!important;
-    stroke: #fff !important;
+    stroke: var(--color-text) !important;
 }
 
 .page-hero-light {
@@ -1958,12 +1963,17 @@ header.scrolled .mobile-menu-toggle svg {
     padding: 80px;
     width: 100%;
     max-width: 600px;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 30px 100px rgba(230, 174, 23, 0.15);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.15), 0 30px 100px rgba(230, 174, 23, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.05);
     position: relative;
     overflow: hidden;
     transition: all 0.5s ease;
     color: var(--color-text);
+}
+
+.light-mode .auth-card {
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.08), 0 10px 40px rgba(230, 174, 23, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 .auth-card-header {
@@ -1988,6 +1998,10 @@ header.scrolled .mobile-menu-toggle svg {
     display: flex;
     margin-bottom: 30px;
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.light-mode .auth-tabs {
+    border-bottom-color: rgba(0, 0, 0, 0.1);
 }
 
 .tab-btn {
@@ -2178,6 +2192,13 @@ header.scrolled .mobile-menu-toggle svg {
     transition: var(--transition-smooth);
 }
 
+.light-mode .auth-card .form-group input,
+.light-mode .auth-card .form-group select,
+.light-mode .auth-card .form-group textarea {
+    border-color: rgba(0, 0, 0, 0.1);
+    background-color: rgba(0, 0, 0, 0.02);
+}
+
 .auth-card .form-group select {
     appearance: none;
     -webkit-appearance: none;
@@ -2193,7 +2214,7 @@ header.scrolled .mobile-menu-toggle svg {
 .auth-card .form-group input:-webkit-autofill:hover,
 .auth-card .form-group input:-webkit-autofill:focus {
     -webkit-text-fill-color: var(--color-text);
-    -webkit-box-shadow: 0 0 0px 1000px #1a1a1a inset;
+    -webkit-box-shadow: 0 0 0px 1000px var(--color-bg) inset;
     transition: background-color 5000s ease-in-out 0s;
 }
 
@@ -2771,7 +2792,7 @@ header.scrolled .mobile-menu-toggle svg {
 
 .osteopatia-description {
     font-size: 1.25rem;
-    color: #ccc;
+    color: var(--color-text); /* Adaptable color: black in light mode */
     max-width: 800px;
     margin: 0 auto;
     line-height: 1.6;
@@ -2957,7 +2978,7 @@ header.scrolled .mobile-menu-toggle svg {
 
 .testimonials-subtext {
     font-size: 1rem;
-    color: #ccc;
+    color: var(--color-text); /* Adaptable color: black in light mode */
     line-height: 1.7;
     margin-bottom: 40px;
 }
@@ -3121,22 +3142,23 @@ header.scrolled .mobile-menu-toggle svg {
 }
 
 .stat-item {
-    color: var(--color-text);
+    color: #ffffff !important; /* Force white for visibility on parallax background */
 }
 
 .stat-number {
     font-size: 2.5rem;
     font-weight: 800;
     margin-bottom: 10px;
-    color: var(--color-text);
+    color: inherit;
     text-transform: none;
 }
 
 .stat-label {
     font-size: 1.2rem;
     font-weight: 400;
-    color: var(--color-text);
+    color: inherit;
     opacity: 0.95;
+    text-transform: uppercase;
 }
 
 /* Responsive for tablets */
@@ -4092,7 +4114,8 @@ body.loaded #preloader {
     bottom: 0;
     left: 0;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.95);
+    background-color: var(--color-surface);
+    backdrop-filter: blur(10px);
     color: var(--color-text);
     padding: 20px;
     z-index: 9999;
@@ -4907,7 +4930,8 @@ body.loaded #preloader {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.75);
+    background: var(--color-surface);
+    opacity: 0.98;
     backdrop-filter: blur(8px);
     z-index: 10000;
     display: flex;
