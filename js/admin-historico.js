@@ -32,21 +32,26 @@ onAuthStateChanged(auth, async (user) => {
         let consolidatedHistory = [];
         
         if (isAdmin) {
-            const usersSnap = await getDocs(collection(db, "users"));
-            usersSnap.forEach(uDoc => {
-                const uData = uDoc.data();
-                if (uData.bookingsHistory && uData.bookingsHistory.length > 0) {
-                    uData.bookingsHistory.forEach(booking => {
+            // Read all user booking documents from weekly_schedules collection
+            const allDocs = await getDocs(collection(db, "weekly_schedules"));
+            allDocs.forEach(docSnap => {
+                const data = docSnap.data();
+                // User booking docs have IDs starting with "user_"
+                if (docSnap.id.startsWith('user_') && data.bookings && data.bookings.length > 0) {
+                    const userName = data.name || data.email || "Utilizador";
+                    data.bookings.forEach(booking => {
                         consolidatedHistory.push({
                             ...booking,
-                            userName: uData.name || uData.email || "Utilizador"
+                            userName: booking.bookedName || userName
                         });
                     });
                 }
             });
         } else {
-            if (userData.bookingsHistory) {
-                consolidatedHistory = userData.bookingsHistory;
+            // Read user's own booking doc from weekly_schedules
+            const bookingDoc = await getDoc(doc(db, "weekly_schedules", `user_${user.uid}`));
+            if (bookingDoc.exists()) {
+                consolidatedHistory = bookingDoc.data().bookings || [];
             }
         }
 

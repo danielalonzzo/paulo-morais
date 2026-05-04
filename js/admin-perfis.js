@@ -99,7 +99,7 @@ async function loadProfiles() {
     }
 }
 
-function showUserDetails(data) {
+async function showUserDetails(data) {
     modalName.textContent = data.name || "Sem Nome";
     modalContainer.innerHTML = "";
 
@@ -136,44 +136,52 @@ function showUserDetails(data) {
         modalContainer.appendChild(obsBox);
     }
 
-    // Booking History Section
-    if (data.bookingsHistory && data.bookingsHistory.length > 0) {
-        const historyBox = document.createElement('div');
-        historyBox.className = 'history-box';
-        
-        // Sort history by date/time (most recent first)
-        const sortedHistory = [...data.bookingsHistory].sort((a, b) => {
-            const dateA = a.date ? new Date(`${a.date}T${a.time || '00:00'}`) : new Date(0);
-            const dateB = b.date ? new Date(`${b.date}T${b.time || '00:00'}`) : new Date(0);
-            return dateB - dateA;
-        });
+    // Booking History Section — read from weekly_schedules/user_{uid}
+    try {
+        const bookingDoc = await getDoc(doc(db, "weekly_schedules", `user_${data.id}`));
+        if (bookingDoc.exists()) {
+            const bookings = bookingDoc.data().bookings || [];
+            if (bookings.length > 0) {
+                const historyBox = document.createElement('div');
+                historyBox.className = 'history-box';
+                
+                // Sort history by date/time (most recent first)
+                const sortedHistory = [...bookings].sort((a, b) => {
+                    const dateA = a.date ? new Date(`${a.date}T${a.time || '00:00'}`) : new Date(0);
+                    const dateB = b.date ? new Date(`${b.date}T${b.time || '00:00'}`) : new Date(0);
+                    return dateB - dateA;
+                });
 
-        historyBox.innerHTML = `
-            <span class="history-title">Histórico de Reservas <i data-lucide="history" style="width:16px;"></i></span>
-            <div class="history-list">
-                ${sortedHistory.map(item => `
-                    <div class="history-item">
-                        <div class="history-main-info">
-                            <span class="history-tag ${item.serviceType === 'osteopatia' ? 'tag-osteo' : 'tag-treino'}">
-                                ${item.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino'}
-                            </span>
-                        </div>
-                        
-                        <div class="history-schedule-meta">
-                            <div class="meta-item">
-                                <i data-lucide="calendar"></i>
-                                <span>${item.date || '---'}</span>
+                historyBox.innerHTML = `
+                    <span class="history-title">Histórico de Reservas <i data-lucide="history" style="width:16px;"></i></span>
+                    <div class="history-list">
+                        ${sortedHistory.map(item => `
+                            <div class="history-item">
+                                <div class="history-main-info">
+                                    <span class="history-tag ${item.serviceType === 'osteopatia' ? 'tag-osteo' : 'tag-treino'}">
+                                        ${item.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino'}
+                                    </span>
+                                </div>
+                                
+                                <div class="history-schedule-meta">
+                                    <div class="meta-item">
+                                        <i data-lucide="calendar"></i>
+                                        <span>${item.date || '---'}</span>
+                                    </div>
+                                    <div class="meta-item">
+                                        <i data-lucide="clock"></i>
+                                        <span>${item.time || '---'}</span>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="meta-item">
-                                <i data-lucide="clock"></i>
-                                <span>${item.time || '---'}</span>
-                            </div>
-                        </div>
+                        `).join('')}
                     </div>
-                `).join('')}
-            </div>
-        `;
-        modalContainer.appendChild(historyBox);
+                `;
+                modalContainer.appendChild(historyBox);
+            }
+        }
+    } catch (e) {
+        console.warn("Could not load booking history for user", e);
     }
 
     modal.classList.add('active');

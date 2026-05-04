@@ -4,8 +4,6 @@ import {
     getDoc,
     onSnapshot,
     writeBatch,
-    arrayUnion,
-    arrayRemove,
     updateDoc,
     deleteField
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -40,23 +38,8 @@ export function initCalendarMode(user, db, role = null, profileCompleted = false
     const isAdmin = role === 'admin' || user.email === ADMIN_EMAIL;
     console.log("initCalendarMode - isAdmin:", isAdmin, "profileCompleted:", profileCompleted);
 
-    if (isAdmin) {
-        console.log("Showing admin calendar");
-        adminSection.classList.remove('hidden');
-        calendarSection.classList.add('hidden');
-        renderAdminGrid(db, user);
-    } else {
-        // Only show client calendar if profile is completed
-        if (profileCompleted) {
-            console.log("Showing client calendar (profile completed)");
-            calendarSection.classList.remove('hidden');
-            renderClientGrid(db, user);
-        } else {
-            console.log("Hiding client calendar (profile NOT completed)");
-            calendarSection.classList.add('hidden');
-        }
-        adminSection.classList.add('hidden');
-    }
+    // Initial load logic is handled by auth.js loadDashboardPreview
+    // We just render the grid in background if we want, or leave it to openGlobalAgenda
 }
 
 // Deterministic User Color Generator
@@ -136,7 +119,7 @@ function renderAdminGrid(db, user) {
             }));
         }
 
-        buildGrid(gridEl, scheduleData, true, db, user, weekId, userNames);
+        buildGrid(gridEl, scheduleData, true, db, user, weekId, userNames, true);
         renderAdminUserLegend(scheduleData, legendEl, userNames);
     });
 }
@@ -186,7 +169,7 @@ function renderAdminUserLegend(data, legendEl, userNames = {}) {
     });
 }
 
-function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
+function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}, isReadOnly = false) {
     wrapper.innerHTML = "";
     const days = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
     const startHour = 6;
@@ -233,7 +216,7 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
                         
                         btn.onclick = (e) => {
                             e.stopPropagation();
-                            openGroupPopup(slotId, slotInfo, db, weekId, userNames);
+                            openGroupPopup(slotId, slotInfo, db, weekId, userNames, isReadOnly);
                         };
                     } else if (slotInfo.status === 'booked' && slotInfo.bookedBy) {
                         // Personal booking (treino/osteopatia)
@@ -247,35 +230,45 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
                         
                         btn.innerHTML = `${hourStr}<br><span class="client-name">${displayName}</span>`;
                         
-                        // Add X button for Admin cancellation
-                        const cancelBtn = document.createElement('button');
-                        cancelBtn.className = 'cancel-booking-btn';
-                        cancelBtn.innerHTML = '<i data-lucide="x"></i>';
-                        cancelBtn.title = "Eliminar Reserva";
-                        cancelBtn.onclick = (e) => {
-                            e.stopPropagation();
-                            if (confirm(`Deseja eliminar a reserva de "${displayName}"?`)) {
-                                cancelAdminBooking(db, weekId, slotId, slotInfo);
-                            }
-                        };
-                        btn.appendChild(cancelBtn);
-                        btn.style.pointerEvents = 'auto'; // Ensure it's interactive
+                        if (!isReadOnly) {
+                            // Add X button for Admin cancellation
+                            const cancelBtn = document.createElement('button');
+                            cancelBtn.className = 'cancel-booking-btn';
+                            cancelBtn.innerHTML = '<i data-lucide="x"></i>';
+                            cancelBtn.title = "Eliminar Reserva";
+                            cancelBtn.onclick = (e) => {
+                                e.stopPropagation();
+                                if (confirm(`Deseja eliminar a reserva de "${displayName}"?`)) {
+                                    cancelAdminBooking(db, weekId, slotId, slotInfo);
+                                }
+                            };
+                            btn.appendChild(cancelBtn);
+                            btn.style.pointerEvents = 'auto';
+                        } else {
+                            btn.style.pointerEvents = 'none';
+                        }
                         btn.onclick = (e) => e.stopPropagation();
                     } else {
-                        // Available slot — admin selectable (toggle cycle)
-                        btn.className = 'time-slot admin-selectable';
-                        const sType = slotInfo.serviceType || 'treino';
-                        if (slotInfo.status === 'available' || slotInfo.serviceType) {
-                            btn.classList.add('active', `service-${sType}`);
-                            btn.dataset.serviceType = sType;
-                            
-                            // If grupal slot with no bookings yet, show "0 reservas"
-                            if (sType === 'grupal') {
-                                const count = (slotInfo.bookedUsers && slotInfo.bookedUsers.length) || 0;
-                                btn.innerHTML = `${hourStr}<br><span class="group-count">${count} reservas</span>`;
+                        // Available slot — admin selectable
+                        if (isReadOnly) {
+                            btn.className = 'time-slot available-readonly';
+                            btn.style.opacity = '0.3';
+                            btn.style.pointerEvents = 'none';
+                        } else {
+                            btn.className = 'time-slot admin-selectable';
+                            const sType = slotInfo.serviceType || 'treino';
+                            if (slotInfo.status === 'available' || slotInfo.serviceType) {
+                                btn.classList.add('active', `service-${sType}`);
+                                btn.dataset.serviceType = sType;
+                                
+                                // If grupal slot with no bookings yet, show "0 reservas"
+                                if (sType === 'grupal') {
+                                    const count = (slotInfo.bookedUsers && slotInfo.bookedUsers.length) || 0;
+                                    btn.innerHTML = `${hourStr}<br><span class="group-count">${count} reservas</span>`;
+                                }
                             }
+                            btn.onclick = () => adminCycleSlot(btn, hourStr);
                         }
-                        btn.onclick = () => adminCycleSlot(btn, hourStr);
                     }
                 } else {
                     // Empty slot — admin selectable
@@ -355,7 +348,7 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}) {
     if (window.lucide) window.lucide.createIcons();
 }
 
-// Admin click cycle: Inactive → Treino (1) → Grupal (2) → Osteo (3) → Clear (4)
+// Admin click cycle: Inactive → Treino (1) → Online (2) → Osteo (3) → Clear (4)
 function adminCycleSlot(btn, hourStr) {
     if (!btn.classList.contains('active')) {
         // Click 1: Inactive → Treino (yellow)
@@ -363,7 +356,7 @@ function adminCycleSlot(btn, hourStr) {
         btn.dataset.serviceType = 'treino';
         btn.textContent = hourStr;
     } else if (btn.classList.contains('service-treino')) {
-        // Click 2: Treino → Grupal (blue)
+        // Click 2: Treino → Online (blue)
         btn.className = 'time-slot admin-selectable active service-grupal';
         btn.dataset.serviceType = 'grupal';
         btn.innerHTML = `${hourStr}<br><span class="group-count">0 reservas</span>`;
@@ -380,7 +373,7 @@ function adminCycleSlot(btn, hourStr) {
     }
 }
 
-function openGroupPopup(slotId, slotInfo, db, weekId, userNames) {
+function openGroupPopup(slotId, slotInfo, db, weekId, userNames, isReadOnly = false) {
     const popup = document.getElementById('group-booking-popup');
     const titleEl = document.getElementById('popup-title');
     const subtitleEl = document.getElementById('popup-subtitle');
@@ -391,7 +384,7 @@ function openGroupPopup(slotId, slotInfo, db, weekId, userNames) {
 
     const datePart = slotId.split('T')[0];
     const timePart = slotId.split('T')[1];
-    titleEl.textContent = 'Treino Grupal';
+    titleEl.textContent = 'Treino Online';
     subtitleEl.textContent = `${datePart} às ${timePart}`;
 
     listEl.innerHTML = '';
@@ -411,18 +404,21 @@ function openGroupPopup(slotId, slotInfo, db, weekId, userNames) {
                     <div class="user-dot"></div>
                     <span>${displayName}</span>
                 </div>
+                ${!isReadOnly ? `
                 <button class="remove-user-btn" title="Remover utilizador">
                     <i data-lucide="x" style="width: 14px; height: 14px;"></i>
-                </button>
+                </button>` : ''}
             `;
             
-            // Remove user button
-            item.querySelector('.remove-user-btn').onclick = async () => {
-                if (confirm(`Deseja remover "${displayName}" deste treino grupal?`)) {
-                    await removeUserFromGroup(db, weekId, slotId, bu);
-                    // Popup will refresh via onSnapshot
-                }
-            };
+            if (!isReadOnly) {
+                // Remove user button
+                item.querySelector('.remove-user-btn').onclick = async () => {
+                    if (confirm(`Deseja remover "${displayName}" deste treino grupal?`)) {
+                        await removeUserFromGroup(db, weekId, slotId, bu);
+                        // Popup will refresh via onSnapshot
+                    }
+                };
+            }
             
             listEl.appendChild(item);
         });
@@ -464,24 +460,20 @@ async function removeUserFromGroup(db, weekId, slotId, userEntry) {
             [`slots.${slotId}.bookedCount`]: updatedUsers.length
         });
 
-        // Remove from user's personal booking history
+        // Remove from user's booking history in weekly_schedules
         if (userEntry.uid) {
             try {
-                const userRef = doc(db, "users", userEntry.uid);
-                const bookingToRemove = {
-                    status: 'booked',
-                    serviceType: 'grupal',
-                    time: slotId.split('T')[1],
-                    date: slotId.split('T')[0],
-                    bookedBy: userEntry.uid,
-                    bookedName: userEntry.name,
-                    timestamp: userEntry.timestamp
-                };
-                await updateDoc(userRef, {
-                    bookingsHistory: arrayRemove(bookingToRemove)
-                });
+                const bookingDocRef = doc(db, "weekly_schedules", `user_${userEntry.uid}`);
+                const bookingSnap = await getDoc(bookingDocRef);
+                if (bookingSnap.exists()) {
+                    const bookings = bookingSnap.data().bookings || [];
+                    const filtered = bookings.filter(b => 
+                        !(b.serviceType === 'grupal' && b.date === slotId.split('T')[0] && b.time === slotId.split('T')[1])
+                    );
+                    await updateDoc(bookingDocRef, { bookings: filtered });
+                }
             } catch (e) {
-                console.warn("Could not remove from user history", e);
+                console.warn("Could not remove from user booking history", e);
             }
         }
 
@@ -658,7 +650,7 @@ function updateBookingSummary(db, user, weekId) {
 
             const batch = writeBatch(db);
             const scheduleRef = doc(db, "weekly_schedules", weekId);
-            const userRef = doc(db, "users", user.uid);
+            const bookingDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
             
             const bookingsToSave = [];
             const bookingsToRemove = [];
@@ -732,14 +724,9 @@ function updateBookingSummary(db, user, weekId) {
                 }
             });
 
-            // Update user's personal booking history
-            if (bookingsToSave.length > 0) {
-                batch.set(userRef, { bookingsHistory: arrayUnion(...bookingsToSave) }, { merge: true });
-            }
-            if (bookingsToRemove.length > 0) {
-                // arrayRemove requires exact object match
-                batch.set(userRef, { bookingsHistory: arrayRemove(...bookingsToRemove) }, { merge: true });
-            }
+            // Update user's booking history in weekly_schedules/user_{uid}
+            // We can't use batch for this easily since we need to read first, so do it after commit
+            // (bookingsToSave and bookingsToRemove will be processed after batch)
 
             await batch.commit();
 
@@ -759,10 +746,12 @@ function updateBookingSummary(db, user, weekId) {
                         [`slots.${ga.slotId}.bookedUsers`]: currentUsers,
                         [`slots.${ga.slotId}.bookedCount`]: currentUsers.length
                     });
-                    // Add to user history
-                    await updateDoc(userRef, {
-                        bookingsHistory: arrayUnion(ga.bookingHistory)
-                    });
+                    // Add to user history in weekly_schedules
+                    const bDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
+                    const bSnap = await getDoc(bDocRef);
+                    const existingBookings = bSnap.exists() ? (bSnap.data().bookings || []) : [];
+                    existingBookings.push(ga.bookingHistory);
+                    await setDoc(bDocRef, { uid: user.uid, email: user.email, bookings: existingBookings }, { merge: true });
                 } else if (ga.action === 'remove') {
                     // Remove user from group
                     currentUsers = currentUsers.filter(u => u.uid !== user.uid);
@@ -770,27 +759,42 @@ function updateBookingSummary(db, user, weekId) {
                         [`slots.${ga.slotId}.bookedUsers`]: currentUsers,
                         [`slots.${ga.slotId}.bookedCount`]: currentUsers.length
                     });
-                    // Remove from user history (best effort — match by fields)
+                    // Remove from user history in weekly_schedules
                     try {
-                        const userSnap = await getDoc(userRef);
-                        if (userSnap.exists()) {
-                            const history = userSnap.data().bookingsHistory || [];
-                            const match = history.find(h =>
-                                h.serviceType === 'grupal' &&
+                        const bDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
+                        const bSnap = await getDoc(bDocRef);
+                        if (bSnap.exists()) {
+                            const bookings = bSnap.data().bookings || [];
+                            const filtered = bookings.filter(h =>
+                                !(h.serviceType === 'grupal' &&
                                 h.date === ga.bookingHistory.date &&
-                                h.time === ga.bookingHistory.time &&
-                                h.bookedBy === user.uid
+                                h.time === ga.bookingHistory.time)
                             );
-                            if (match) {
-                                await updateDoc(userRef, {
-                                    bookingsHistory: arrayRemove(match)
-                                });
-                            }
+                            await updateDoc(bDocRef, { bookings: filtered });
                         }
                     } catch (e) {
                         console.warn("Could not remove group booking from history", e);
                     }
                 }
+            }
+            
+            // Save personal bookings/cancellations to user history
+            if (bookingsToSave.length > 0 || bookingsToRemove.length > 0) {
+                const bDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
+                const bSnap = await getDoc(bDocRef);
+                let existingBookings = bSnap.exists() ? (bSnap.data().bookings || []) : [];
+                
+                // Add new bookings
+                bookingsToSave.forEach(b => existingBookings.push(b));
+                
+                // Remove cancelled bookings
+                bookingsToRemove.forEach(rem => {
+                    existingBookings = existingBookings.filter(b =>
+                        !(b.date === rem.date && b.time === rem.time && b.serviceType === rem.serviceType)
+                    );
+                });
+                
+                await setDoc(bDocRef, { uid: user.uid, email: user.email, bookings: existingBookings }, { merge: true });
             }
             
             alert(`Operação concluída com sucesso!`);
@@ -808,7 +812,7 @@ function createSummaryItem(slot, isCancellation = false) {
     item.className = `summary-item ${isCancellation ? 'cancellation' : ''}`;
     let sName = 'Treino Personalizado';
     if (slot.serviceType === 'osteopatia') sName = 'Osteopatia';
-    else if (slot.serviceType === 'grupal') sName = 'Em Grupo';
+    else if (slot.serviceType === 'grupal') sName = 'Online';
     item.innerHTML = `
         <span><strong>${sName}</strong> - ${slot.time} (${slot.id.split('T')[0]})</span>
         <button class="remove-slot" data-slot-id="${slot.id}">&times;</button>
@@ -820,7 +824,7 @@ async function cancelAdminBooking(db, weekId, slotId, slotInfo) {
     try {
         const scheduleRef = doc(db, "weekly_schedules", weekId);
         
-        // 1. Revert slot to available and reset to default service (Treino)
+        // 1. Revert slot to available
         await updateDoc(scheduleRef, {
             [`slots.${slotId}`]: {
                 status: 'available',
@@ -830,12 +834,21 @@ async function cancelAdminBooking(db, weekId, slotId, slotInfo) {
             }
         });
 
-        // 2. Remove from user history
+        // 2. Remove from user booking history in weekly_schedules
         if (slotInfo.bookedBy) {
-            const userRef = doc(db, "users", slotInfo.bookedBy);
-            await updateDoc(userRef, {
-                bookingsHistory: arrayRemove(slotInfo)
-            });
+            try {
+                const bookingDocRef = doc(db, "weekly_schedules", `user_${slotInfo.bookedBy}`);
+                const bookingSnap = await getDoc(bookingDocRef);
+                if (bookingSnap.exists()) {
+                    const bookings = bookingSnap.data().bookings || [];
+                    const filtered = bookings.filter(b => 
+                        !(b.date === slotId.split('T')[0] && b.time === slotId.split('T')[1])
+                    );
+                    await updateDoc(bookingDocRef, { bookings: filtered });
+                }
+            } catch (e) {
+                console.warn("Could not remove from user booking doc", e);
+            }
         }
 
         alert("Reserva removida com sucesso!");
@@ -879,3 +892,42 @@ async function clearUnbookedSlots(db, weekId) {
         alert("Erro ao limpar horários.");
     }
 }
+
+// Global Agenda Handlers
+window.openGlobalAgenda = async function() {
+    const dashboardActions = document.getElementById('dashboard-main-actions');
+    const previewSection = document.getElementById('dashboard-preview-section');
+    const globalAgenda = document.getElementById('global-agenda-section');
+    
+    if (dashboardActions) dashboardActions.classList.add('hidden');
+    if (previewSection) previewSection.classList.add('hidden');
+    if (globalAgenda) globalAgenda.classList.remove('hidden');
+    
+    const { auth, db } = await import('./firebase-config.js');
+    renderAdminGrid(db, auth.currentUser);
+};
+
+window.closeGlobalAgenda = function() {
+    const dashboardActions = document.getElementById('dashboard-main-actions');
+    const previewSection = document.getElementById('dashboard-preview-section');
+    const globalAgenda = document.getElementById('global-agenda-section');
+    
+    if (dashboardActions) dashboardActions.classList.remove('hidden');
+    if (previewSection) previewSection.classList.remove('hidden');
+    if (globalAgenda) globalAgenda.classList.add('hidden');
+};
+
+window.changeGlobalWeek = async function(offset) {
+    currentWeekStart.setDate(currentWeekStart.getDate() + (offset * 7));
+    
+    const weekHeaders = document.querySelectorAll('.current-week');
+    const endDate = new Date(currentWeekStart);
+    endDate.setDate(currentWeekStart.getDate() + 6);
+    
+    const formatter = new Intl.DateTimeFormat('pt-PT', { day: 'numeric', month: 'short' });
+    const weekText = `${formatter.format(currentWeekStart)} - ${formatter.format(endDate)}`;
+    weekHeaders.forEach(el => el.textContent = weekText);
+    
+    const { auth, db } = await import('./firebase-config.js');
+    renderAdminGrid(db, auth.currentUser);
+};

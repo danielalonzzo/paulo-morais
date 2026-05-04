@@ -14,7 +14,10 @@ import {
 import {
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    getDocs,
+    collection,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initCalendarMode } from './calendar.js';
 
@@ -71,11 +74,19 @@ document.addEventListener('DOMContentLoaded', () => {
             authCard.classList.add('hidden');
             userDashboard.classList.remove('hidden');
 
-            // IMMEDIATE ADMIN CHECK (for fast button visibility)
             const ADMIN_EMAIL = "pt@pmorais.pt";
+            const userEmail = user.email ? user.email.toLowerCase().trim() : "no-email";
+            console.log("Auth State Changed. User:", userEmail);
+            const isAdminEmail = userEmail === ADMIN_EMAIL.toLowerCase();
+
             const btnShowProfiles = document.getElementById('btn-show-profiles');
             const btnShowForms = document.getElementById('btn-show-forms');
-            if (user.email === ADMIN_EMAIL) {
+            const btnStartBooking = document.getElementById('btn-start-booking');
+            
+            console.log("Immediate Admin Check:", { userEmail, isAdminEmail });
+
+            if (isAdminEmail) {
+                console.log("Admin detected by email (Immediate)");
                 if (btnShowProfiles) {
                     btnShowProfiles.classList.remove('hidden');
                     btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
@@ -83,6 +94,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (btnShowForms) {
                     btnShowForms.classList.remove('hidden');
                     btnShowForms.onclick = () => window.location.href = 'formulario.html';
+                }
+                if (btnStartBooking) {
+                    const span = btnStartBooking.querySelector('.btn-text');
+                    if (span) span.textContent = 'Gestão de Agenda';
+                    else btnStartBooking.textContent = 'Gestão de Agenda';
+                }
+            }
+
+            // Show dashboard IMMEDIATELY - don't wait for async data
+            authCard.classList.add('hidden');
+            userDashboard.classList.remove('hidden');
+            const dashboardActionsImmediate = document.getElementById('dashboard-main-actions');
+            if (dashboardActionsImmediate) dashboardActionsImmediate.classList.remove('hidden');
+            console.log('Dashboard shown immediately for:', user.email);
+
+            // For admin: also show preview section immediately so it's visible
+            // even if the async loadUserProfile fails or takes too long
+            if (isAdminEmail) {
+                const previewSectionImmediate = document.getElementById('dashboard-preview-section');
+                if (previewSectionImmediate) {
+                    previewSectionImmediate.classList.remove('hidden');
+                    console.log('Admin preview section shown immediately');
                 }
             }
 
@@ -108,9 +141,8 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Login Event
-    const loginBtn = document.getElementById('btn-login');
-    if (loginBtn) {
-        loginBtn.addEventListener('click', async (e) => {
+    if (loginForm) {
+        loginForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
@@ -121,29 +153,43 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
+                const loginBtn = document.getElementById('btn-login');
+                if (loginBtn) {
+                    loginBtn.disabled = true;
+                    loginBtn.textContent = "A entrar...";
+                }
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 console.error("Login error:", error);
                 alert("Erro ao iniciar sessão: " + translateError(error.code));
+                const loginBtn = document.getElementById('btn-login');
+                if (loginBtn) {
+                    loginBtn.disabled = false;
+                    loginBtn.textContent = "Entrar";
+                }
             }
         });
     }
 
     // Register Event
-    const registerBtn = document.getElementById('btn-register');
-    if (registerBtn) {
-        registerBtn.addEventListener('click', async (e) => {
+    if (registerForm) {
+        registerForm.addEventListener('submit', async (e) => {
             e.preventDefault();
             const name = document.getElementById('reg-name').value;
             const email = document.getElementById('reg-email').value;
             const password = document.getElementById('reg-password').value;
 
             if (!name || !email || !password) {
-                alert("Por favor preencha todos os campos.");
+                alert("Por favor, preencha todos os campos.");
                 return;
             }
 
             try {
+                const registerBtn = document.getElementById('btn-register');
+                if (registerBtn) {
+                    registerBtn.disabled = true;
+                    registerBtn.textContent = "A criar conta...";
+                }
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
 
@@ -160,6 +206,11 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (error) {
                 console.error("Registration error:", error);
                 alert("Erro ao registar: " + translateError(error.code));
+                const registerBtn = document.getElementById('btn-register');
+                if (registerBtn) {
+                    registerBtn.disabled = false;
+                    registerBtn.textContent = "Criar Conta";
+                }
             }
         });
     }
@@ -202,6 +253,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnCancelWizard = document.getElementById('btn-cancel-wizard');
     const profileWizard = document.getElementById('profile-wizard');
     const dashboardActions = document.getElementById('dashboard-main-actions');
+    const dashboardPreviewSection = document.getElementById('dashboard-preview-section');
     const profileForm = document.getElementById('profile-form');
 
     if (btnShowWizard) {
@@ -223,6 +275,36 @@ document.addEventListener('DOMContentLoaded', () => {
             window.scrollTo({ top: 0, behavior: 'smooth' });
         });
     }
+
+    // Booking Wizard / Admin Manager Logic
+    const btnStartBooking = document.getElementById('btn-start-booking');
+    const bookingWizardSection = document.getElementById('booking-wizard-section');
+    // (dashboardActions and dashboardPreviewSection already declared above)
+    
+    if (btnStartBooking) {
+        btnStartBooking.addEventListener('click', () => {
+            // Determine if admin by checking button
+            const isAdmin = document.getElementById('btn-show-profiles') && !document.getElementById('btn-show-profiles').classList.contains('hidden');
+            const targetSection = isAdmin ? document.getElementById('admin-calendar-section') : document.getElementById('booking-wizard-section');
+            
+            if (targetSection) targetSection.classList.remove('hidden');
+            if (dashboardActions) dashboardActions.classList.add('hidden');
+            if (dashboardPreviewSection) dashboardPreviewSection.classList.add('hidden');
+            
+            if (!isAdmin && window.goToStep) window.goToStep(1); // Reset wizard
+            if (isAdmin && window.openAdminBookingWizard) window.openAdminBookingWizard();
+            
+            setTimeout(() => {
+                targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 100);
+        });
+    }
+
+    // Global function to close booking wizard
+    window.closeBookingWizard = function() {
+        // Refresh the page to ensure the dashboard data is updated
+        location.reload();
+    };
 
     if (profileForm) {
         // Handle conditional validation for Observations
@@ -413,21 +495,29 @@ async function loadUserProfile(user) {
 
                 const btnShowProfiles = document.getElementById('btn-show-profiles');
                 const btnShowForms = document.getElementById('btn-show-forms');
-                const ADMIN_EMAIL = "pt@pmorais.pt";
+                const userEmail = user.email ? user.email.toLowerCase().trim() : "no-email";
+                const isAdminEmail = userEmail === "pt@pmorais.pt";
+                const isAdmin = (data && data.role && data.role.toLowerCase() === 'admin') || isAdminEmail;
 
-                if (data.role === 'admin' || user.email === ADMIN_EMAIL) {
-                    // AUTO-FIX: Ensure Paulo has the admin role in Firestore
-                    if (data.role !== 'admin' && user.email === ADMIN_EMAIL) {
-                        try {
-                            await setDoc(doc(db, "users", user.uid), { role: 'admin' }, { merge: true });
-                            console.log("Admin role auto-fixed for Paulo.");
-                        } catch (e) {
-                            console.warn("Could not auto-fix admin role. Possibly rules restricted.", e);
-                        }
+                console.log("CRITICAL ADMIN CHECK", { 
+                    rawEmail: user.email,
+                    processedEmail: "[" + userEmail + "]", 
+                    isAdminEmail, 
+                    isAdmin,
+                    firestoreRole: data?.role 
+                });
+
+                if (isAdmin) {
+                    // AUTO-FIX: Ensure Paulo has the admin role in Firestore if he's the owner
+                    if (data.role !== 'admin' && isAdminEmail) {
+                        // Non-blocking auto-fix
+                        setDoc(doc(db, "users", user.uid), { role: 'admin' }, { merge: true })
+                            .then(() => console.log("Admin role auto-fixed for Paulo in Firestore."))
+                            .catch(e => console.warn("Could not auto-fix admin role. Possibly rules restricted.", e));
                     }
 
                     if (calendarSection) calendarSection.classList.add('hidden');
-                    if (adminCalendarSection) adminCalendarSection.classList.remove('hidden');
+                    if (adminCalendarSection) adminCalendarSection.classList.add('hidden'); // HIDDEN by default now, shown via button
                     if (dashboardActions) dashboardActions.classList.remove('hidden');
                     if (profileWizard) profileWizard.classList.add('hidden');
                     if (btnShowProfiles) {
@@ -438,12 +528,29 @@ async function loadUserProfile(user) {
                         btnShowForms.classList.remove('hidden');
                         btnShowForms.onclick = () => window.location.href = 'formulario.html';
                     }
+                    
+                    const btnStartBooking = document.getElementById('btn-start-booking');
+                    if (btnStartBooking) btnStartBooking.innerHTML = '<i data-lucide="calendar"></i> <span class="btn-text">Gestão da Agenda</span>';
+                    
+                    // Robust admin dashboard preview — catch errors so section stays visible
+                    try {
+                        await loadDashboardPreview(true, user, data);
+                    } catch (previewError) {
+                        console.error("Error loading admin dashboard preview:", previewError);
+                        const fallbackList = document.getElementById('preview-list');
+                        const fallbackSection = document.getElementById('dashboard-preview-section');
+                        if (fallbackSection) fallbackSection.classList.remove('hidden');
+                        if (fallbackList) fallbackList.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Erro ao carregar dados da agenda. Tente recarregar a página.</p>';
+                    }
+                    
                 } else if (data.profileCompleted) {
-                    if (calendarSection) calendarSection.classList.remove('hidden');
+                    if (calendarSection) calendarSection.classList.add('hidden');
                     if (adminCalendarSection) adminCalendarSection.classList.add('hidden');
                     if (dashboardActions) dashboardActions.classList.remove('hidden');
                     if (profileWizard) profileWizard.classList.add('hidden');
                     if (cancelWizardBtn) cancelWizardBtn.classList.remove('hidden');
+                    
+                    loadDashboardPreview(false, user, data);
                 } else {
                     // Profile NOT completed and is client
                     if (calendarSection) calendarSection.classList.add('hidden');
@@ -451,6 +558,9 @@ async function loadUserProfile(user) {
                     if (dashboardActions) dashboardActions.classList.add('hidden');
                     if (profileWizard) profileWizard.classList.remove('hidden');
                     if (cancelWizardBtn) cancelWizardBtn.classList.add('hidden'); // Hide cancel if mandatory
+                    
+                    const previewSection = document.getElementById('dashboard-preview-section');
+                    if (previewSection) previewSection.classList.add('hidden');
                 }
 
                 // If profile is already completed, change button text
@@ -465,12 +575,48 @@ async function loadUserProfile(user) {
                 }
                 return data;
             } else {
-                console.log("No user document found. Showing wizard.");
+                console.log("No user document found. Checking if admin...");
+                const ADMIN_EMAIL_CHECK = "pt@pmorais.pt";
+                const userEmailLower = user.email ? user.email.toLowerCase().trim() : "";
+                
+                if (userEmailLower === ADMIN_EMAIL_CHECK.toLowerCase()) {
+                    // Admin with no Firestore doc yet — create it and show dashboard
+                    console.log("Admin with no doc - creating and showing dashboard");
+                    userWelcome.textContent = `Olá, Paulo!`;
+                    
+                    const dashboardActionsEl = document.getElementById('dashboard-main-actions');
+                    const profileWizardEl = document.getElementById('profile-wizard');
+                    if (dashboardActionsEl) dashboardActionsEl.classList.remove('hidden');
+                    if (profileWizardEl) profileWizardEl.classList.add('hidden');
+
+                    const btnShowProfiles = document.getElementById('btn-show-profiles');
+                    const btnShowForms = document.getElementById('btn-show-forms');
+                    if (btnShowProfiles) { btnShowProfiles.classList.remove('hidden'); btnShowProfiles.onclick = () => window.location.href = 'perfis.html'; }
+                    if (btnShowForms) { btnShowForms.classList.remove('hidden'); btnShowForms.onclick = () => window.location.href = 'formulario.html'; }
+                    
+                    // Create minimal admin doc
+                    try {
+                        await setDoc(doc(db, "users", user.uid), { name: "Paulo Morais", email: user.email, role: 'admin', profileCompleted: true, createdAt: new Date().toISOString() });
+                    } catch(e) { console.warn("Could not create admin doc", e); }
+                    
+                    // Robust admin dashboard preview for no-doc case
+                    try {
+                        await loadDashboardPreview(true, user, { role: 'admin', profileCompleted: true });
+                    } catch (previewError) {
+                        console.error("Error loading admin preview (no-doc):", previewError);
+                        const fallbackList = document.getElementById('preview-list');
+                        const fallbackSection = document.getElementById('dashboard-preview-section');
+                        if (fallbackSection) fallbackSection.classList.remove('hidden');
+                        if (fallbackList) fallbackList.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Erro ao carregar dados da agenda.</p>';
+                    }
+                    return { role: 'admin', profileCompleted: true };
+                }
+                
+                // Regular client with no doc — show profile wizard
                 userWelcome.textContent = `Olá, ${user.displayName || user.email}!`;
                 if (profName && user.displayName) profName.value = user.displayName;
                 if (profEmail) profEmail.value = user.email || "";
 
-                // FORCE visibility for new users without document yet
                 const calendarSection = document.getElementById('calendar-section');
                 const adminCalendarSection = document.getElementById('admin-calendar-section');
                 const dashboardActions = document.getElementById('dashboard-main-actions');
@@ -482,25 +628,21 @@ async function loadUserProfile(user) {
                 if (dashboardActions) dashboardActions.classList.add('hidden');
                 if (profileWizard) profileWizard.classList.remove('hidden');
                 if (cancelWizardBtn) cancelWizardBtn.classList.add('hidden');
-
-                // Fallback for Admin account if no document exists yet
-                const ADMIN_EMAIL = "pt@pmorais.pt";
-                if (user.email === ADMIN_EMAIL) {
-                    const btnShowProfiles = document.getElementById('btn-show-profiles');
-                    const btnShowForms = document.getElementById('btn-show-forms');
-                    if (btnShowProfiles) {
-                        btnShowProfiles.classList.remove('hidden');
-                        btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
-                    }
-                    if (btnShowForms) {
-                        btnShowForms.classList.remove('hidden');
-                        btnShowForms.onclick = () => window.location.href = 'formulario.html';
-                    }
-                }
                 return null;
             }
         } catch (error) {
             console.error("Error fetching user data:", error);
+            // Even on error, ensure admin preview stays visible if admin was detected
+            const userEmailFallback = user.email ? user.email.toLowerCase().trim() : "";
+            if (userEmailFallback === "pt@pmorais.pt") {
+                console.log("Firestore error but admin detected — keeping preview visible");
+                const fallbackSection = document.getElementById('dashboard-preview-section');
+                const fallbackActions = document.getElementById('dashboard-main-actions');
+                if (fallbackSection) fallbackSection.classList.remove('hidden');
+                if (fallbackActions) fallbackActions.classList.remove('hidden');
+                const fallbackList = document.getElementById('preview-list');
+                if (fallbackList) fallbackList.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Erro de conexão à base de dados. Tente recarregar.</p>';
+            }
             return null;
         }
     }
@@ -525,4 +667,375 @@ function translateError(code) {
         default:
             return 'Ocorreu um erro inesperado. Tente novamente.';
     }
+}
+
+// --- ADMIN WIZARD FIREBASE HOOKS --- //
+window.saveAdminWizardSchedule = async function(slotsMap, weekId) {
+    try {
+        const docRef = doc(db, "weekly_schedules", weekId);
+        
+        // Preserve existing bookings!
+        const existingSnap = await getDoc(docRef);
+        if (existingSnap.exists()) {
+            const existingData = existingSnap.data();
+            Object.keys(existingData.slots || {}).forEach(k => {
+                const existingSlot = existingData.slots[k];
+                // Preserve personal bookings
+                if (existingSlot.status === 'booked') {
+                    slotsMap[k] = existingSlot;
+                }
+                // Preserve group bookings that have users
+                if (existingSlot.serviceType === 'grupal' && existingSlot.bookedUsers && existingSlot.bookedUsers.length > 0) {
+                    slotsMap[k] = existingSlot;
+                }
+            });
+        }
+        
+        await setDoc(docRef, {
+            publishedDate: new Date().toISOString(),
+            publishedByAdmin: true,
+            slots: slotsMap
+        }, { merge: true });
+        
+        alert("Semana publicada com sucesso no sistema!");
+        window.location.reload();
+    } catch (e) {
+        console.error("Erro ao guardar na base de dados:", e);
+        alert("Erro ao publicar: " + e.message);
+    }
+};
+
+window.loadAdminWizardSchedule = async function(weekId, callback) {
+    try {
+        const docRef = doc(db, "weekly_schedules", weekId);
+        const snap = await getDoc(docRef);
+        if (snap.exists()) {
+            callback(snap.data().slots || {});
+        } else {
+            callback({});
+        }
+    } catch (e) {
+        console.error("Erro ao carregar dados:", e);
+        callback({});
+    }
+};
+
+window.submitWizardBooking = async function(payload, durationSlots) {
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("User not authenticated");
+        
+        // Fetch user profile name as priority fallback
+        let realName = payload.clientName || user.displayName;
+        if (!realName) {
+            try {
+                const userProfile = await getDoc(doc(db, "users", user.uid));
+                if (userProfile.exists()) {
+                    realName = userProfile.data().name;
+                }
+            } catch (e) {
+                console.warn("Could not fetch user profile name:", e);
+            }
+        }
+        if (!realName) realName = user.email; // Final fallback
+        
+        // Group selections by weekId
+        const weeks = {};
+        payload.selections.forEach(sel => {
+            const dateObj = new Date(sel.isoDate);
+            const dayOfWeek = dateObj.getDay();
+            dateObj.setDate(dateObj.getDate() - dayOfWeek);
+            const weekYear = dateObj.getFullYear();
+            const weekMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+            const weekDay = String(dateObj.getDate()).padStart(2, '0');
+            const weekId = `${weekYear}-${weekMonth}-${weekDay}`;
+            
+            if (!weeks[weekId]) weeks[weekId] = [];
+            weeks[weekId].push(sel);
+        });
+        
+        const historyToAdd = [];
+        
+        // Process each week
+        for (const weekId of Object.keys(weeks)) {
+            const docRef = doc(db, "weekly_schedules", weekId);
+            const snap = await getDoc(docRef);
+            let slots = snap.exists() ? (snap.data().slots || {}) : {};
+            
+            // Build nested slots object for proper Firestore structure
+            const slotsToMerge = {};
+            
+            for (const sel of weeks[weekId]) {
+                const baseTimeStr = sel.time;
+                const [hStr, mStr] = baseTimeStr.split(':');
+                let h = parseInt(hStr);
+                let m = parseInt(mStr);
+                
+                let groupFull = false;
+                
+                for (let i = 0; i < durationSlots; i++) {
+                    const timeStr = `${h.toString().padStart(2,'0')}:${m === 0 ? '00' : '30'}`;
+                    const slotId = `${sel.isoDate}T${timeStr}`;
+                    
+                    const existingSlot = slots[slotId] || {};
+                    
+                    // Check if user already has a booking in this slot (prevent double-booking)
+                    if (existingSlot.status === 'booked' && existingSlot.bookedBy === user.uid) {
+                        throw new Error(`Já tem uma reserva às ${timeStr} no dia ${sel.dateStr}. Não é possível reservar dois serviços na mesma hora.`);
+                    }
+                    
+                    if (payload.modality === 'tr_online') {
+                        // Online is group based
+                        const users = existingSlot.bookedUsers || [];
+                        if (users.length >= 10) {
+                            groupFull = true;
+                            break;
+                        }
+                        
+                        // Check if user is already in this group slot
+                        if (users.some(u => u.uid === user.uid)) {
+                            throw new Error(`Já está inscrito na aula online às ${timeStr} no dia ${sel.dateStr}.`);
+                        }
+                        
+                        // Add this user
+                        const newUsers = [...users];
+                        newUsers.push({ uid: user.uid, name: realName });
+                        
+                        slotsToMerge[slotId] = {
+                            status: 'booked',
+                            serviceType: 'grupal',
+                            bookedUsers: newUsers,
+                            bookedCount: newUsers.length
+                        };
+                    } else {
+                        // Personal or Osteopatia
+                        if (existingSlot.status === 'booked' || existingSlot.status === 'blocked') {
+                            throw new Error(`Slot de ${sel.dateStr} às ${timeStr} já não está disponível.`);
+                        }
+                        
+                        let sType = 'treino_personalizado';
+                        if (payload.category === 'osteopatia') sType = 'osteopatia';
+                        
+                        slotsToMerge[slotId] = {
+                            status: 'booked',
+                            serviceType: sType,
+                            bookedBy: user.uid,
+                            bookedName: realName
+                        };
+                    }
+                    
+                    // Increment 30 mins
+                    m += 30;
+                    if (m >= 60) {
+                        h += 1;
+                        m = 0;
+                    }
+                }
+                
+                if (groupFull) throw new Error(`A aula online de ${sel.dateStr} às ${sel.time} já está cheia.`);
+                
+                // Add to history list
+                let sType = payload.category === 'osteopatia' ? 'osteopatia' : 'treino';
+                if (payload.modality === 'tr_online') sType = 'grupal';
+                
+                historyToAdd.push({
+                    id: `bk_${Date.now()}_${Math.floor(Math.random()*10000)}`,
+                    date: sel.isoDate,
+                    time: sel.time,
+                    serviceType: sType,
+                    serviceName: payload.serviceName,
+                    bookedName: realName,
+                    status: 'booked',
+                    createdAt: new Date().toISOString()
+                });
+            }
+            
+            // Save week updates using proper nested structure
+            if (Object.keys(slotsToMerge).length > 0) {
+                await setDoc(docRef, { slots: slotsToMerge }, { merge: true });
+            }
+        }
+        
+        // Save to user booking history in weekly_schedules collection
+        const bookingDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
+        const bookingSnap = await getDoc(bookingDocRef);
+        const existingBookings = bookingSnap.exists() ? (bookingSnap.data().bookings || []) : [];
+        
+        historyToAdd.forEach(h => existingBookings.push(h));
+        
+        await setDoc(bookingDocRef, {
+            uid: user.uid,
+            name: realName,
+            email: user.email,
+            bookings: existingBookings
+        }, { merge: true });
+        
+        return true;
+    } catch (e) {
+        console.error("Booking error:", e);
+        throw e;
+    }
+};
+
+async function loadDashboardPreview(isAdmin, user, data) {
+    console.log("--- DASHBOARD PREVIEW START ---");
+    console.log("isAdmin parameter:", isAdmin);
+    console.log("User email:", user.email);
+    console.log("Firestore Data:", data);
+    const listEl = document.getElementById('preview-list');
+    const titleEl = document.getElementById('preview-title');
+    const previewSection = document.getElementById('dashboard-preview-section');
+    const userDashboard = document.getElementById('user-dashboard');
+    
+    if (!listEl || !previewSection) {
+        console.error("Critical dashboard elements missing");
+        return;
+    }
+    
+    // Ensure dashboard is visible
+    if (userDashboard) userDashboard.classList.remove('hidden');
+    previewSection.classList.remove('hidden');
+    listEl.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">A carregar dados...</p>';
+    
+    if (!isAdmin) {
+        if (titleEl) {
+            titleEl.textContent = "As Suas Próximas Sessões";
+            titleEl.className = "preview-title";
+        }
+        
+        // Read bookings from weekly_schedules/user_{uid}
+        let userBookings = [];
+        try {
+            const bookingDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
+            const bookingSnap = await getDoc(bookingDocRef);
+            if (bookingSnap.exists()) {
+                userBookings = bookingSnap.data().bookings || [];
+            }
+        } catch (e) {
+            console.warn("Could not load user bookings from weekly_schedules:", e);
+        }
+        
+        const now = new Date();
+        now.setHours(0,0,0,0);
+        
+        const upcoming = userBookings.filter(h => {
+            if (!h.date) return false;
+            const bDate = new Date(h.date);
+            return bDate >= now && h.status === 'booked';
+        }).sort((a,b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
+        
+        if (upcoming.length === 0) {
+            listEl.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Sem sessões agendadas para breve.</p>';
+            return;
+        }
+        
+        listEl.innerHTML = '';
+        upcoming.forEach(b => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            
+            let sName = 'Treino';
+            let sClass = 'badge-treino';
+            if (b.serviceType === 'grupal' || b.serviceType === 'treino_grupo') { sName = 'Online'; sClass = 'badge-grupal'; }
+            if (b.serviceType === 'osteopatia') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
+            if (b.serviceType === 'treino_online' || b.serviceType === 'online') { sName = 'Online'; sClass = 'badge-online'; }
+            
+            item.innerHTML = `
+                <div class="preview-item-info">
+                    <strong>${b.date}</strong>
+                    <span>às ${b.time}</span>
+                </div>
+                <div class="preview-badge ${sClass}">
+                    ${sName}
+                </div>
+            `;
+            listEl.appendChild(item);
+        });
+        
+    } else {
+        // ------ ADMIN BRANCH — Read from all user booking docs ------
+        if (titleEl) {
+            titleEl.innerHTML = '<i data-lucide="calendar-days" style="width:18px;height:18px;"></i><span>Próximos Clientes</span>';
+            titleEl.style.display = 'flex';
+            titleEl.style.alignItems = 'center';
+            titleEl.style.gap = '8px';
+        }
+
+        const now = new Date();
+        now.setHours(0, 0, 0, 0);
+
+        try {
+            // Read ALL documents from weekly_schedules collection
+            const allDocs = await getDocs(collection(db, "weekly_schedules"));
+            const upcomingAdmin = [];
+
+            allDocs.forEach(docSnap => {
+                // Only process user booking documents (ID starts with "user_")
+                if (!docSnap.id.startsWith('user_')) return;
+                
+                const data = docSnap.data();
+                const bookings = data.bookings || [];
+                
+                bookings.forEach(b => {
+                    if (!b.date || b.status !== 'booked') return;
+                    const bDate = new Date(b.date);
+                    if (bDate < now) return; // Skip past bookings
+                    
+                    upcomingAdmin.push({
+                        name: b.bookedName || data.name || data.email || 'Cliente',
+                        date: b.date,
+                        time: b.time || '---',
+                        type: b.serviceType
+                    });
+                });
+            });
+
+            // Sort by date and time
+            upcomingAdmin.sort((a, b) => {
+                const dtA = new Date(`${a.date}T${a.time || '00:00'}`);
+                const dtB = new Date(`${b.date}T${b.time || '00:00'}`);
+                return dtA - dtB;
+            });
+
+            if (upcomingAdmin.length === 0) {
+                listEl.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Sem clientes agendados para breve.</p>';
+            } else {
+                listEl.innerHTML = '';
+                upcomingAdmin.forEach(b => {
+                    const item = document.createElement('div');
+                    item.className = 'preview-item';
+                    
+                    let sName = 'Treino';
+                    let sClass = 'badge-treino';
+                    if (b.type === 'grupal') { sName = 'Online'; sClass = 'badge-grupal'; }
+                    if (b.type === 'osteopatia') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
+
+                    // Format date for display (YYYY-MM-DD → DD/MM)
+                    let dateDisplay = b.date;
+                    if (b.date && b.date.includes('-')) {
+                        const [, mm, dd] = b.date.split('-');
+                        dateDisplay = `${dd}/${mm}`;
+                    }
+
+                    item.innerHTML = `
+                        <div class="preview-item-info">
+                            <div style="display:flex; flex-direction:column;">
+                                <strong style="color:var(--color-primary);">${b.name}</strong>
+                                <span style="font-size:0.8rem; color:var(--color-text-dim);">${dateDisplay} às ${b.time}</span>
+                            </div>
+                        </div>
+                        <div class="preview-badge ${sClass}">
+                            ${sName}
+                        </div>
+                    `;
+                    listEl.appendChild(item);
+                });
+            }
+        } catch (e) {
+            console.error("Error loading admin list:", e);
+            listEl.innerHTML = `<p style="color:#c00; text-align:center; padding:20px;">Erro ao carregar lista.</p>`;
+        }
+    }
+    
+    if (window.lucide) window.lucide.createIcons();
 }

@@ -146,103 +146,194 @@
             <!-- Dashboard (Hidden by default) -->
             <div id="user-dashboard" class="user-dashboard hidden fade-in">
                 <h2 id="user-welcome">Olá!</h2>
-                <div id="dashboard-main-actions" class="dashboard-actions">
+                
+                <!-- Dashboard Preview (Upcoming Bookings / Agenda) -->
+                <div id="dashboard-preview-section" class="dashboard-preview fade-in hidden" style="margin-top: 25px; border-radius: 20px; padding: 25px;">
+                    <h3 id="preview-title" style="margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px;">
+                        <i data-lucide="layout-dashboard" style="width: 20px;"></i>
+                        <span>Resumo da Agenda</span>
+                    </h3>
+                    <div id="preview-list" class="preview-list">
+                        <p class="color-text-dim text-center" style="padding: 10px; margin: 0;">A carregar dados...</p>
+                    </div>
+                </div>
+
+                <div id="dashboard-main-actions" class="dashboard-actions" style="margin-top: 30px;">
                     <button id="btn-show-wizard" class="btn btn-primary"><i data-lucide="user-cog"></i> <span class="btn-text">Editar Perfil</span></button>
                     <a href="historico.html" class="btn btn-outline" style="text-decoration: none;"><i data-lucide="calendar"></i> <span class="btn-text">Histórico</span></a>
+                    <button id="btn-start-booking" class="btn btn-primary"><i data-lucide="calendar-plus"></i> <span class="btn-text">Nova Marcação</span></button>
                     <button id="btn-show-profiles" class="btn btn-admin-premium hidden"><i data-lucide="users"></i> <span class="btn-text">Perfis</span></button>
                     <button id="btn-show-forms" class="btn btn-admin-premium hidden"><i data-lucide="file-text"></i> <span class="btn-text">Formulários</span></button>
                     <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out"></i> <span class="btn-text">Terminar Sessão</span></button>
                 </div>
 
-                <!-- Client Calendar Booking Section -->
-                <div id="calendar-section" class="calendar-section border-top-fade hidden">
-                    <div class="calendar-header">
-                        <h3 class="premium-title">O TEU HORÁRIO</h3>
-                        <div class="week-navigation">
-                            <button class="nav-btn" disabled><i data-lucide="chevron-left"></i></button>
-                            <span class="current-week">19 Fev - 25 Fev</span>
-                            <button class="nav-btn"><i data-lucide="chevron-right"></i></button>
+                <!-- Client Booking Wizard Section -->
+                <div id="booking-wizard-section" class="calendar-section border-top-fade hidden">
+                    <div class="booking-container">
+                        <div class="breadcrumbs" id="booking-breadcrumbs">
+                            <!-- Injected via JS -->
                         </div>
-                    </div>
 
-                    <div class="calendar-legend">
-                        <span class="legend-item">
-                            <div class="legend-box available"></div> Indisponível
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box treino"></div> Treino Personalizado
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box grupal"></div> Em Grupo
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box osteo"></div> Osteopatia
-                        </span>
-                    </div>
-
-                    <div class="weekly-grid-scroll-wrapper">
-                        <div class="weekly-grid" id="client-weekly-grid">
-                            <!-- JS will dynamically inject the columns and time slots here -->
+                        <!-- Step 1: Category -->
+                        <div id="step-1" class="booking-step active">
+                            <h2 class="step-title">Que tipo de serviço procura hoje?</h2>
+                            <div class="options-grid">
+                                <div class="option-card" data-category="osteopatia" onclick="selectCategory('osteopatia')">
+                                    <div class="option-icon"><i data-lucide="activity"></i></div>
+                                    <h3 class="option-title">Osteopatia</h3>
+                                    <p class="color-text-dim">Tratamento clínico e reabilitação física.</p>
+                                </div>
+                                <div class="option-card" data-category="treino" onclick="selectCategory('treino')">
+                                    <div class="option-icon"><i data-lucide="dumbbell"></i></div>
+                                    <h3 class="option-title">Treino</h3>
+                                    <p class="color-text-dim">Condicionamento, força e saúde preventiva.</p>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-
-
-                    <!-- Multi-Booking Summary (Client) -->
-                    <div id="booking-summary-container" class="booking-summary-container hidden fade-in">
-                        <h4 class="summary-title">Resumo da Reserva</h4>
-                        <div id="booking-summary-list" class="summary-list">
-                            <!-- JS will inject items here -->
+                        <!-- Step 2: Modality -->
+                        <div id="step-2" class="booking-step">
+                            <h2 class="step-title">Como prefere receber este serviço?</h2>
+                            <div class="options-grid" id="modalities-grid">
+                                <!-- Injected via JS based on Category -->
+                            </div>
+                            <div class="controls">
+                                <button class="btn btn-outline" onclick="goToStep(1)">Voltar</button>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="calendar-footer">
-                        <button id="btn-confirm-booking" class="btn btn-primary btn-action-main" disabled>Confirmar Reserva</button>
+                        <!-- Step 3: Calendar -->
+                        <div id="step-3" class="booking-step">
+                            <h2 class="step-title">Selecione a Data e Hora</h2>
+                            
+                            <div class="calendar-wrapper">
+                                <div class="calendar-header">
+                                    <button class="btn btn-outline" style="padding:5px 15px;" onclick="changeMonth(-1)">&lt;</button>
+                                    <h3 id="calendar-month-year">Novembro 2026</h3>
+                                    <button class="btn btn-outline" style="padding:5px 15px;" onclick="changeMonth(1)">&gt;</button>
+                                </div>
+                                <div class="calendar-grid" id="calendar-days">
+                                    <div class="day-name">Dom</div><div class="day-name">Seg</div><div class="day-name">Ter</div>
+                                    <div class="day-name">Qua</div><div class="day-name">Qui</div><div class="day-name">Sex</div><div class="day-name">Sáb</div>
+                                    <!-- Days injected via JS -->
+                                </div>
+                                
+                                <div id="time-slots-container" style="display:none;">
+                                    <h4 style="margin-top:20px; text-align:center;">Horários Disponíveis</h4>
+                                    <div class="time-slots" id="time-slots">
+                                        <!-- Slots injected via JS -->
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="controls">
+                                <button class="btn btn-outline" onclick="goToStep(2)">Voltar</button>
+                                <button class="btn btn-primary" id="btn-continue-form" disabled onclick="goToStep(4)">Continuar</button>
+                            </div>
+                        </div>
+
+                        <!-- Step 4: Checkout / User Data -->
+                        <div id="step-4" class="booking-step">
+                            <h2 class="step-title">Confirme a Reserva</h2>
+                            
+                            <div class="cart-summary" id="cart-summary">
+                                <!-- Details injected via JS -->
+                            </div>
+
+                            <form id="booking-form" onsubmit="submitBooking(event)">
+                                <div class="form-group">
+                                    <label>Notas adicionais (Opcional)</label>
+                                    <textarea class="form-control" id="b_notes" rows="3" placeholder="Alguma observação para esta sessão?"></textarea>
+                                </div>
+                                
+                                <div class="controls">
+                                    <button type="button" class="btn btn-outline" onclick="goToStep(3)">Voltar</button>
+                                    <button type="submit" class="btn btn-primary">Confirmar Marcação</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                        <!-- Step 5: Success -->
+                        <div id="step-5" class="booking-step text-center">
+                            <div style="color: var(--color-primary); margin-bottom: 20px;">
+                                <i data-lucide="check-circle" style="width: 80px; height: 80px; margin:0 auto;"></i>
+                            </div>
+                            <h2 class="step-title">Marcação Confirmada!</h2>
+                            <p>Adicionámos esta sessão ao teu Histórico.</p>
+                            <div style="margin-top:40px;">
+                                <button onclick="closeBookingWizard()" class="btn btn-outline">Voltar ao Lobby</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
-                <!-- Admin Calendar Section (Static Preview) -->
-                <div id="admin-calendar-section" class="calendar-section admin-mode border-top-fade mt-5 hidden">
-                    <div class="calendar-header">
-                        <h3 class="premium-title">GESTÃO DE DISPONIBILIDADE (ADMIN)</h3>
-                        <div class="week-navigation">
-                            <span class="current-week" style="margin: 0;">19 Fev - 25 Fev</span>
+                <!-- Admin Global Agenda Section -->
+                <div id="global-agenda-section" class="calendar-section admin-mode border-top-fade hidden">
+                    <div class="booking-container" style="max-width: 1000px;">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="step-title" style="margin: 0;">Agenda Global</h2>
+                            <button onclick="window.closeGlobalAgenda()" class="btn btn-outline" style="padding: 5px 15px;">
+                                <i data-lucide="arrow-left"></i> Voltar ao Lobby
+                            </button>
+                        </div>
+                        <div class="calendar-wrapper">
+                            <div class="calendar-header">
+                                <button class="btn btn-outline" style="padding:5px 15px;" onclick="window.changeGlobalWeek(-1)">&lt;</button>
+                                <h3 class="current-week"></h3>
+                                <button class="btn btn-outline" style="padding:5px 15px;" onclick="window.changeGlobalWeek(1)">&gt;</button>
+                            </div>
+                            <div class="calendar-legend" id="admin-user-legend">
+                                <!-- Users list populated via JS -->
+                            </div>
+                            <div class="calendar-grid" id="admin-weekly-grid">
+                                <!-- Admin grid injected via JS -->
+                            </div>
                         </div>
                     </div>
-                    <div class="calendar-legend mb-3">
-                        <span class="legend-item">
-                            <div class="legend-box treino"></div> Treino Personalizado (Um clique)
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box grupal"></div> Em Grupo (Dois cliques)
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box osteo"></div> Osteopatia (Três cliques)
-                        </span>
-                        <span class="legend-item">
-                            <div class="legend-box available"></div> Indisponível (Quatro cliques)
-                        </span>
-                    </div>
+                </div>
 
-
-                    <div class="weekly-grid-scroll-wrapper">
-                        <div class="weekly-grid" id="admin-weekly-grid">
-                            <!-- JS will dynamically inject the columns and time slots here (Admin Mode) -->
+                <!-- Admin Calendar Section (Intuitive Publisher) -->
+                <div id="admin-calendar-section" class="calendar-section admin-mode border-top-fade hidden">
+                    <div class="booking-container">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                            <h2 class="step-title" style="margin: 0;">Gestão da Agenda</h2>
+                            <button onclick="window.closeBookingWizard()" class="btn btn-outline" style="padding: 5px 15px;">
+                                <i data-lucide="arrow-left"></i> Voltar ao Lobby
+                            </button>
                         </div>
-                    </div>
+                        <p class="text-center color-text-dim" style="margin-bottom: 30px;">
+                            Clique nos dias e horas que deseja <strong>BLOQUEAR</strong> (marcar como indisponíveis). A agenda é gerada por defeito.
+                        </p>
 
-                    <!-- Admin User Legend -->
-                    <div id="admin-user-legend" class="admin-user-legend hidden">
-                        <!-- JS will inject user legend items here -->
-                    </div>
+                        <!-- Step 2: The Calendar Grid -->
+                        <div id="admin-calendar-grid-wrapper" style="transition: all 0.3s;">
+                            <div class="calendar-wrapper">
+                                <div class="calendar-header">
+                                    <button class="btn btn-outline" style="padding:5px 15px;" onclick="window.changeAdminWeek(-1)">&lt;</button>
+                                    <h3 id="admin-week-label">1 Nov - 7 Nov 2026</h3>
+                                    <button class="btn btn-outline" style="padding:5px 15px;" onclick="window.changeAdminWeek(1)">&gt;</button>
+                                </div>
+                                <div class="calendar-grid" id="admin-calendar-days">
+                                    <!-- Injected via JS -->
+                                </div>
+                                
+                                <div id="admin-time-slots-container" style="display:none;">
+                                    <h4 style="margin-top:20px; text-align:center;">Selecione as Horas para Bloquear em <span id="admin-selected-day-label"></span></h4>
+                                    <div class="time-slots" id="admin-time-slots">
+                                        <!-- Slots injected via JS -->
+                                    </div>
+                                </div>
+                            </div>
 
-                    <div class="admin-footer">
-                        <button id="btn-publish-week" class="btn btn-primary-black btn-action-admin">
-                            <i data-lucide="send"></i> Publicar Semana
-                        </button>
-                        <button id="btn-clear-availability" class="btn btn-outline btn-action-admin">
-                            <i data-lucide="trash-2"></i> Limpar Horários
-                        </button>
+                            <div class="controls" style="justify-content: center; gap: 15px; flex-wrap: wrap;">
+                                <button class="btn btn-outline" onclick="window.clearAdminWeek()">
+                                    <i data-lucide="trash-2"></i> Limpar Bloqueios
+                                </button>
+                                <button id="btn-publish-week" class="btn btn-primary" onclick="window.publishAdminWeek()">
+                                    <i data-lucide="send"></i> Publicar Agenda da Semana
+                                </button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -336,7 +427,7 @@
     <!-- Group Booking Popup (Admin) -->
     <div id="group-booking-popup" class="group-booking-popup">
         <div class="group-booking-card">
-            <h4 id="popup-title">Treino Grupal</h4>
+            <h4 id="popup-title">Treino Online</h4>
             <p class="popup-subtitle" id="popup-subtitle"></p>
             <div class="user-list" id="popup-user-list"></div>
             <button class="close-popup-btn" id="popup-close-btn">Fechar</button>
@@ -395,6 +486,7 @@
     </footer>
 
     <!-- Scripts -->
+    <script src="js/agendamento.js"></script>
     <script type="module" src="js/auth.js"></script>
     <script src="js/script.js"></script>
 </body>
