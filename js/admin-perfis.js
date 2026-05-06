@@ -66,12 +66,14 @@ async function loadProfiles() {
         }
 
         clients.forEach(userData => {
+            const isDeact = userData.isDeactivated ? '<span style="display:inline-block; margin-top:8px; font-size:0.7rem; background:var(--color-danger, #ef4444); color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">Conta Desativada</span>' : '';
             const card = document.createElement('div');
             card.className = 'user-card';
             card.innerHTML = `
                 <div>
                     <h4>${userData.name || "Sem Nome"}</h4>
                     <p>${userData.email}</p>
+                    ${isDeact}
                 </div>
                 <div class="card-footer-link">
                     VER FICHA COMPLETA <i data-lucide="external-link" style="width: 14px;"></i>
@@ -100,7 +102,7 @@ async function loadProfiles() {
 }
 
 async function showUserDetails(data) {
-    modalName.textContent = data.name || "Sem Nome";
+    modalName.innerHTML = (data.name || "Sem Nome") + (data.isDeactivated ? ' <span style="font-size:0.8rem; background:var(--color-danger, #ef4444); color:#fff; padding:3px 8px; border-radius:4px; vertical-align:middle; margin-left:10px;">CONTA DESATIVADA PELO UTILIZADOR</span>' : '');
     modalContainer.innerHTML = "";
 
     const details = [
@@ -158,8 +160,8 @@ async function showUserDetails(data) {
                         ${sortedHistory.map(item => `
                             <div class="history-item">
                                 <div class="history-main-info">
-                                    <span class="history-tag ${item.serviceType === 'osteopatia.html' ? 'tag-osteo' : 'tag-treino'}">
-                                        ${item.serviceType === 'osteopatia.html' ? 'Osteopatia' : 'Treino'}
+                                    <span class="history-tag ${item.serviceType === 'osteopatia' ? 'tag-osteo' : 'tag-treino'}">
+                                        ${item.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino'}
                                     </span>
                                 </div>
                                 

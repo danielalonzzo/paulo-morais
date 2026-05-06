@@ -68,7 +68,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Monitor Auth State
     onAuthStateChanged(auth, async (user) => {
+        if (window.isReactivating) return;
         if (user) {
+            try {
+                const checkSnap = await getDoc(doc(db, "users", user.uid));
+                if (checkSnap.exists() && checkSnap.data().isDeactivated) {
+                    await signOut(auth);
+                    alert("A sua conta está desativada. Para reativá-la, por favor faça um novo registo com os mesmos dados.");
+                    return;
+                }
+            } catch(e) {
+                console.warn("Could not check deactivated status", e);
+            }
+
             // User is signed in
             console.log('User signed in:', user.email);
             authCard.classList.add('hidden');
@@ -213,13 +225,38 @@ document.addEventListener('DOMContentLoaded', () => {
                     email: email,
                     role: "client",
                     profileCompleted: false,
+                    isDeactivated: false,
                     createdAt: new Date().toISOString()
                 });
 
                 console.log("User registered and data saved");
             } catch (error) {
-                console.error("Registration error:", error);
-                alert("Erro ao registar: " + translateError(error.code));
+                if (error.code === 'auth/email-already-in-use') {
+                    try {
+                        window.isReactivating = true;
+                        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                        const checkUser = userCredential.user;
+                        const docRef = doc(db, "users", checkUser.uid);
+                        const docSnap = await getDoc(docRef);
+                        
+                        if (docSnap.exists() && docSnap.data().isDeactivated) {
+                            await updateDoc(docRef, { isDeactivated: false });
+                            alert("A sua conta foi reativada com sucesso! Bem-vindo de volta.");
+                            window.location.reload();
+                            return;
+                        } else {
+                            await signOut(auth);
+                            window.isReactivating = false;
+                            alert("Este email já está registado e a conta está ativa. Por favor, inicie sessão no separador 'Iniciar Sessão'.");
+                        }
+                    } catch (loginErr) {
+                        window.isReactivating = false;
+                        alert("Este email já está registado. Se for o seu, inicie sessão ou recupere a palavra-passe.");
+                    }
+                } else {
+                    console.error("Registration error:", error);
+                    alert("Erro ao registar: " + translateError(error.code));
+                }
                 const registerBtn = document.getElementById('btn-register');
                 if (registerBtn) {
                     registerBtn.disabled = false;
@@ -241,11 +278,15 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             try {
-                await sendPasswordResetEmail(auth, email);
+                const actionCodeSettings = {
+                    url: 'https://pmorais.pt/auth-action',
+                    handleCodeInApp: false
+                };
+                await sendPasswordResetEmail(auth, email, actionCodeSettings);
                 alert("Email de recuperação enviado! Verifique a sua caixa de entrada.");
             } catch (error) {
                 console.error("Reset password error:", error);
-                alert("Erro al enviar email: " + translateError(error.code));
+                alert("Erro ao enviar email: " + translateError(error.code));
             }
         });
     }
@@ -287,6 +328,29 @@ document.addEventListener('DOMContentLoaded', () => {
             profileWizard.classList.add('hidden');
             dashboardActions.classList.remove('hidden');
             window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+    }
+
+    const btnDeactivateAccount = document.getElementById('btn-deactivate-account');
+    if (btnDeactivateAccount) {
+        btnDeactivateAccount.addEventListener('click', async () => {
+            const confirmDeactivation = confirm("Tem a certeza que deseja desativar a sua conta? Não poderá iniciar sessão novamente até realizar um novo registo.");
+            if (confirmDeactivation) {
+                const user = auth.currentUser;
+                if (user) {
+                    try {
+                        await updateDoc(doc(db, "users", user.uid), {
+                            isDeactivated: true
+                        });
+                        alert("Conta desativada com sucesso.");
+                        await signOut(auth);
+                        window.location.reload();
+                    } catch (error) {
+                        console.error("Erro ao desativar conta:", error);
+                        alert("Ocorreu um erro ao desativar a sua conta.");
+                    }
+                }
+            }
         });
     }
 
@@ -842,7 +906,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                         }
                         
                         let sType = 'treino_personalizado';
-                        if (payload.category === 'osteopatia.html') sType = 'osteopatia.html';
+                        if (payload.category === 'osteopatia') sType = 'osteopatia';
                         
                         slotsToMerge[slotId] = {
                             status: 'booked',
@@ -864,7 +928,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                 if (groupFull) throw new Error(`A aula online de ${sel.dateStr} às ${sel.time} já está cheia.`);
                 
                 // Add to history list
-                let sType = payload.category === 'osteopatia.html' ? 'osteopatia.html' : 'treino';
+                let sType = payload.category === 'osteopatia' ? 'osteopatia' : 'treino';
                 if (payload.modality === 'tr_online') sType = 'grupal';
                 
                 historyToAdd.push({
@@ -916,7 +980,7 @@ window.cancelClientBooking = async function(bookingId, isoDate, startTime, servi
 
         // 1. Calculate duration slots
         let durationSlots = 1;
-        if (serviceType === 'osteopatia.html') durationSlots = 2;
+        if (serviceType === 'osteopatia') durationSlots = 2;
         if (serviceType === 'grupal' || serviceType === 'treino_grupo' || serviceType === 'treino_online' || serviceType === 'online') durationSlots = 2;
         if (serviceType === 'treino') durationSlots = 2; // All treinos are now 60 min
 
@@ -1073,7 +1137,7 @@ async function loadDashboardPreview(isAdmin, user, data) {
             let sName = 'Treino';
             let sClass = 'badge-treino';
             if (b.serviceType === 'grupal' || b.serviceType === 'treino_grupo') { sName = 'Online'; sClass = 'badge-grupal'; }
-            if (b.serviceType === 'osteopatia.html') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
+            if (b.serviceType === 'osteopatia') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
             if (b.serviceType === 'treino_online' || b.serviceType === 'online') { sName = 'Online'; sClass = 'badge-online'; }
             
             item.innerHTML = `
@@ -1147,7 +1211,7 @@ async function loadDashboardPreview(isAdmin, user, data) {
                     let sName = 'Treino';
                     let sClass = 'badge-treino';
                     if (b.type === 'grupal') { sName = 'Online'; sClass = 'badge-grupal'; }
-                    if (b.type === 'osteopatia.html') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
+                    if (b.type === 'osteopatia') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
 
                     // Format date for display (YYYY-MM-DD → DD/MM)
                     let dateDisplay = b.date;

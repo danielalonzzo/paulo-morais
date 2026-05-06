@@ -4540,6 +4540,7 @@ body.loaded #preloader {
     margin-top: 60px;
     position: relative;
     overflow: hidden;
+    max-width: 100%; /* Prevent Android overflow */
 }
 
 .calendar-section.admin-mode {
@@ -5918,6 +5919,7 @@ body.loaded #preloader {
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(230, 174, 23, 0.2);
     position: relative;
+    overflow-x: hidden; /* Prevent Android horizontal bleed */
 }
 .booking-step {
     display: none;
@@ -5987,6 +5989,8 @@ body.loaded #preloader {
     grid-template-columns: repeat(7, 1fr);
     gap: 10px;
     text-align: center;
+    overflow: hidden; /* Prevent horizontal bleed on Android */
+    max-width: 100%;
 }
 .day-name {
     font-weight: bold;
@@ -6002,6 +6006,8 @@ body.loaded #preloader {
     cursor: pointer;
     transition: all 0.2s;
     background: rgba(255, 255, 255, 0.05);
+    min-width: 0; /* Prevent grid blowout on Android */
+    overflow: hidden;
 }
 .calendar-day.disabled {
     opacity: 0.3;
@@ -6090,6 +6096,183 @@ body.loaded #preloader {
     display: flex;
     justify-content: space-between;
     margin-top: 40px;
+}
+
+/* ========================================= */
+/* BOOKING WIZARD MOBILE RESPONSIVE          */
+/* Fixes Android rendering inconsistencies   */
+/* ========================================= */
+@media (max-width: 768px) {
+    .booking-container {
+        padding: 15px;
+        margin: 20px auto;
+        border-radius: 16px;
+    }
+
+    .step-title {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+    }
+
+    .calendar-wrapper {
+        padding: 15px;
+        border-radius: 14px;
+        overflow: hidden; /* Prevent horizontal bleed on Android */
+    }
+
+    .calendar-header {
+        margin-bottom: 15px;
+        gap: 5px;
+    }
+
+    .calendar-header h3 {
+        font-size: 1rem;
+        min-width: 0; /* Allow text to shrink on narrow screens */
+        text-align: center;
+    }
+
+    .calendar-grid {
+        gap: 6px;
+    }
+
+    .day-name {
+        font-size: 0.75rem;
+        padding-bottom: 6px;
+    }
+
+    .calendar-day {
+        font-size: 0.85rem;
+        min-width: 0; /* Prevent grid blowout on Android */
+    }
+
+    .time-slots {
+        grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+        gap: 10px;
+        margin-top: 20px;
+        padding-top: 20px;
+    }
+
+    .time-slot {
+        padding: 10px 6px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+    }
+
+    .options-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .option-card {
+        padding: 30px 15px;
+    }
+
+    .option-title {
+        font-size: 1.2rem;
+    }
+
+    .controls {
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 25px;
+    }
+
+    .controls .btn {
+        flex: 1;
+        min-width: 120px;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .cart-summary {
+        padding: 15px;
+    }
+
+    .breadcrumbs {
+        font-size: 0.8rem;
+        gap: 6px;
+        margin-bottom: 20px;
+        flex-wrap: wrap;
+    }
+
+    /* Admin Agenda responsive */
+    #admin-calendar-section .booking-container,
+    #global-agenda-section .booking-container {
+        padding: 12px;
+    }
+
+    #admin-calendar-section .step-title,
+    #global-agenda-section .step-title {
+        font-size: 1.2rem;
+    }
+
+    #admin-calendar-section > .booking-container > div:first-child,
+    #global-agenda-section > .booking-container > div:first-child {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+
+    #admin-time-slots-container h4,
+    #time-slots-container h4 {
+        font-size: 0.95rem;
+    }
+}
+
+@media (max-width: 400px) {
+    .booking-container {
+        padding: 10px;
+        margin: 10px auto;
+    }
+
+    .calendar-wrapper {
+        padding: 10px;
+    }
+
+    .calendar-grid {
+        gap: 4px;
+    }
+
+    .calendar-day {
+        font-size: 0.78rem;
+    }
+
+    .day-name {
+        font-size: 0.65rem;
+    }
+
+    .time-slots {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+    }
+
+    .time-slot {
+        padding: 8px 4px;
+        font-size: 0.8rem;
+    }
+
+    .step-title {
+        font-size: 1.15rem;
+    }
+
+    .option-card {
+        padding: 20px 12px;
+    }
+
+    .option-title {
+        font-size: 1.1rem;
+    }
+
+    .option-icon svg {
+        width: 36px;
+        height: 36px;
+    }
+
+    .controls .btn {
+        font-size: 0.85rem;
+        padding: 10px 15px;
+    }
 }
 
 /* Help Icon Trigger */

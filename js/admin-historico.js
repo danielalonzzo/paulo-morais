@@ -76,8 +76,8 @@ onAuthStateChanged(auth, async (user) => {
                 historyContent.innerHTML = historyToDisplay.map(item => `
                     <div class="history-item">
                         <div class="history-main-info">
-                            <span class="history-tag ${item.serviceType === 'osteopatia.html' ? 'tag-osteo' : 'tag-treino'}">
-                                ${item.serviceType === 'osteopatia.html' ? 'Osteopatia' : 'Treino'}
+                            <span class="history-tag ${item.serviceType === 'osteopatia' ? 'tag-osteo' : 'tag-treino'}">
+                                ${item.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino'}
                             </span>
                             ${isAdmin ? `
                                 <div class="history-user-info">

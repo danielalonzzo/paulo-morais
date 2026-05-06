@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paulo Morais — Recuperação de Conta</title>
+    <meta name="description" content="Recuperação de palavra-passe e verificação de conta — Paulo Morais, Osteopata & Especialista em Treino Personalizado">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="/images/logo/logo_f_amarelo.png">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --color-bg: #0B0B0B;
+            --color-surface: #151515;
+            --color-surface-elevated: #1a1a1a;
+            --color-primary: #E6AE17;
+            --color-primary-hover: #d5a015;
+            --color-text: #ffffff;
+            --color-text-dim: #999999;
+            --color-border: #2a2a2a;
+            --color-success: #22c55e;
+            --color-error: #ef4444;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-text);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        /* Subtle background glow */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(230, 174, 23, 0.06) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .auth-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 460px;
+        }
+
+        /* Logo Section */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 36px;
+        }
+
+        .logo-section img {
+            width: 120px;
+            height: auto;
+            border-radius: 18px;
+            margin: 0 auto 20px;
+            display: block;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+        }
+
+        .logo-section .brand-name {
+            font-size: 1.1rem;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: var(--color-text);
+        }
+
+        .logo-section .brand-sub {
+            font-size: 0.75rem;
+            color: var(--color-primary);
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+        }
+
+        /* Main Card */
+        .auth-card {
+            background: var(--color-surface);
+            border: 1px solid var(--color-border);
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .gold-accent-line {
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+        }
+
+        .auth-card-body {
+            padding: 40px 36px;
+        }
+
+        .auth-card-body h1 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+
+        .auth-card-body .subtitle {
+            font-size: 0.9rem;
+            color: var(--color-text-dim);
+            margin-bottom: 28px;
+            line-height: 1.5;
+        }
+
+        /* Form Elements */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--color-text-dim);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 16px;
+            background: var(--color-surface-elevated);
+            border: 1px solid var(--color-border);
+            border-radius: 10px;
+            color: var(--color-text);
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-group input:focus {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 3px rgba(230, 174, 23, 0.15);
+        }
+
+        .form-group input::placeholder {
+            color: #555;
+        }
+
+        .password-requirements {
+            font-size: 0.75rem;
+            color: var(--color-text-dim);
+            margin-top: 8px;
+        }
+
+        /* Buttons */
+        .btn-action {
+            width: 100%;
+            padding: 15px 24px;
+            background: var(--color-primary);
+            color: #000;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-top: 8px;
+        }
+
+        .btn-action:hover {
+            background: var(--color-primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(230, 174, 23, 0.35);
+        }
+
+        .btn-action:active {
+            transform: translateY(0);
+        }
+
+        .btn-action:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-secondary {
+            display: inline-block;
+            width: 100%;
+            padding: 14px 24px;
+            background: transparent;
+            color: var(--color-primary);
+            border: 1px solid var(--color-primary);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            margin-top: 12px;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(230, 174, 23, 0.1);
+        }
+
+        /* Status Messages */
+        .status-message {
+            padding: 14px 18px;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            line-height: 1.5;
+        }
+
+        .status-message.visible {
+            display: flex;
+        }
+
+        .status-message.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--color-success);
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--color-error);
+        }
+
+        .status-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: none;
+            width: 20px;
+            height: 20px;
+            border: 2.5px solid rgba(0, 0, 0, 0.2);
+            border-top-color: #000;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
+        }
+
+        .spinner.active { display: inline-block; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Hidden sections */
+        .hidden { display: none !important; }
+
+        /* Footer */
+        .auth-footer {
+            text-align: center;
+            margin-top: 28px;
+            font-size: 0.75rem;
+            color: #555;
+            letter-spacing: 0.3px;
+        }
+
+        .auth-footer a {
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .auth-footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Success Animation */
+        .success-checkmark {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 20px;
+            border-radius: 50%;
+            background: rgba(34, 197, 94, 0.1);
+            border: 2px solid var(--color-success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            animation: scaleIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes scaleIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        /* Loading state for the whole page */
+        .page-loading {
+            text-align: center;
+            padding: 60px 36px;
+        }
+
+        .page-loading .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--color-border);
+            border-top-color: var(--color-primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        .page-loading p {
+            color: var(--color-text-dim);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 480px) {
+            .auth-card-body {
+                padding: 32px 24px;
+            }
+            .auth-card-body h1 {
+                font-size: 1.3rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <!-- Logo -->
+    <div class="logo-section">
+        <img src="/images/logo/logo_f_amarelo.png" alt="Paulo Morais">
+        <div class="brand-name">Paulo Morais</div>
+        <div class="brand-sub">Osteopata & Treino Personalizado</div>
+    </div>
+
+    <!-- Main Card -->
+    <div class="auth-card">
+        <div class="gold-accent-line"></div>
+
+        <!-- ═══ State: Loading ═══ -->
+        <div id="state-loading" class="page-loading">
+            <div class="loading-spinner"></div>
+            <p>A verificar o pedido...</p>
+        </div>
+
+        <!-- ═══ State: Reset Password Form ═══ -->
+        <div id="state-reset-password" class="auth-card-body hidden">
+            <h1>Nova Palavra-passe</h1>
+            <p class="subtitle">Introduza a sua nova palavra-passe para recuperar o acesso à sua conta.</p>
+
+            <div id="reset-status" class="status-message"></div>
+
+            <form id="reset-form">
+                <div class="form-group">
+                    <label for="new-password">Nova palavra-passe</label>
+                    <input type="password" id="new-password" placeholder="Mínimo 6 caracteres" required minlength="6" autocomplete="new-password">
+                </div>
+                <div class="form-group">
+                    <label for="confirm-password">Confirmar palavra-passe</label>
+                    <input type="password" id="confirm-password" placeholder="Repita a palavra-passe" required minlength="6" autocomplete="new-password">
+                    <p class="password-requirements">A palavra-passe deve ter pelo menos 6 caracteres.</p>
+                </div>
+                <button type="submit" class="btn-action" id="btn-reset-submit">
+                    <span id="btn-reset-text">Redefinir Palavra-passe</span>
+                    <span class="spinner" id="btn-reset-spinner"></span>
+                </button>
+            </form>
+        </div>
+
+        <!-- ═══ State: Reset Success ═══ -->
+        <div id="state-reset-success" class="auth-card-body hidden" style="text-align: center;">
+            <div class="success-checkmark">✓</div>
+            <h1>Palavra-passe Atualizada</h1>
+            <p class="subtitle">A sua palavra-passe foi redefinida com sucesso. Já pode iniciar sessão com a nova palavra-passe.</p>
+            <a href="/perfil" class="btn-action" style="display: block; text-decoration: none; text-align: center;">Iniciar Sessão</a>
+        </div>
+
+        <!-- ═══ State: Verify Email Success ═══ -->
+        <div id="state-verify-success" class="auth-card-body hidden" style="text-align: center;">
+            <div class="success-checkmark">✓</div>
+            <h1>Email Verificado</h1>
+            <p class="subtitle">O seu endereço de email foi verificado com sucesso. Pode agora utilizar todas as funcionalidades da sua conta.</p>
+            <a href="/perfil" class="btn-action" style="display: block; text-decoration: none; text-align: center;">Ir para a Área Reservada</a>
+        </div>
+
+        <!-- ═══ State: Error ═══ -->
+        <div id="state-error" class="auth-card-body hidden" style="text-align: center;">
+            <div class="success-checkmark" style="border-color: var(--color-error); background: rgba(239, 68, 68, 0.1);">✕</div>
+            <h1>Ligação Inválida</h1>
+            <p class="subtitle" id="error-message">Esta ligação de recuperação expirou ou já foi utilizada. Por favor, solicite uma nova recuperação de palavra-passe.</p>
+            <a href="/perfil" class="btn-secondary">Voltar ao Início de Sessão</a>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="auth-footer">
+        <a href="https://pmorais.pt">pmorais.pt</a> · Lisboa, Portugal<br>
+        &copy; 2026 Paulo Morais. Todos os direitos reservados.
+    </div>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { 
+        getAuth,
+        verifyPasswordResetCode,
+        confirmPasswordReset,
+        applyActionCode
+    } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCROYGriQ-5RWiLVCRwGz9KaDUKE6zNR2w",
+        authDomain: "pmorais.pt",
+        databaseURL: "https://paulo-morais-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "paulo-morais",
+        storageBucket: "paulo-morais.firebasestorage.app",
+        messagingSenderId: "431406968000",
+        appId: "1:431406968000:web:a759ddc6912639d7c69125",
+        measurementId: "G-GYWR102Y9N"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    // ── Parse URL parameters ──
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
+    const oobCode = urlParams.get('oobCode');
+
+    // ── DOM References ──
+    const stateLoading = document.getElementById('state-loading');
+    const stateResetPassword = document.getElementById('state-reset-password');
+    const stateResetSuccess = document.getElementById('state-reset-success');
+    const stateVerifySuccess = document.getElementById('state-verify-success');
+    const stateError = document.getElementById('state-error');
+    const errorMessage = document.getElementById('error-message');
+
+    function showState(state) {
+        [stateLoading, stateResetPassword, stateResetSuccess, stateVerifySuccess, stateError]
+            .forEach(el => el.classList.add('hidden'));
+        state.classList.remove('hidden');
+    }
+
+    function showStatus(containerId, message, type) {
+        const el = document.getElementById(containerId);
+        el.innerHTML = `<span class="status-icon">${type === 'error' ? '⚠️' : '✓'}</span><span>${message}</span>`;
+        el.className = `status-message visible ${type}`;
+    }
+
+    // ── Handle the action based on mode ──
+    async function handleAction() {
+        if (!oobCode) {
+            showState(stateError);
+            errorMessage.textContent = 'Parâmetros em falta. Por favor, utilize a ligação enviada por email.';
+            return;
+        }
+
+        switch (mode) {
+            case 'resetPassword':
+                await handleResetPassword();
+                break;
+            case 'verifyEmail':
+                await handleVerifyEmail();
+                break;
+            case 'recoverEmail':
+                // Recover email is less common, redirect to login
+                showState(stateError);
+                errorMessage.textContent = 'A recuperação de email foi processada. Por favor, inicie sessão novamente.';
+                break;
+            default:
+                showState(stateError);
+                errorMessage.textContent = 'Ação desconhecida. Por favor, verifique a ligação e tente novamente.';
+        }
+    }
+
+    // ── Password Reset ──
+    async function handleResetPassword() {
+        try {
+            // Verify the code is valid before showing the form
+            const email = await verifyPasswordResetCode(auth, oobCode);
+            console.log('Reset code valid for:', email);
+            showState(stateResetPassword);
+
+            // Handle form submission
+            const form = document.getElementById('reset-form');
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const newPassword = document.getElementById('new-password').value;
+                const confirmPassword = document.getElementById('confirm-password').value;
+                const btnText = document.getElementById('btn-reset-text');
+                const btnSpinner = document.getElementById('btn-reset-spinner');
+                const btnSubmit = document.getElementById('btn-reset-submit');
+
+                // Validation
+                if (newPassword.length < 6) {
+                    showStatus('reset-status', 'A palavra-passe deve ter pelo menos 6 caracteres.', 'error');
+                    return;
+                }
+
+                if (newPassword !== confirmPassword) {
+                    showStatus('reset-status', 'As palavras-passe não coincidem.', 'error');
+                    return;
+                }
+
+                // Submit
+                btnText.style.display = 'none';
+                btnSpinner.classList.add('active');
+                btnSubmit.disabled = true;
+
+                try {
+                    await confirmPasswordReset(auth, oobCode, newPassword);
+                    showState(stateResetSuccess);
+                } catch (error) {
+                    console.error('Error confirming reset:', error);
+                    btnText.style.display = 'inline';
+                    btnSpinner.classList.remove('active');
+                    btnSubmit.disabled = false;
+
+                    let msg = 'Ocorreu um erro ao redefinir a palavra-passe. Tente novamente.';
+                    if (error.code === 'auth/expired-action-code') {
+                        msg = 'Esta ligação expirou. Por favor, solicite uma nova recuperação de palavra-passe.';
+                    } else if (error.code === 'auth/invalid-action-code') {
+                        msg = 'Esta ligação já foi utilizada ou é inválida.';
+                    } else if (error.code === 'auth/weak-password') {
+                        msg = 'A palavra-passe é demasiado fraca. Escolha uma mais segura.';
+                    }
+                    showStatus('reset-status', msg, 'error');
+                }
+            });
+        } catch (error) {
+            console.error('Error verifying reset code:', error);
+            showState(stateError);
+            if (error.code === 'auth/expired-action-code') {
+                errorMessage.textContent = 'Esta ligação de recuperação expirou. Por favor, solicite uma nova recuperação de palavra-passe.';
+            } else if (error.code === 'auth/invalid-action-code') {
+                errorMessage.textContent = 'Esta ligação já foi utilizada ou é inválida. Por favor, solicite uma nova.';
+            } else {
+                errorMessage.textContent = 'Ocorreu um erro ao processar o seu pedido. Tente novamente mais tarde.';
+            }
+        }
+    }
+
+    // ── Email Verification ──
+    async function handleVerifyEmail() {
+        try {
+            await applyActionCode(auth, oobCode);
+            showState(stateVerifySuccess);
+        } catch (error) {
+            console.error('Error verifying email:', error);
+            showState(stateError);
+            if (error.code === 'auth/expired-action-code') {
+                errorMessage.textContent = 'Esta ligação de verificação expirou. Por favor, solicite uma nova.';
+            } else if (error.code === 'auth/invalid-action-code') {
+                errorMessage.textContent = 'Esta ligação já foi utilizada ou é inválida.';
+            } else {
+                errorMessage.textContent = 'Ocorreu um erro ao verificar o seu email. Tente novamente mais tarde.';
+            }
+        }
+    }
+
+    // ── Start ──
+    handleAction();
+</script>
+
+</body>
+</html>

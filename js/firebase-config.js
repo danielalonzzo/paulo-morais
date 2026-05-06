@@ -4,7 +4,7 @@ import { getFirestore } from "https://www.gstatic.com/firebasejs/10.8.0/firebase
 
 const firebaseConfig = {
     apiKey: "AIzaSyCROYGriQ-5RWiLVCRwGz9KaDUKE6zNR2w",
-    authDomain: "paulo-morais.firebaseapp.com",
+    authDomain: "pmorais.pt",
     databaseURL: "https://paulo-morais-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "paulo-morais",
     storageBucket: "paulo-morais.firebasestorage.app",

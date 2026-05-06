@@ -17,7 +17,7 @@ const emailPort = defineSecret("EMAIL_PORT");
 // - bodyHtml: The main content HTML (paragraphs, lists, etc.)
 // - ctaText: (optional) CTA button text
 // - ctaUrl: (optional) CTA button URL
-function buildEmailHtml({ title, bodyHtml, ctaText, ctaUrl }) {
+function buildEmailHtml({ title, bodyHtml, ctaText, ctaUrl, unsubscribeUrl }) {
   const currentYear = new Date().getFullYear();
 
   const ctaBlock = ctaText && ctaUrl ? `
@@ -125,7 +125,12 @@ function buildEmailHtml({ title, bodyHtml, ctaText, ctaUrl }) {
                     </p>
                     <p style="margin:0; font-size:11px; color:#666666;">Lisboa, Portugal &nbsp;&middot;&nbsp; &copy; ${currentYear} Paulo Morais</p>
                   </td>
-                </tr>
+                </tr>${unsubscribeUrl ? `
+                <tr>
+                  <td align="center" style="padding-top:18px;">
+                    <a href="${unsubscribeUrl}" target="_blank" style="color:#555555; font-size:10px; text-decoration:none; letter-spacing:0.2px;">Desinscrever-se das notificações</a>
+                  </td>
+                </tr>` : ""}
               </table>
             </td>
           </tr>
@@ -173,8 +178,9 @@ exports.onWeeklyScheduleUpdated = functions
         const usersSnap = await admin.firestore().collection("users").where("role", "==", "client").get();
         const bccList = [];
         usersSnap.forEach(doc => {
-          const email = doc.data().email;
-          if (email) bccList.push(email);
+          const data = doc.data();
+          // Skip users who have unsubscribed from email notifications
+          if (data.email && data.unsubscribed !== true) bccList.push(data.email);
         });
 
         if (bccList.length > 0) {
@@ -200,19 +206,29 @@ exports.onWeeklyScheduleUpdated = functions
               <p style="margin:0 0 20px 0;">Informamos que a agenda da semana <strong style="color:#1a1a1a;">${dateRangeText}</strong> já se encontra aberta para novas marcações.</p>
               <p style="margin:0 0 4px 0;">Para garantir o seu horário de preferência, por favor, aceda à sua área reservada através da sua conta:</p>`;
 
-          const mailOptions = {
-            from: `"Paulo Morais" <${emailUser.value()}>`,
-            bcc: bccList.join(","),
-            subject: "A agenda da semana já está disponível!",
-            html: buildEmailHtml({
-              title: "Agenda Semanal Disponível",
-              bodyHtml,
-              ctaText: "&#128197;&nbsp;&nbsp;Agendar Agora",
-              ctaUrl: "https://pmorais.pt/perfil.html?booking=true"
-            })
-          };
-          await transporter.sendMail(mailOptions);
-          console.log(`Broadcast sent to ${bccList.length} clients.`);
+          // Send individually so each user gets their own unsubscribe link
+          for (const clientEmail of bccList) {
+            const token = Buffer.from(clientEmail).toString("base64");
+            const unsubUrl = `https://pmorais.pt/desinscrever?token=${encodeURIComponent(token)}`;
+            const mailOptions = {
+              from: `"Paulo Morais" <${emailUser.value()}>`,
+              to: clientEmail,
+              subject: "A agenda da semana já está disponível!",
+              html: buildEmailHtml({
+                title: "Agenda Semanal Disponível",
+                bodyHtml,
+                ctaText: "&#128197;&nbsp;&nbsp;Agendar Agora",
+                ctaUrl: "https://pmorais.pt/perfil?booking=true",
+                unsubscribeUrl: unsubUrl
+              }),
+              headers: {
+                "List-Unsubscribe": `<${unsubUrl}>`,
+                "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
+              }
+            };
+            await transporter.sendMail(mailOptions);
+          }
+          console.log(`Broadcast sent individually to ${bccList.length} clients.`);
         }
       } catch (error) {
         console.error("Error sending broadcast:", error);
@@ -300,4 +316,54 @@ exports.onWeeklyScheduleUpdated = functions
     }
     
     return null;
+  });
+
+// ===== Unsubscribe HTTP Endpoint =====
+// Handles GET requests from the unsubscribe link in emails.
+// Sets unsubscribed:true on the user's Firestore document.
+exports.handleUnsubscribe = functions
+  .runWith({ secrets: [] })
+  .https
+  .onRequest(async (req, res) => {
+    // Enable CORS
+    res.set("Access-Control-Allow-Origin", "https://pmorais.pt");
+    res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
+
+    try {
+      const token = req.query.token || req.body.token;
+      if (!token) {
+        return res.status(400).json({ success: false, error: "Token em falta." });
+      }
+
+      const email = Buffer.from(token, "base64").toString("utf-8");
+      if (!email || !email.includes("@")) {
+        return res.status(400).json({ success: false, error: "Token inválido." });
+      }
+
+      // Find user document by email
+      const usersSnap = await admin.firestore()
+        .collection("users")
+        .where("email", "==", email)
+        .limit(1)
+        .get();
+
+      if (usersSnap.empty) {
+        // Still return success to not leak information
+        return res.status(200).json({ success: true });
+      }
+
+      const userDoc = usersSnap.docs[0];
+      await userDoc.ref.update({ unsubscribed: true });
+
+      console.log(`User ${email} has unsubscribed from email notifications.`);
+      return res.status(200).json({ success: true });
+    } catch (error) {
+      console.error("Error processing unsubscribe:", error);
+      return res.status(500).json({ success: false, error: "Erro interno." });
+    }
   });

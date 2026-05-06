@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="pt">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Desinscrever-se — Paulo Morais</title>
+    <link rel="icon" type="image/png" href="images/logo/logo_amarelo_alpha.png" media="(prefers-color-scheme: dark)">
+    <link rel="icon" type="image/png" href="images/logo/paulo_morais-08.png" media="(prefers-color-scheme: light)">
+    <meta name="robots" content="noindex">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
+        rel="stylesheet">
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Style -->
+    <link rel="stylesheet" href="css/style.css">
+    <script src="js/theme.js"></script>
+    <style>
+        .unsub-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .unsub-card {
+            background: var(--color-card-bg, #ffffff);
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.10);
+            max-width: 480px;
+            width: 100%;
+            padding: 48px 40px;
+            text-align: center;
+        }
+
+        .unsub-card .logo {
+            width: 80px;
+            height: auto;
+            border-radius: 14px;
+            margin-bottom: 28px;
+        }
+
+        .unsub-card h1 {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--color-heading, #1a1a1a);
+            margin: 0 0 12px 0;
+            letter-spacing: -0.3px;
+        }
+
+        .unsub-card p {
+            font-size: 15px;
+            line-height: 1.7;
+            color: var(--color-text, #555);
+            margin: 0 0 28px 0;
+        }
+
+        .unsub-btn {
+            display: inline-block;
+            padding: 13px 36px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #1a1a1a;
+            background: #E6AE17;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            letter-spacing: 0.3px;
+            transition: opacity 0.2s ease, transform 0.15s ease;
+            font-family: inherit;
+        }
+
+        .unsub-btn:hover {
+            opacity: 0.88;
+            transform: translateY(-1px);
+        }
+
+        .unsub-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .unsub-status {
+            margin-top: 24px;
+            font-size: 14px;
+            line-height: 1.6;
+            min-height: 24px;
+        }
+
+        .unsub-status.success {
+            color: #2e7d32;
+        }
+
+        .unsub-status.error {
+            color: #c62828;
+        }
+
+        .unsub-note {
+            font-size: 12px !important;
+            color: var(--color-text-muted, #999) !important;
+            margin-top: 32px !important;
+            margin-bottom: 0 !important;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 13px;
+            color: var(--color-primary, #E6AE17);
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        /* Spinner for loading state */
+        .spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0, 0, 0, 0.15);
+            border-top-color: #1a1a1a;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="unsub-wrapper">
+        <div class="unsub-card">
+            <img src="images/logo/logo_f_amarelo.png" alt="Paulo Morais" class="logo">
+            <h1 id="unsub-title">Desinscrever-se</h1>
+            <p id="unsub-desc">Ao confirmar, deixará de receber notificações por e-mail da parte de Paulo Morais.
+                A sua conta permanecerá ativa.</p>
+            <button class="unsub-btn" id="unsub-btn" onclick="processUnsubscribe()">Confirmar</button>
+            <div class="unsub-status" id="unsub-status"></div>
+            <p class="unsub-note">Poderá voltar a inscrever-se a qualquer momento contactando
+                <strong>pt@pmorais.pt</strong>.</p>
+            <a href="/" class="back-link">← Voltar ao site</a>
+        </div>
+    </div>
+
+    <script>
+        // Get the Cloud Function URL (adjust region if needed)
+        const CF_URL = 'https://us-central1-paulo-morais.cloudfunctions.net/handleUnsubscribe';
+
+        function getTokenFromUrl() {
+            const params = new URLSearchParams(window.location.search);
+            return params.get('token');
+        }
+
+        async function processUnsubscribe() {
+            const token = getTokenFromUrl();
+            const btn = document.getElementById('unsub-btn');
+            const status = document.getElementById('unsub-status');
+
+            if (!token) {
+                status.className = 'unsub-status error';
+                status.textContent = 'Link inválido. Por favor, utilize o link enviado no seu e-mail.';
+                return;
+            }
+
+            // Loading state
+            btn.disabled = true;
+            status.className = 'unsub-status';
+            status.innerHTML = '<span class="spinner"></span> A processar...';
+
+            try {
+                const resp = await fetch(`${CF_URL}?token=${encodeURIComponent(token)}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                const data = await resp.json();
+
+                if (resp.ok && data.success) {
+                    status.className = 'unsub-status success';
+                    status.textContent = 'Desinscrito com sucesso. Não receberá mais notificações por e-mail.';
+                    document.getElementById('unsub-title').textContent = 'Tudo pronto';
+                    document.getElementById('unsub-desc').textContent = 'A sua preferência foi registada.';
+                    btn.style.display = 'none';
+                } else {
+                    status.className = 'unsub-status error';
+                    status.textContent = data.error || 'Ocorreu um erro. Tente novamente mais tarde.';
+                    btn.disabled = false;
+                }
+            } catch (err) {
+                status.className = 'unsub-status error';
+                status.textContent = 'Erro de ligação. Verifique a sua internet e tente novamente.';
+                btn.disabled = false;
+            }
+        }
+
+        // If token exists, show ready state; if not, show error immediately
+        (function () {
+            if (!getTokenFromUrl()) {
+                const status = document.getElementById('unsub-status');
+                status.className = 'unsub-status error';
+                status.textContent = 'Link inválido. Por favor, utilize o link recebido no seu e-mail.';
+                document.getElementById('unsub-btn').disabled = true;
+            }
+        })();
+    </script>
+
+</body>
+
+</html>
