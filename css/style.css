@@ -248,7 +248,68 @@ h4 {
     transform: scale(1.05);
     box-shadow: 0 0 20px rgba(230, 174, 23, 0.6),
         0 0 40px rgba(230, 174, 23, 0.3);
-    /* Brillo mágico amarillo */
+}
+
+/* Reusable Ultra Premium Metallic Button Effect */
+@property --glow-angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+}
+
+@keyframes rotate-glow-angle {
+    0% { --glow-angle: 0deg; }
+    100% { --glow-angle: 360deg; }
+}
+
+@keyframes internal-shimmer {
+    0% { background-position: 250% 0, 0 0; }
+    100% { background-position: -50% 0, 0 0; }
+}
+
+.btn-premium-metallic {
+    position: relative;
+    /* Shimmer layer top, Bright Metallic base bottom */
+    background: 
+        linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.9) 40%, transparent 50%) 0 0 / 200% 100% no-repeat,
+        linear-gradient(145deg, #fff2ac 0%, #ffd700 50%, #e6ae17 100%) !important;
+    animation: internal-shimmer 2.5s infinite linear !important;
+    
+    color: #000 !important;
+    font-weight: 900 !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    border: none !important;
+    border-radius: 50px !important;
+    
+    /* Clean Metallic Bevel (Vibrant Effect) */
+    box-shadow: inset 1px 2px 5px rgba(255, 255, 255, 0.9), inset -1px -2px 5px rgba(230, 174, 23, 0.4) !important;
+    text-shadow: 0px 1px 0px rgba(255,255,255,0.5);
+    z-index: 1;
+}
+
+/* Rotating External Light/Shadow */
+.btn-premium-metallic::before {
+    content: '';
+    position: absolute;
+    inset: -6px; /* Expands slightly beyond the button */
+    border-radius: 55px; /* Matches button + inset */
+    background: conic-gradient(from var(--glow-angle, 0deg), transparent 0%, transparent 60%, rgba(230, 174, 23, 1) 85%, transparent 100%);
+    z-index: -1;
+    filter: blur(8px);
+    animation: rotate-glow-angle 2s linear infinite;
+    /* Static fallback glow just in case */
+    box-shadow: 0 0 15px rgba(230, 174, 23, 0.4);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.btn-premium-metallic:hover {
+    transform: scale(1.03) translateY(-2px) !important;
+}
+
+.btn-premium-metallic:hover::before {
+    opacity: 1;
 }
 
 .highlight {
@@ -406,10 +467,8 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
     position: fixed;
     bottom: 40px;
     right: 40px;
-    display: flex;
-    flex-direction: column-reverse;
-    align-items: center;
-    gap: 15px;
+    width: 60px;
+    height: 60px;
     z-index: 999;
 }
 
@@ -425,6 +484,9 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
     box-shadow: 0 4px 10px rgba(230, 174, 23, 0.4);
     cursor: pointer;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: absolute;
+    bottom: 0;
+    right: 0;
     z-index: 2;
 }
 
@@ -455,30 +517,16 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
 }
 
 .fab-options {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(20px);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .fab-container:hover .fab-options {
-        opacity: 1;
-        visibility: visible;
-        transform: translateY(0);
-    }
-}
-
-.fab-container.active .fab-options {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 .fab-action-btn {
+    position: absolute;
     width: 50px;
     height: 50px;
     background-color: var(--color-surface);
@@ -488,24 +536,48 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
-    transform: translateY(10px);
+    visibility: hidden;
     border: 1px solid var(--color-text-dim);
+    pointer-events: auto;
 }
 
-/* Staggered animation for buttons */
+/* Position Social Buttons (Upwards) */
+.fab-action-btn:nth-child(1) { bottom: 205px; right: 5px; transform: translateY(20px); }
+.fab-action-btn:nth-child(2) { bottom: 140px; right: 5px; transform: translateY(20px); }
+.fab-action-btn:nth-child(3) { bottom: 75px; right: 5px; transform: translateY(20px); }
+
+/* Position Theme Toggle (Left) */
+.fab-action-btn.theme-toggle { 
+    bottom: 5px; 
+    right: 75px; 
+    transform: translateX(20px); 
+}
+
+/* Staggered expansion on Hover/Active */
 @media (hover: hover) and (pointer: fine) {
-    .fab-container:hover .fab-action-btn:nth-child(1) { transition-delay: 0.15s; opacity: 1; transform: translateY(0); }
-    .fab-container:hover .fab-action-btn:nth-child(2) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
-    .fab-container:hover .fab-action-btn:nth-child(3) { transition-delay: 0.05s; opacity: 1; transform: translateY(0); }
-    .fab-container:hover .fab-action-btn:nth-child(4) { transition-delay: 0s; opacity: 1; transform: translateY(0); }
+    .fab-container:hover .fab-action-btn {
+        opacity: 1;
+        visibility: visible;
+        transform: translate(0, 0);
+    }
+    .fab-container:hover .fab-action-btn:nth-child(1) { transition-delay: 0.15s; }
+    .fab-container:hover .fab-action-btn:nth-child(2) { transition-delay: 0.1s; }
+    .fab-container:hover .fab-action-btn:nth-child(3) { transition-delay: 0.05s; }
+    .fab-container:hover .fab-action-btn.theme-toggle { transition-delay: 0s; }
 }
 
-.fab-container.active .fab-action-btn:nth-child(1) { transition-delay: 0.15s; opacity: 1; transform: translateY(0); }
-.fab-container.active .fab-action-btn:nth-child(2) { transition-delay: 0.1s; opacity: 1; transform: translateY(0); }
-.fab-container.active .fab-action-btn:nth-child(3) { transition-delay: 0.05s; opacity: 1; transform: translateY(0); }
-.fab-container.active .fab-action-btn:nth-child(4) { transition-delay: 0s; opacity: 1; transform: translateY(0); }
+.fab-container.active .fab-action-btn {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(0, 0);
+}
+.fab-container.active .fab-action-btn:nth-child(1) { transition-delay: 0.15s; }
+.fab-container.active .fab-action-btn:nth-child(2) { transition-delay: 0.1s; }
+.fab-container.active .fab-action-btn:nth-child(3) { transition-delay: 0.05s; }
+.fab-container.active .fab-action-btn.theme-toggle { transition-delay: 0s; }
+
 
 .fab-action-btn.theme-toggle:hover {
     color: var(--color-primary);
@@ -2113,6 +2185,7 @@ header.scrolled .mobile-menu-toggle svg {
     padding: 60px 0;
     text-align: center;
     color: var(--color-text);
+    position: relative;
 }
 
 .user-dashboard h2 {
@@ -2407,7 +2480,7 @@ header.scrolled .mobile-menu-toggle svg {
 
 /* --- About Page Refinement - Revised --- */
 .about-hero-section {
-    padding: 350px 0 100px;
+    padding: 350px 0 40px;
     background-color: var(--color-bg);
     display: flex;
     justify-content: center;
@@ -2504,6 +2577,32 @@ header.scrolled .mobile-menu-toggle svg {
     object-fit: cover;
     display: block;
     border-radius: 40px; /* Applied directly to img since overflow is hidden is removed */
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Instagram photo link wrapper for sobre-mim */
+.about-photo-ig-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+
+a.about-hero-photo.ig-photo-link {
+    display: block;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+a.about-hero-photo.ig-photo-link .ig-feed-overlay {
+    border-radius: 40px;
+}
+
+a.about-hero-photo.ig-photo-link:hover img {
+    transform: scale(1.08);
+}
+
+a.about-hero-photo.ig-photo-link:hover .ig-feed-overlay {
+    opacity: 1;
 }
 
 .about-split-right {
@@ -2554,7 +2653,7 @@ header.scrolled .mobile-menu-toggle svg {
 /* Second Section - High Contrast White */
 .about-yellow-section {
     background-color: var(--color-bg);
-    padding: 120px 0;
+    padding: 60px 0 120px;
     color: var(--color-text);
 }
 
@@ -2991,16 +3090,209 @@ header.scrolled .mobile-menu-toggle svg {
     justify-items: center;
 }
 
-.testimonials-image-wrapper {
-    border-radius: 30px;
-    overflow: hidden;
-    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+/* ==================== Instagram Feed Grid ==================== */
+.ig-feed-wrapper {
+    width: 100%;
 }
 
-.testimonials-image-wrapper img {
-    width: 100%;
-    height: auto;
+.ig-feed-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    height: 420px;
+    overflow: hidden;
+    border-radius: 24px;
+    position: relative;
+}
+
+/* Fade masks top & bottom */
+.ig-feed-grid::before,
+.ig-feed-grid::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px;
+    z-index: 2;
+    pointer-events: none;
+}
+
+.ig-feed-grid::before {
+    top: 0;
+    background: linear-gradient(to bottom, var(--color-bg) 0%, transparent 100%);
+}
+
+.ig-feed-grid::after {
+    bottom: 0;
+    background: linear-gradient(to top, var(--color-bg) 0%, transparent 100%);
+}
+
+.ig-feed-column {
+    overflow: hidden;
+    position: relative;
+}
+
+/* Vertical scroll animation */
+.ig-feed-scroll {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.ig-feed-scroll.ig-scroll-up {
+    animation: ig-scroll-up 20s linear infinite;
+}
+
+.ig-feed-scroll.ig-scroll-down {
+    animation: ig-scroll-down 20s linear infinite;
+}
+
+.ig-feed-scroll.ig-scroll-slow {
+    animation-duration: 28s;
+}
+
+@keyframes ig-scroll-up {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
+}
+
+@keyframes ig-scroll-down {
+    0% { transform: translateY(-50%); }
+    100% { transform: translateY(0); }
+}
+
+/* Pause animation on hover */
+.ig-feed-grid:hover .ig-feed-scroll {
+    animation-play-state: paused;
+}
+
+/* Individual feed item */
+.ig-feed-item {
     display: block;
+    position: relative;
+    border-radius: 14px;
+    overflow: hidden;
+    aspect-ratio: 1 / 1;
+    flex-shrink: 0;
+}
+
+.ig-feed-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1), filter 0.4s ease;
+}
+
+/* Hover overlay with Instagram icon */
+.ig-feed-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(131, 58, 180, 0.7), rgba(253, 29, 29, 0.5), rgba(252, 176, 69, 0.5));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    color: #fff;
+    backdrop-filter: blur(2px);
+}
+
+.ig-feed-item:hover img {
+    transform: scale(1.1);
+}
+
+.ig-feed-item:hover .ig-feed-overlay {
+    opacity: 1;
+}
+
+/* Follow button */
+.ig-follow-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 24px;
+    padding: 12px 28px;
+    border-radius: 50px;
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: var(--color-text);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    text-decoration: none;
+    letter-spacing: 0.5px;
+}
+
+.ig-follow-btn svg {
+    flex-shrink: 0;
+    transition: transform 0.3s ease;
+}
+
+.ig-follow-btn:hover {
+    background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+    color: #fff;
+    border-color: transparent;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(131, 58, 180, 0.35);
+}
+
+.ig-follow-btn:hover svg {
+    transform: scale(1.15);
+}
+
+/* Light mode adjustments */
+.light-mode .ig-feed-grid::before {
+    background: linear-gradient(to bottom, var(--color-bg) 0%, transparent 100%);
+}
+
+.light-mode .ig-feed-grid::after {
+    background: linear-gradient(to top, var(--color-bg) 0%, transparent 100%);
+}
+
+.light-mode .ig-follow-btn {
+    border-color: rgba(0, 0, 0, 0.15);
+    background: rgba(0, 0, 0, 0.03);
+    color: var(--color-text);
+}
+
+/* ==================== Instagram Feed Mobile ==================== */
+@media (max-width: 768px) {
+    .ig-feed-grid {
+        grid-template-columns: repeat(3, 1fr);
+        height: 300px;
+        gap: 6px;
+        border-radius: 18px;
+    }
+
+    .ig-feed-item {
+        border-radius: 10px;
+    }
+
+    .ig-follow-btn {
+        font-size: 0.85rem;
+        padding: 10px 22px;
+        margin-top: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ig-feed-grid {
+        height: 240px;
+        gap: 5px;
+        border-radius: 14px;
+    }
+
+    .ig-feed-item {
+        border-radius: 8px;
+    }
+
+    /* On very small screens, disable hover overlay (touch devices) */
+    .ig-feed-overlay {
+        display: none;
+    }
 }
 
 /* Testimonial Carousel */
@@ -5625,6 +5917,7 @@ body.loaded #preloader {
     border-radius: 20px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.5);
     border: 1px solid rgba(230, 174, 23, 0.2);
+    position: relative;
 }
 .booking-step {
     display: none;
@@ -5749,6 +6042,11 @@ body.loaded #preloader {
     padding-top: 30px;
     border-top: 1px solid rgba(255,255,255,0.1);
 }
+.time-slots p {
+    grid-column: 1 / -1;
+    width: 100%;
+    text-align: center;
+}
 .time-slot {
     padding: 12px;
     border: 1px solid rgba(255,255,255,0.2);
@@ -5792,6 +6090,32 @@ body.loaded #preloader {
     display: flex;
     justify-content: space-between;
     margin-top: 40px;
+}
+
+/* Help Icon Trigger */
+.help-icon-trigger {
+    position: absolute;
+    top: 25px;
+    right: 25px;
+    color: var(--color-text-dim);
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0.5;
+}
+
+.help-icon-trigger:hover {
+    color: var(--color-primary);
+    transform: scale(1.15) rotate(5deg);
+    opacity: 1;
+}
+
+.help-icon-trigger svg {
+    width: 22px;
+    height: 22px;
 }
 
 /* Custom Service Colors for Wizard and Admin */
@@ -6038,4 +6362,432 @@ body.loaded #preloader {
 
 .light-mode .shadow-gold-extreme {
     box-shadow: 0 20px 60px rgba(230, 174, 23, 0.1);
+}
+
+/* ===== BOOKING TUTORIAL ONBOARDING POPUP ===== */
+.booking-tutorial-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    z-index: 99999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.booking-tutorial-overlay.active {
+    opacity: 1;
+    visibility: visible;
+}
+
+.tutorial-card {
+    background: rgba(17, 17, 17, 0.97);
+    border: 1px solid rgba(230, 174, 23, 0.2);
+    border-radius: 28px;
+    padding: 45px 40px 35px;
+    max-width: 480px;
+    width: 92%;
+    max-height: 85vh;
+    overflow-y: auto;
+    box-shadow:
+        0 0 60px rgba(230, 174, 23, 0.12),
+        0 30px 80px rgba(0, 0, 0, 0.6);
+    transform: scale(0.88) translateY(30px);
+    transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+    position: relative;
+}
+
+.booking-tutorial-overlay.active .tutorial-card {
+    transform: scale(1) translateY(0);
+}
+
+/* Close button */
+.tutorial-close-btn {
+    position: absolute;
+    top: 16px;
+    right: 18px;
+    background: none;
+    border: none;
+    color: var(--color-text-dim);
+    cursor: pointer;
+    padding: 5px;
+    transition: all 0.2s ease;
+    opacity: 0.6;
+    z-index: 2;
+}
+
+.tutorial-close-btn:hover {
+    color: var(--color-primary);
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.tutorial-close-btn i {
+    width: 22px;
+    height: 22px;
+}
+
+/* Step indicator dots */
+.tutorial-indicators {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    margin-bottom: 30px;
+}
+
+.tutorial-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.12);
+    transition: all 0.4s ease;
+    cursor: pointer;
+}
+
+.tutorial-dot.active {
+    background: var(--color-primary);
+    box-shadow: 0 0 12px rgba(230, 174, 23, 0.5);
+    transform: scale(1.2);
+}
+
+.tutorial-dot.completed {
+    background: rgba(230, 174, 23, 0.4);
+}
+
+/* Slide content */
+.tutorial-slides-wrapper {
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+}
+
+.tutorial-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.tutorial-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    position: relative;
+}
+
+.tutorial-slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+}
+
+/* Slide icon area */
+.tutorial-slide-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 22px;
+    background: rgba(230, 174, 23, 0.1);
+    border: 1px solid rgba(230, 174, 23, 0.15);
+    transition: all 0.3s ease;
+}
+
+.tutorial-slide.active .tutorial-slide-icon {
+    animation: iconPulse 2s ease-in-out infinite;
+}
+
+@keyframes iconPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.06); }
+}
+
+.tutorial-slide-icon i {
+    width: 34px;
+    height: 34px;
+    color: var(--color-primary);
+}
+
+/* Step number badge */
+.tutorial-step-badge {
+    display: inline-block;
+    font-size: 0.65rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    color: var(--color-primary);
+    background: rgba(230, 174, 23, 0.08);
+    padding: 5px 14px;
+    border-radius: 20px;
+    margin-bottom: 12px;
+}
+
+.tutorial-slide-title {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: var(--color-text);
+    text-align: center;
+    margin-bottom: 14px;
+    line-height: 1.3;
+}
+
+.tutorial-slide-desc {
+    font-size: 0.92rem;
+    color: var(--color-text-dim);
+    text-align: center;
+    line-height: 1.7;
+    margin-bottom: 0;
+}
+
+.tutorial-slide-desc strong {
+    color: var(--color-primary);
+    font-weight: 700;
+}
+
+/* Tip highlight box */
+.tutorial-tip {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    background: rgba(230, 174, 23, 0.06);
+    border: 1px solid rgba(230, 174, 23, 0.12);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-top: 18px;
+}
+
+.tutorial-tip i {
+    width: 18px;
+    height: 18px;
+    color: var(--color-primary);
+    flex-shrink: 0;
+    margin-top: 2px;
+}
+
+.tutorial-tip span {
+    font-size: 0.82rem;
+    color: var(--color-text-dim);
+    line-height: 1.5;
+}
+
+/* Navigation buttons */
+.tutorial-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+    gap: 12px;
+}
+
+.tutorial-btn {
+    padding: 12px 28px;
+    border-radius: 14px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.tutorial-btn-skip {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-dim);
+}
+
+.tutorial-btn-skip:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text);
+}
+
+.tutorial-btn-next {
+    background: var(--color-primary);
+    color: #000;
+    flex: 1;
+    max-width: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.tutorial-btn-next:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(230, 174, 23, 0.3);
+}
+
+.tutorial-btn-next i {
+    width: 16px;
+    height: 16px;
+}
+
+.tutorial-btn-prev {
+    background: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-dim);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.tutorial-btn-prev:hover {
+    border-color: rgba(255, 255, 255, 0.25);
+    color: var(--color-text);
+}
+
+.tutorial-btn-prev i {
+    width: 16px;
+    height: 16px;
+}
+
+.tutorial-btn-start {
+    background: var(--color-primary);
+    color: #000;
+    flex: 1;
+    max-width: 260px;
+    font-size: 0.95rem;
+    padding: 14px 32px;
+}
+
+.tutorial-btn-start:hover {
+    background: var(--color-primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(230, 174, 23, 0.3);
+}
+
+/* Light mode adjustments */
+.light-mode .tutorial-card {
+    background: rgba(255, 255, 255, 0.97);
+    border-color: rgba(230, 174, 23, 0.25);
+    box-shadow:
+        0 0 60px rgba(230, 174, 23, 0.08),
+        0 30px 80px rgba(0, 0, 0, 0.15);
+}
+
+.light-mode .tutorial-slide-title {
+    color: #111;
+}
+
+.light-mode .tutorial-slide-desc {
+    color: #555;
+}
+
+.light-mode .tutorial-tip {
+    background: rgba(230, 174, 23, 0.06);
+    border-color: rgba(230, 174, 23, 0.15);
+}
+
+.light-mode .tutorial-tip span {
+    color: #555;
+}
+
+.light-mode .tutorial-btn-skip,
+.light-mode .tutorial-btn-prev {
+    border-color: rgba(0, 0, 0, 0.12);
+    color: #777;
+}
+
+.light-mode .tutorial-btn-skip:hover,
+.light-mode .tutorial-btn-prev:hover {
+    border-color: rgba(0, 0, 0, 0.3);
+    color: #333;
+}
+
+.light-mode .tutorial-dot {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.light-mode .tutorial-dot.completed {
+    background: rgba(230, 174, 23, 0.5);
+}
+
+/* Mobile responsive */
+@media (max-width: 576px) {
+    .tutorial-card {
+        padding: 35px 24px 28px;
+        border-radius: 22px;
+        max-height: 90vh;
+    }
+
+    .tutorial-slide-title {
+        font-size: 1.15rem;
+    }
+
+    .tutorial-slide-desc {
+        font-size: 0.85rem;
+    }
+
+    .tutorial-slide-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 16px;
+    }
+
+    .tutorial-slide-icon i {
+        width: 28px;
+        height: 28px;
+    }
+
+    .tutorial-nav {
+        flex-wrap: wrap;
+    }
+
+    .tutorial-btn-next,
+    .tutorial-btn-start {
+        max-width: 100%;
+        flex: 1;
+    }
+
+    .tutorial-btn-skip {
+        order: 2;
+        flex: 1;
+    }
+
+    .tutorial-slides-wrapper {
+        min-height: 350px;
+    }
+}
+
+/* ===== ADMIN TUTORIAL SLIDES ===== */
+.admin-tutorial-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    opacity: 0;
+    transform: translateX(60px);
+    transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: none;
+}
+
+.admin-tutorial-slide.active {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+    position: relative;
+}
+
+.admin-tutorial-slide.exit-left {
+    opacity: 0;
+    transform: translateX(-60px);
+}
+
+.admin-tutorial-slide.active .tutorial-slide-icon {
+    animation: iconPulse 2s ease-in-out infinite;
 }

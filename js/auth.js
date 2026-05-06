@@ -89,16 +89,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Admin detected by email (Immediate)");
                 if (btnShowProfiles) {
                     btnShowProfiles.classList.remove('hidden');
-                    btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+                    btnShowProfiles.onclick = () => window.location.href = 'perfis';
                 }
                 if (btnShowForms) {
                     btnShowForms.classList.remove('hidden');
-                    btnShowForms.onclick = () => window.location.href = 'formulario.html';
+                    btnShowForms.onclick = () => window.location.href = 'formulario';
                 }
                 if (btnStartBooking) {
                     const span = btnStartBooking.querySelector('.btn-text');
                     if (span) span.textContent = 'Gestão de Agenda';
                     else btnStartBooking.textContent = 'Gestão de Agenda';
+                }
+            }
+
+            // Check for booking parameter and auto-trigger wizard for clients
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('booking') === 'true') {
+                if (!isAdminEmail && btnStartBooking) {
+                    // Slight delay to ensure UI is ready
+                    setTimeout(() => {
+                        btnStartBooking.click();
+                        // Clean up URL without refreshing
+                        const newUrl = window.location.pathname;
+                        window.history.replaceState({}, document.title, newUrl);
+                    }, 500);
                 }
             }
 
@@ -293,6 +307,16 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (!isAdmin && window.goToStep) window.goToStep(1); // Reset wizard
             if (isAdmin && window.openAdminBookingWizard) window.openAdminBookingWizard();
+            
+            // Show tutorial for first-time client bookings
+            if (!isAdmin && window.maybeShowBookingTutorial) {
+                window.maybeShowBookingTutorial();
+            }
+            
+            // Show tutorial for first-time admin agenda management
+            if (isAdmin && window.maybeShowAdminTutorial) {
+                window.maybeShowAdminTutorial();
+            }
             
             setTimeout(() => {
                 targetSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -522,11 +546,11 @@ async function loadUserProfile(user) {
                     if (profileWizard) profileWizard.classList.add('hidden');
                     if (btnShowProfiles) {
                         btnShowProfiles.classList.remove('hidden');
-                        btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
+                        btnShowProfiles.onclick = () => window.location.href = 'perfis';
                     }
                     if (btnShowForms) {
                         btnShowForms.classList.remove('hidden');
-                        btnShowForms.onclick = () => window.location.href = 'formulario.html';
+                        btnShowForms.onclick = () => window.location.href = 'formulario';
                     }
                     
                     const btnStartBooking = document.getElementById('btn-start-booking');
@@ -591,8 +615,8 @@ async function loadUserProfile(user) {
 
                     const btnShowProfiles = document.getElementById('btn-show-profiles');
                     const btnShowForms = document.getElementById('btn-show-forms');
-                    if (btnShowProfiles) { btnShowProfiles.classList.remove('hidden'); btnShowProfiles.onclick = () => window.location.href = 'perfis.html'; }
-                    if (btnShowForms) { btnShowForms.classList.remove('hidden'); btnShowForms.onclick = () => window.location.href = 'formulario.html'; }
+                    if (btnShowProfiles) { btnShowProfiles.classList.remove('hidden'); btnShowProfiles.onclick = () => window.location.href = 'perfis'; }
+                    if (btnShowForms) { btnShowForms.classList.remove('hidden'); btnShowForms.onclick = () => window.location.href = 'formulario'; }
                     
                     // Create minimal admin doc
                     try {
@@ -653,9 +677,11 @@ async function loadUserProfile(user) {
 function translateError(code) {
     switch (code) {
         case 'auth/user-not-found':
-            return 'Utilizador não encontrado.';
+            return 'Utilizador não encontrado. Verifique o email.';
         case 'auth/wrong-password':
             return 'Palavra-passe incorrecta.';
+        case 'auth/invalid-credential':
+            return 'Email ou palavra-passe incorretos.';
         case 'auth/email-already-in-use':
             return 'Este email já está a ser utilizado.';
         case 'auth/invalid-email':
@@ -710,13 +736,14 @@ window.loadAdminWizardSchedule = async function(weekId, callback) {
         const docRef = doc(db, "weekly_schedules", weekId);
         const snap = await getDoc(docRef);
         if (snap.exists()) {
-            callback(snap.data().slots || {});
+            const data = snap.data();
+            callback(data.slots || {}, data.publishedByAdmin === true);
         } else {
-            callback({});
+            callback({}, false);
         }
     } catch (e) {
         console.error("Erro ao carregar dados:", e);
-        callback({});
+        callback({}, false);
     }
 };
 
@@ -805,7 +832,8 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                             status: 'booked',
                             serviceType: 'grupal',
                             bookedUsers: newUsers,
-                            bookedCount: newUsers.length
+                            bookedCount: newUsers.length,
+                            clientNotes: payload.notes || ''
                         };
                     } else {
                         // Personal or Osteopatia
@@ -820,7 +848,8 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                             status: 'booked',
                             serviceType: sType,
                             bookedBy: user.uid,
-                            bookedName: realName
+                            bookedName: realName,
+                            clientNotes: payload.notes || ''
                         };
                     }
                     
@@ -846,6 +875,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                     serviceName: payload.serviceName,
                     bookedName: realName,
                     status: 'booked',
+                    clientNotes: payload.notes || '',
                     createdAt: new Date().toISOString()
                 });
             }
@@ -874,6 +904,110 @@ window.submitWizardBooking = async function(payload, durationSlots) {
     } catch (e) {
         console.error("Booking error:", e);
         throw e;
+    }
+};
+
+window.cancelClientBooking = async function(bookingId, isoDate, startTime, serviceType) {
+    if (!confirm("Tem a certeza que pretende desmarcar esta sessão?")) return;
+
+    try {
+        const user = auth.currentUser;
+        if (!user) throw new Error("Não autenticado");
+
+        // 1. Calculate duration slots
+        let durationSlots = 1;
+        if (serviceType === 'osteopatia') durationSlots = 2;
+        if (serviceType === 'grupal' || serviceType === 'treino_grupo' || serviceType === 'treino_online' || serviceType === 'online') durationSlots = 2;
+        if (serviceType === 'treino') durationSlots = 2; // All treinos are now 60 min
+
+        // 2. Calculate weekId
+        const dateObj = new Date(isoDate);
+        const dayOfWeek = dateObj.getDay();
+        dateObj.setDate(dateObj.getDate() - dayOfWeek);
+        const weekYear = dateObj.getFullYear();
+        const weekMonth = String(dateObj.getMonth() + 1).padStart(2, '0');
+        const weekDay = String(dateObj.getDate()).padStart(2, '0');
+        const weekId = `${weekYear}-${weekMonth}-${weekDay}`;
+
+        // 3. Update global weekly_schedules/{weekId}
+        const docRef = doc(db, "weekly_schedules", weekId);
+        const snap = await getDoc(docRef);
+        let slotsToMerge = {};
+
+        if (snap.exists()) {
+            const currentSlots = snap.data().slots || {};
+            let [hStr, mStr] = startTime.split(':');
+            let h = parseInt(hStr);
+            let m = parseInt(mStr);
+
+            for (let i = 0; i < durationSlots; i++) {
+                const timeStr = `${h.toString().padStart(2,'0')}:${m === 0 ? '00' : '30'}`;
+                const slotId = `${isoDate}T${timeStr}`;
+
+                if (currentSlots[slotId]) {
+                    if (serviceType === 'grupal' || serviceType === 'treino_grupo' || serviceType === 'treino_online' || serviceType === 'online') {
+                        // Remove user from bookedUsers
+                        const users = currentSlots[slotId].bookedUsers || [];
+                        const newUsers = users.filter(u => u.uid !== user.uid);
+                        
+                        if (newUsers.length === 0) {
+                            slotsToMerge[slotId] = {
+                                status: 'available',
+                                serviceType: 'available',
+                                bookedUsers: [],
+                                bookedCount: 0
+                            };
+                        } else {
+                            slotsToMerge[slotId] = {
+                                status: 'booked',
+                                serviceType: 'grupal',
+                                bookedUsers: newUsers,
+                                bookedCount: newUsers.length
+                            };
+                        }
+                    } else {
+                        // For personal/osteo, free the slot completely
+                        slotsToMerge[slotId] = {
+                            status: 'available',
+                            serviceType: 'available',
+                            bookedBy: null,
+                            bookedName: null
+                        };
+                    }
+                }
+
+                m += 30;
+                if (m >= 60) {
+                    h += 1;
+                    m = 0;
+                }
+            }
+            if (Object.keys(slotsToMerge).length > 0) {
+                await setDoc(docRef, { slots: slotsToMerge }, { merge: true });
+            }
+        }
+
+        // 4. Update user's personal booking list in weekly_schedules/user_{uid}
+        const bookingDocRef = doc(db, "weekly_schedules", `user_${user.uid}`);
+        const bookingSnap = await getDoc(bookingDocRef);
+        if (bookingSnap.exists()) {
+            let userBookings = bookingSnap.data().bookings || [];
+            for (let b of userBookings) {
+                if (b.id === bookingId) {
+                    b.status = 'cancelled';
+                    b.updatedAt = new Date().toISOString();
+                }
+            }
+            await setDoc(bookingDocRef, { bookings: userBookings }, { merge: true });
+        }
+
+        alert("Sessão desmarcada com sucesso.");
+        // Refresh UI
+        window.location.reload();
+
+    } catch (e) {
+        console.error("Cancel booking error:", e);
+        alert("Erro ao desmarcar sessão: " + e.message);
     }
 };
 
@@ -925,7 +1059,9 @@ async function loadDashboardPreview(isAdmin, user, data) {
         }).sort((a,b) => new Date(a.date + 'T' + a.time) - new Date(b.date + 'T' + b.time));
         
         if (upcoming.length === 0) {
-            listEl.innerHTML = '<p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Sem sessões agendadas para breve.</p>';
+            listEl.innerHTML = `
+                <p class="color-text-dim text-center" style="padding: 20px; margin: 0;">Sem sessões agendadas para breve.</p>
+            `;
             return;
         }
         
@@ -945,8 +1081,11 @@ async function loadDashboardPreview(isAdmin, user, data) {
                     <strong>${b.date}</strong>
                     <span>às ${b.time}</span>
                 </div>
-                <div class="preview-badge ${sClass}">
-                    ${sName}
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
+                    <div class="preview-badge ${sClass}">
+                        ${sName}
+                    </div>
+                    <button class="btn btn-sm btn-outline" style="padding: 2px 8px; font-size: 0.75rem;" onclick="window.cancelClientBooking('${b.id}', '${b.date}', '${b.time}', '${b.serviceType}')">Cancelar</button>
                 </div>
             `;
             listEl.appendChild(item);

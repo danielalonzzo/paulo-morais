@@ -18,7 +18,7 @@ const pageTitle = document.getElementById('page-title');
 
 onAuthStateChanged(auth, async (user) => {
     if (!user) {
-        window.location.href = "perfil.html";
+        window.location.href = "perfil";
         return;
     }
 
