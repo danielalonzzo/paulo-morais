@@ -355,12 +355,14 @@
                 </div>
 
                 <!-- Profile Wizard (Hidden by default) -->
-                <div id="profile-wizard" class="profile-wizard hidden fade-in">
-                    <hr class="divider">
-                    <h3>O seu Perfil de Saúde</h3>
-                    <p class="wizard-desc">Complete estes dados para que o Paulo possa personalizar o seu treino.</p>
+                <div id="profile-wizard" class="profile-wizard hidden fade-in auth-card-container" style="margin-top: 40px; padding: 0;">
+                    <div class="auth-card glass-panel shadow-gold-extreme" style="max-width: 800px; padding: clamp(30px, 5vw, 60px); text-align: left; width: 100%;">
+                        <div class="auth-card-header" style="text-align: center; margin-bottom: 40px;">
+                            <h3 class="auth-title-card" style="font-size: clamp(1.8rem, 4vw, 2.4rem); margin-bottom: 15px;">O seu Perfil de Saúde</h3>
+                            <p class="auth-subtitle wizard-desc" style="margin-bottom: 0; font-size: 1rem;">Complete estes dados para que o Paulo possa personalizar o seu treino.</p>
+                        </div>
 
-                    <form id="profile-form" class="auth-form">
+                        <form id="profile-form" class="auth-form">
                         <div class="form-row">
                             <div class="form-group">
                                 <label for="prof-name">Nome</label>
@@ -436,7 +438,8 @@
                             <button type="button" id="btn-cancel-wizard" class="btn btn-outline">Cancelar</button>
                             <button type="button" id="btn-deactivate-account" class="btn" style="background-color: var(--color-danger, #ef4444); color: white; margin-left: auto;">Desativar Conta</button>
                         </div>
-                    </form>
+                        </form>
+                    </div>
                 </div>
             </div>
         </div>

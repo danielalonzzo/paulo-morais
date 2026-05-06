@@ -33,6 +33,15 @@
     --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* Light Mode Overrides */
+body.light-mode {
+    --color-bg: #ffffff;
+    --color-surface: #f9f9f9;
+    --color-text: #111111;
+    --color-text-dim: #666666;
+    --color-accent: #000000;
+}
+
 /* --- FONTS --- */
 @font-face {
     font-family: 'Patron';
@@ -2306,6 +2315,12 @@ header.scrolled .mobile-menu-toggle svg {
     border-color: rgba(255, 255, 255, 0.05);
     color: rgba(255, 255, 255, 0.6);
     cursor: default;
+}
+
+.light-mode .auth-card .form-group input:read-only {
+    background-color: rgba(0, 0, 0, 0.02);
+    border-color: rgba(0, 0, 0, 0.05);
+    color: rgba(0, 0, 0, 0.5);
 }
 
 /* Profile Wizard Spacing */

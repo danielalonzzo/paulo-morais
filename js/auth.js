@@ -114,19 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Check for booking parameter and auto-trigger wizard for clients
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('booking') === 'true') {
-                if (!isAdminEmail && btnStartBooking) {
-                    // Slight delay to ensure UI is ready
-                    setTimeout(() => {
-                        btnStartBooking.click();
-                        // Clean up URL without refreshing
-                        const newUrl = window.location.pathname;
-                        window.history.replaceState({}, document.title, newUrl);
-                    }, 500);
-                }
-            }
+
 
             // Show dashboard IMMEDIATELY - don't wait for async data
             authCard.classList.add('hidden');
@@ -149,8 +137,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const userData = await loadUserProfile(user);
             console.log("User data loaded for:", user.email, userData);
 
-            // Initialize Calendar System depending on Role and Profile Completion
             const isCompleted = !!userData?.profileCompleted;
+
+            // Check for booking parameter and auto-trigger wizard for clients
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('booking') === 'true') {
+                if (!isAdminEmail && btnStartBooking) {
+                    if (isCompleted) {
+                        setTimeout(() => {
+                            btnStartBooking.click();
+                            const newUrl = window.location.pathname;
+                            window.history.replaceState({}, document.title, newUrl);
+                        }, 500);
+                    } else {
+                        sessionStorage.setItem('pendingBooking', 'true');
+                        const newUrl = window.location.pathname;
+                        window.history.replaceState({}, document.title, newUrl);
+                    }
+                }
+            }
+
+            // Initialize Calendar System depending on Role and Profile Completion
             console.log("Initializing calendar. Profile completed:", isCompleted);
             initCalendarMode(user, db, userData?.role, isCompleted);
         } else {
@@ -494,6 +501,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Refresh calendar state
                 initCalendarMode(user, db, updatedData?.role, updatedData?.profileCompleted);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
+
+                if (sessionStorage.getItem('pendingBooking') === 'true') {
+                    sessionStorage.removeItem('pendingBooking');
+                    const btnStartBooking = document.getElementById('btn-start-booking');
+                    if (btnStartBooking) {
+                        setTimeout(() => {
+                            btnStartBooking.click();
+                        }, 500);
+                    }
+                }
             } catch (error) {
                 console.error("Error updating profile:", error);
                 alert("Erro ao actualizar o perfil.");
