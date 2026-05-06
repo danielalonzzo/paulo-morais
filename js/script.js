@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', () => {
         banner.id = 'cookie-banner';
         banner.className = 'cookie-banner';
         banner.innerHTML = `
-            <p>Utilizamos cookies para melhorar a sua experiência e para fins de marketing. Ao continuar, concorda com a nossa <a href="politica-privacidade">Política de Privacidade</a>.</p>
+            <p>Utilizamos cookies para melhorar a sua experiência e para fins de marketing. Ao continuar, concorda com a nossa <a href="politica-privacidade.html">Política de Privacidade</a>.</p>
             <div class="cookie-buttons">
                 <button id="accept-cookies" class="btn btn-primary btn-sm">Aceitar</button>
                 <button id="reject-cookies" class="btn btn-primary-black btn-sm" style="border: 1px solid #333;">Rejeitar</button>

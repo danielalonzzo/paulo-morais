@@ -89,11 +89,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.log("Admin detected by email (Immediate)");
                 if (btnShowProfiles) {
                     btnShowProfiles.classList.remove('hidden');
-                    btnShowProfiles.onclick = () => window.location.href = 'perfis';
+                    btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
                 }
                 if (btnShowForms) {
                     btnShowForms.classList.remove('hidden');
-                    btnShowForms.onclick = () => window.location.href = 'formulario';
+                    btnShowForms.onclick = () => window.location.href = 'formulario.html';
                 }
                 if (btnStartBooking) {
                     const span = btnStartBooking.querySelector('.btn-text');
@@ -546,11 +546,11 @@ async function loadUserProfile(user) {
                     if (profileWizard) profileWizard.classList.add('hidden');
                     if (btnShowProfiles) {
                         btnShowProfiles.classList.remove('hidden');
-                        btnShowProfiles.onclick = () => window.location.href = 'perfis';
+                        btnShowProfiles.onclick = () => window.location.href = 'perfis.html';
                     }
                     if (btnShowForms) {
                         btnShowForms.classList.remove('hidden');
-                        btnShowForms.onclick = () => window.location.href = 'formulario';
+                        btnShowForms.onclick = () => window.location.href = 'formulario.html';
                     }
                     
                     const btnStartBooking = document.getElementById('btn-start-booking');
@@ -615,8 +615,8 @@ async function loadUserProfile(user) {
 
                     const btnShowProfiles = document.getElementById('btn-show-profiles');
                     const btnShowForms = document.getElementById('btn-show-forms');
-                    if (btnShowProfiles) { btnShowProfiles.classList.remove('hidden'); btnShowProfiles.onclick = () => window.location.href = 'perfis'; }
-                    if (btnShowForms) { btnShowForms.classList.remove('hidden'); btnShowForms.onclick = () => window.location.href = 'formulario'; }
+                    if (btnShowProfiles) { btnShowProfiles.classList.remove('hidden'); btnShowProfiles.onclick = () => window.location.href = 'perfis.html'; }
+                    if (btnShowForms) { btnShowForms.classList.remove('hidden'); btnShowForms.onclick = () => window.location.href = 'formulario.html'; }
                     
                     // Create minimal admin doc
                     try {
@@ -842,7 +842,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                         }
                         
                         let sType = 'treino_personalizado';
-                        if (payload.category === 'osteopatia') sType = 'osteopatia';
+                        if (payload.category === 'osteopatia.html') sType = 'osteopatia.html';
                         
                         slotsToMerge[slotId] = {
                             status: 'booked',
@@ -864,7 +864,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                 if (groupFull) throw new Error(`A aula online de ${sel.dateStr} às ${sel.time} já está cheia.`);
                 
                 // Add to history list
-                let sType = payload.category === 'osteopatia' ? 'osteopatia' : 'treino';
+                let sType = payload.category === 'osteopatia.html' ? 'osteopatia.html' : 'treino';
                 if (payload.modality === 'tr_online') sType = 'grupal';
                 
                 historyToAdd.push({
@@ -916,7 +916,7 @@ window.cancelClientBooking = async function(bookingId, isoDate, startTime, servi
 
         // 1. Calculate duration slots
         let durationSlots = 1;
-        if (serviceType === 'osteopatia') durationSlots = 2;
+        if (serviceType === 'osteopatia.html') durationSlots = 2;
         if (serviceType === 'grupal' || serviceType === 'treino_grupo' || serviceType === 'treino_online' || serviceType === 'online') durationSlots = 2;
         if (serviceType === 'treino') durationSlots = 2; // All treinos are now 60 min
 
@@ -1073,7 +1073,7 @@ async function loadDashboardPreview(isAdmin, user, data) {
             let sName = 'Treino';
             let sClass = 'badge-treino';
             if (b.serviceType === 'grupal' || b.serviceType === 'treino_grupo') { sName = 'Online'; sClass = 'badge-grupal'; }
-            if (b.serviceType === 'osteopatia') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
+            if (b.serviceType === 'osteopatia.html') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
             if (b.serviceType === 'treino_online' || b.serviceType === 'online') { sName = 'Online'; sClass = 'badge-online'; }
             
             item.innerHTML = `
@@ -1147,7 +1147,7 @@ async function loadDashboardPreview(isAdmin, user, data) {
                     let sName = 'Treino';
                     let sClass = 'badge-treino';
                     if (b.type === 'grupal') { sName = 'Online'; sClass = 'badge-grupal'; }
-                    if (b.type === 'osteopatia') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
+                    if (b.type === 'osteopatia.html') { sName = 'Osteopatia'; sClass = 'badge-osteo'; }
 
                     // Format date for display (YYYY-MM-DD → DD/MM)
                     let dateDisplay = b.date;

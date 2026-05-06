@@ -21,7 +21,7 @@ onAuthStateChanged(auth, async (user) => {
     try {
         if (!user) {
             console.log("No user found, redirecting...");
-            window.location.href = 'perfil';
+            window.location.href = 'perfil.html';
             return;
         }
 
@@ -35,7 +35,7 @@ onAuthStateChanged(auth, async (user) => {
 
         if (userData?.role !== 'admin' && user.email !== ADMIN_EMAIL) {
             alert("Acesso restrito a administradores.");
-            window.location.href = 'perfil';
+            window.location.href = 'perfil.html';
             return;
         }
 
@@ -158,8 +158,8 @@ async function showUserDetails(data) {
                         ${sortedHistory.map(item => `
                             <div class="history-item">
                                 <div class="history-main-info">
-                                    <span class="history-tag ${item.serviceType === 'osteopatia' ? 'tag-osteo' : 'tag-treino'}">
-                                        ${item.serviceType === 'osteopatia' ? 'Osteopatia' : 'Treino'}
+                                    <span class="history-tag ${item.serviceType === 'osteopatia.html' ? 'tag-osteo' : 'tag-treino'}">
+                                        ${item.serviceType === 'osteopatia.html' ? 'Osteopatia' : 'Treino'}
                                     </span>
                                 </div>
                                 

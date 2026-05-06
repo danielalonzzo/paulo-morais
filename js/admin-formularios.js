@@ -20,7 +20,7 @@ const btnCloseModal = document.getElementById('btn-close-modal');
 onAuthStateChanged(auth, async (user) => {
     try {
         if (!user) {
-            window.location.href = 'perfil';
+            window.location.href = 'perfil.html';
             return;
         }
 
@@ -30,7 +30,7 @@ onAuthStateChanged(auth, async (user) => {
 
         if (userData?.role !== 'admin' && user.email !== ADMIN_EMAIL) {
             alert("Acesso restrito a administradores.");
-            window.location.href = 'perfil';
+            window.location.href = 'perfil.html';
             return;
         }
 
