@@ -323,6 +323,13 @@ document.addEventListener('DOMContentLoaded', () => {
             profileWizard.classList.remove('hidden');
             dashboardActions.classList.add('hidden');
             
+            const tutorialCheckbox = document.getElementById('prof-tutorial-seen');
+            if (tutorialCheckbox) {
+                const clientSeen = localStorage.getItem('pm_booking_tutorial_seen') === 'true';
+                const adminSeen = localStorage.getItem('pm_admin_tutorial_seen') === 'true';
+                tutorialCheckbox.checked = clientSeen || adminSeen;
+            }
+
             // Scroll to the wizard
             setTimeout(() => {
                 profileWizard.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -480,6 +487,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 return;
             }
 
+            const tutorialCheckbox = document.getElementById('prof-tutorial-seen');
+            if (tutorialCheckbox) {
+                if (tutorialCheckbox.checked) {
+                    localStorage.setItem('pm_booking_tutorial_seen', 'true');
+                    localStorage.setItem('pm_admin_tutorial_seen', 'true');
+                } else {
+                    localStorage.removeItem('pm_booking_tutorial_seen');
+                    localStorage.removeItem('pm_admin_tutorial_seen');
+                }
+            }
+
             try {
                 await setDoc(doc(db, "users", user.uid), {
                     birthdate,
@@ -516,6 +534,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert("Erro ao actualizar o perfil.");
             }
         });
+
+        // Initialize tutorial checkbox on load
+        const tutorialCheckbox = document.getElementById('prof-tutorial-seen');
+        if (tutorialCheckbox) {
+            const clientSeen = localStorage.getItem('pm_booking_tutorial_seen') === 'true';
+            const adminSeen = localStorage.getItem('pm_admin_tutorial_seen') === 'true';
+            // Mark checked if EITHER one is seen (handles both roles intuitively)
+            tutorialCheckbox.checked = clientSeen || adminSeen;
+        }
     }
 });
 

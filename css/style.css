@@ -4749,33 +4749,25 @@ body.loaded #preloader {
 }
 
 /* Selected slots (Mine) */
-.time-slot.selected.service-treino {
+.time-slot.selected.service-treino,
+.time-slot.active-selection.service-treino,
+.time-slot.active-selection.service-treino_personalizado {
     background: var(--color-treino);
     color: #000;
     box-shadow: 0 0 25px rgba(230, 174, 23, 0.6);
 }
 
-.time-slot.selected.service-osteo {
+.time-slot.selected.service-osteo,
+.time-slot.active-selection.service-osteo,
+.time-slot.active-selection.service-osteopatia {
     background: var(--color-osteo);
     color: #000;
     box-shadow: 0 0 25px rgba(255, 255, 255, 0.6);
 }
 
-.time-slot.selected::after {
-    content: 'A tua reserva';
-    position: absolute;
-    bottom: -15px;
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 0.6rem;
-    white-space: nowrap;
-    color: var(--color-primary);
-    font-weight: 700;
-    text-transform: uppercase;
-}
-
 .time-slot.service-treino:hover,
-.time-slot.service-treino.active-selection {
+.time-slot.service-treino.active-selection,
+.time-slot.service-treino_personalizado.active-selection {
     background: var(--color-treino);
     color: #000;
     box-shadow: 0 0 20px rgba(230, 174, 23, 0.4);
@@ -4796,7 +4788,8 @@ body.loaded #preloader {
     border-color: var(--color-grupal);
 }
 
-.time-slot.selected.service-grupal {
+.time-slot.selected.service-grupal,
+.time-slot.active-selection.service-grupal {
     background: var(--color-grupal);
     color: var(--color-text);
     box-shadow: 0 0 25px rgba(10, 111, 232, 0.6);
@@ -4812,10 +4805,26 @@ body.loaded #preloader {
 .time-slot.service-osteo.active-selection,
 .time-slot.service-osteopatia:hover,
 .time-slot.service-osteopatia.active-selection {
-    background: var(--color-osteo) !important;
+    background: var(--color-osteo);
+    color: var(--color-bg);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4);
+    border-color: var(--color-osteo);
+}
+
+/* Generic Fallback for Active States */
+.time-slot.active,
+.time-slot.active-selection {
+    background: var(--color-primary) !important;
     color: #000 !important;
-    box-shadow: 0 0 20px rgba(255, 255, 255, 0.4) !important;
-    border-color: var(--color-osteo) !important;
+    border-color: var(--color-primary) !important;
+    box-shadow: 0 0 15px rgba(230, 174, 23, 0.4) !important;
+    opacity: 1 !important;
+}
+
+.time-slot.service-blocked.active {
+    background: var(--color-primary) !important;
+    border-color: var(--color-primary) !important;
+    color: #fff !important;
 }
 
 /* Admin Multi-State Selection Styles */
@@ -4992,7 +5001,8 @@ body.loaded #preloader {
 }
 
 
-.time-slot.selected {
+.time-slot.selected,
+.time-slot.active-selection {
     background: var(--color-primary);
     color: #000;
     box-shadow: 0 0 25px rgba(230, 174, 23, 0.5);
@@ -6076,7 +6086,9 @@ body.loaded #preloader {
     cursor: pointer;
     transition: all 0.2s;
 }
-.time-slot:hover, .time-slot.selected {
+.time-slot:hover, 
+.time-slot.selected,
+.time-slot.active-selection {
     background: var(--color-primary);
     color: #000;
     border-color: var(--color-primary);

@@ -9,12 +9,14 @@ admin.initializeApp();
 // ===== Google Calendar Integration =====
 const serviceAccount = require("./service-account.json");
 const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
-const auth = new google.auth.JWT(
-  serviceAccount.client_email,
-  null,
-  serviceAccount.private_key,
-  SCOPES
-);
+// Initialize Google Calendar API
+const auth = new google.auth.GoogleAuth({
+  credentials: {
+    client_email: serviceAccount.client_email,
+    private_key: serviceAccount.private_key,
+  },
+  scopes: SCOPES,
+});
 const calendar = google.calendar({ version: 'v3', auth });
 const CALENDAR_ID = '787c5415397bcfb7a4e59fd24b2192ee3ab886775a2cc781c3a951540b79d83f@group.calendar.google.com';
 
@@ -252,135 +254,246 @@ exports.onWeeklyScheduleUpdated = functions
     const beforeSlots = beforeData.slots || {};
     const afterSlots = afterData.slots || {};
 
+    const newBookings = [];
+    const newCancellations = [];
+
     for (const slotId of Object.keys(afterSlots)) {
       const beforeSlot = beforeSlots[slotId] || {};
       const afterSlot = afterSlots[slotId] || {};
 
-      // New Booking Detection
-      if (beforeSlot.status !== "booked" && afterSlot.status === "booked" && afterSlot.bookedBy) {
-        console.log(`New booking detected at ${slotId} by ${afterSlot.bookedName}`);
-        
-        // --- Google Calendar Integration: Add Event ---
-        try {
-          const [datePart, timePart] = slotId.split('T');
-          let [hour, minute] = timePart.split(':').map(Number);
-          // Assume 1 hour duration
-          let endHour = hour + 1;
-          const endHourStr = endHour.toString().padStart(2, '0');
-          const minuteStr = minute.toString().padStart(2, '0');
-          
-          const startDateTime = `${datePart}T${timePart}:00`;
-          const endDateTime = `${datePart}T${endHourStr}:${minuteStr}:00`;
+      // New Booking Detection (Personal/Osteo/Group)
+      const isNewPersonal = beforeSlot.status !== "booked" && afterSlot.status === "booked" && afterSlot.bookedBy;
+      const isNewGroupJoin = afterSlot.serviceType === "grupal" && (afterSlot.bookedCount || 0) > (beforeSlot.bookedCount || 0);
 
-          const event = {
-            summary: `Reserva: ${afterSlot.bookedName} (${afterSlot.serviceType || 'Serviço'})`,
-            description: `Cliente: ${afterSlot.bookedName}\nServiço: ${afterSlot.serviceType || 'N/A'}\nNotas: ${afterSlot.clientNotes || 'Nenhuma'}`,
-            start: {
-              dateTime: startDateTime,
-              timeZone: 'Europe/Lisbon',
-            },
-            end: {
-              dateTime: endDateTime,
-              timeZone: 'Europe/Lisbon',
-            },
-          };
-
-          const calendarResponse = await calendar.events.insert({
-            calendarId: CALENDAR_ID,
-            resource: event,
-          });
-
-          const eventId = calendarResponse.data.id;
-          console.log(`Google Calendar event created: ${eventId}`);
-          
-          await admin.firestore().document(`weekly_schedules/${weekId}`).update({
-            [`slots.${slotId}.googleEventId`]: eventId
-          });
-        } catch (error) {
-          console.error("Error creating Google Calendar event:", error);
+      if (isNewPersonal || isNewGroupJoin) {
+        let name = afterSlot.bookedName;
+        if (isNewGroupJoin && !name) {
+          const beforeUsers = beforeSlot.bookedUsers || [];
+          const afterUsers = afterSlot.bookedUsers || [];
+          const joiner = afterUsers.find(au => !beforeUsers.some(bu => bu.uid === au.uid));
+          name = joiner ? joiner.name : "Novo Aluno";
         }
-
-        const notesRow = afterSlot.clientNotes
-          ? `<tr><td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Nota</td><td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">${afterSlot.clientNotes}</td></tr>`
-          : "";
-
-        const bodyHtml = `
-              <p style="margin:0 0 20px 0;">Foi registada uma nova reserva no sistema.</p>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eee; border-radius:8px; overflow:hidden; margin-bottom:8px;">
-                <tr style="background-color:#f9f9f9;">
-                  <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0; width:120px;">Cliente</td>
-                  <td style="padding:8px 12px; color:#1a1a1a; font-size:14px; font-weight:700; border-bottom:1px solid #f0f0f0;">${afterSlot.bookedName || "N/A"}</td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Data / Hora</td>
-                  <td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">${slotId}</td>
-                </tr>
-                <tr style="background-color:#f9f9f9;">
-                  <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Serviço</td>
-                  <td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">${afterSlot.serviceType || "N/A"}</td>
-                </tr>
-                ${notesRow}
-              </table>`;
-
-        const mailOptions = {
-          from: `"Paulo Morais" <${emailUser.value()}>`,
-          to: adminEmail,
-          subject: `Nova Reserva: ${afterSlot.bookedName} (${slotId})`,
-          html: buildEmailHtml({
-            title: "Nova Reserva no Sistema",
-            bodyHtml,
-            ctaText: "Ver Painel de Gestão",
-            ctaUrl: "https://pmorais.pt/perfil.html"
-          })
-        };
-        await transporter.sendMail(mailOptions).catch(console.error);
+        newBookings.push({ slotId, data: afterSlot, clientName: name });
       }
 
-      // Cancellation Detection
-      if (beforeSlot.status === "booked" && beforeSlot.bookedBy && afterSlot.status === "available" && !afterSlot.bookedBy) {
-         console.log(`Booking cancelled at ${slotId} by ${beforeSlot.bookedName}`);
+      // Cancellation Detection: Detect if it WAS booked but NOW it isn't (available, blocked, or deleted)
+      const wasPersonal = beforeSlot.status === "booked" && beforeSlot.bookedBy;
+      const isNowPersonal = afterSlot.status === "booked" && afterSlot.bookedBy;
+      const isPersonalCanc = wasPersonal && !isNowPersonal;
+      
+      const beforeCount = beforeSlot.bookedCount || (beforeSlot.bookedUsers ? beforeSlot.bookedUsers.length : 0);
+      const afterCount = afterSlot.bookedCount || (afterSlot.bookedUsers ? afterSlot.bookedUsers.length : 0);
+      const isGroupCanc = beforeSlot.serviceType === "grupal" && afterCount < beforeCount;
 
-         // --- Google Calendar Integration: Delete Event ---
-         if (beforeSlot.googleEventId) {
-           try {
-             await calendar.events.delete({
-               calendarId: CALENDAR_ID,
-               eventId: beforeSlot.googleEventId,
-             });
-             console.log(`Google Calendar event deleted: ${beforeSlot.googleEventId}`);
-           } catch (error) {
-             console.error("Error deleting Google Calendar event:", error);
-           }
-         }
-
-         const bodyHtml = `
-              <p style="margin:0 0 20px 0;">Uma reserva foi cancelada no sistema.</p>
-              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eee; border-radius:8px; overflow:hidden; margin-bottom:8px;">
-                <tr style="background-color:#f9f9f9;">
-                  <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0; width:120px;">Cliente</td>
-                  <td style="padding:8px 12px; color:#1a1a1a; font-size:14px; font-weight:700; border-bottom:1px solid #f0f0f0;">${beforeSlot.bookedName || "N/A"}</td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 12px; color:#999; font-size:14px;">Data / Hora</td>
-                  <td style="padding:8px 12px; color:#333; font-size:14px;">${slotId}</td>
-                </tr>
-              </table>`;
-         
-         const mailOptions = {
-          from: `"Paulo Morais" <${emailUser.value()}>`,
-          to: adminEmail,
-          subject: `Reserva Cancelada: ${beforeSlot.bookedName} (${slotId})`,
-          html: buildEmailHtml({
-            title: "Reserva Cancelada",
-            bodyHtml,
-            ctaText: "Ver Painel de Gestão",
-            ctaUrl: "https://pmorais.pt/perfil.html"
-          })
-        };
-        await transporter.sendMail(mailOptions).catch(console.error);
+      if (isPersonalCanc || isGroupCanc) {
+        let name = beforeSlot.bookedName;
+        if (isGroupCanc && !name) {
+          const beforeUsers = beforeSlot.bookedUsers || [];
+          const afterUsers = afterSlot.bookedUsers || [];
+          const leaver = beforeUsers.find(bu => !afterUsers.some(au => au.uid === bu.uid));
+          name = leaver ? leaver.name : "Aluno";
+        }
+        newCancellations.push({ slotId, data: beforeSlot, clientName: name });
       }
     }
-    
+
+    // --- HANDLE NEW BOOKINGS (Unified Email + GCal) ---
+    if (newBookings.length > 0) {
+      console.log(`${newBookings.length} new slots detected. Processing unified email...`);
+      
+      const mainClientName = newBookings[0].clientName || "N/A";
+      const clientNotes = newBookings[0].data.clientNotes || "Nenhuma";
+      const serviceType = newBookings[0].data.serviceType || "N/A";
+      
+      // Sort chronologically
+      newBookings.sort((a, b) => a.slotId.localeCompare(b.slotId));
+
+      let sessionItemsHtml = "";
+      for (const b of newBookings) {
+        // --- Google Calendar Integration ---
+        // Avoid duplicate/overlapping events for contiguous 30-min slots in the same batch
+        const [datePart, timePart] = b.slotId.split('T');
+        const [hour, minute] = timePart.split(':').map(Number);
+        const prevMinute = minute === 0 ? 30 : 0;
+        const prevHour = minute === 0 ? hour - 1 : hour;
+        const prevSlotId = `${datePart}T${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}`;
+        
+        const isContinuation = newBookings.some(nb => nb.slotId === prevSlotId);
+        
+        // ONLY trigger event creation and email listing for the START of a session
+        if (!isContinuation) {
+          // Determine session duration (usually 60 mins = 2 slots)
+            let durationMinutes = 30;
+            let checkHour = hour;
+            let checkMinute = minute;
+            while (true) {
+              checkMinute += 30;
+              if (checkMinute >= 60) { checkHour += 1; checkMinute = 0; }
+              const nextId = `${datePart}T${checkHour.toString().padStart(2, '0')}:${checkMinute.toString().padStart(2, '0')}`;
+              if (newBookings.some(nb => nb.slotId === nextId)) {
+                durationMinutes += 30;
+              } else {
+                break;
+              }
+            }
+
+            // Ensure at least 60 mins if it's one of Paulo's services (Personal/Osteo/Online)
+            // (Client UI already handles this, but we force it here for GCal correctness)
+            if (durationMinutes < 60) durationMinutes = 60;
+
+          const startDateTime = `${datePart}T${timePart}:00`;
+          const endMoment = new Date(startDateTime);
+          endMoment.setMinutes(endMoment.getMinutes() + durationMinutes);
+
+          try {
+            // Format to YYYY-MM-DDTHH:mm:ss
+            const endDateTime = endMoment.getFullYear() + "-" + 
+                                String(endMoment.getMonth() + 1).padStart(2, '0') + "-" + 
+                                String(endMoment.getDate()).padStart(2, '0') + "T" + 
+                                String(endMoment.getHours()).padStart(2, '0') + ":" + 
+                                String(endMoment.getMinutes()).padStart(2, '0') + ":00";
+
+            const event = {
+              summary: `Reserva: ${b.clientName} (${b.data.serviceType || 'Serviço'})`,
+              description: `Cliente: ${b.clientName}\nServiço: ${b.data.serviceType || 'N/A'}\nNotas: ${clientNotes}`,
+              start: { dateTime: startDateTime, timeZone: 'Europe/Lisbon' },
+              end: { dateTime: endDateTime, timeZone: 'Europe/Lisbon' },
+            };
+
+            const calendarResponse = await calendar.events.insert({ calendarId: CALENDAR_ID, resource: event });
+            const eventId = calendarResponse.data.id;
+            console.log(`Google Calendar event created: ${eventId} (${durationMinutes} min)`);
+            
+            // Link event ID to the start slot
+            await admin.firestore().doc(`weekly_schedules/${weekId}`).update({
+              [`slots.${b.slotId}.googleEventId`]: eventId
+            });
+          } catch (error) {
+            console.error("Error creating Google Calendar event:", error.response ? JSON.stringify(error.response.data) : error);
+          }
+
+          // Add to the email list with full time range
+          const startTime = timePart;
+          const endTime = `${String(endMoment.getHours()).padStart(2, '0')}:${String(endMoment.getMinutes()).padStart(2, '0')}`;
+          sessionItemsHtml += `<li style="margin-bottom:4px;">${datePart.split('-').reverse().join('/')}: <strong>${startTime} às ${endTime}</strong></li>`;
+        }
+      }
+
+      const notesRow = clientNotes !== "Nenhuma"
+        ? `<tr><td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Nota</td><td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">${clientNotes}</td></tr>`
+        : "";
+
+      const bodyHtml = `
+            <p style="margin:0 0 20px 0;">Foi registada uma nova reserva no sistema.</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eee; border-radius:8px; overflow:hidden; margin-bottom:8px;">
+              <tr style="background-color:#f9f9f9;">
+                <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0; width:120px;">Cliente</td>
+                <td style="padding:8px 12px; color:#1a1a1a; font-size:14px; font-weight:700; border-bottom:1px solid #f0f0f0;">${mainClientName}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Sessões</td>
+                <td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">
+                  <ul style="margin:0; padding-left:18px;">${sessionItemsHtml}</ul>
+                </td>
+              </tr>
+              <tr style="background-color:#f9f9f9;">
+                <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Serviço</td>
+                <td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">${serviceType}</td>
+              </tr>
+              ${notesRow}
+            </table>`;
+
+      const mailOptions = {
+        from: `"Paulo Morais" <${emailUser.value()}>`,
+        to: adminEmail,
+        subject: `Nova Reserva: ${mainClientName} (${newBookings.length} horários)`,
+        html: buildEmailHtml({
+          title: "Nova Reserva no Sistema",
+          bodyHtml,
+          ctaText: "Ver Painel de Gestão",
+          ctaUrl: "https://pmorais.pt/perfil.html"
+        })
+      };
+      await transporter.sendMail(mailOptions).catch(console.error);
+    }
+
+    // --- HANDLE CANCELLATIONS (Unified Email + GCal) ---
+    if (newCancellations.length > 0) {
+      console.log(`${newCancellations.length} slots cancelled. Processing unified email...`);
+      const mainClientName = newCancellations[0].clientName || "N/A";
+      
+      newCancellations.sort((a, b) => a.slotId.localeCompare(b.slotId));
+      
+      let sessionItemsHtml = "";
+      for (const c of newCancellations) {
+        // --- Google Calendar Integration: Delete Event ---
+        if (c.data.googleEventId) {
+          try {
+            await calendar.events.delete({ calendarId: CALENDAR_ID, eventId: c.data.googleEventId });
+            console.log(`Google Calendar event deleted: ${c.data.googleEventId}`);
+          } catch (error) {
+            console.error("Error deleting Google Calendar event:", error.response ? JSON.stringify(error.response.data) : error);
+          }
+        }
+        
+        const [datePart, timePart] = c.slotId.split('T');
+        const [hour, minute] = timePart.split(':').map(Number);
+        const prevMinute = minute === 0 ? 30 : 0;
+        const prevHour = minute === 0 ? hour - 1 : hour;
+        const prevSlotId = `${datePart}T${prevHour.toString().padStart(2, '0')}:${prevMinute.toString().padStart(2, '0')}`;
+        
+        // Find end of contiguous block for the email
+        let durationMinutes = 30;
+        let checkHour = hour;
+        let checkMinute = minute;
+        while (true) {
+          checkMinute += 30;
+          if (checkMinute >= 60) { checkHour += 1; checkMinute = 0; }
+          const nextId = `${datePart}T${checkHour.toString().padStart(2, '0')}:${checkMinute.toString().padStart(2, '0')}`;
+          if (newCancellations.some(nc => nc.slotId === nextId)) {
+            durationMinutes += 30;
+          } else {
+            break;
+          }
+        }
+        const endTime = new Date(`${datePart}T${timePart}:00`);
+        endTime.setMinutes(endTime.getMinutes() + durationMinutes);
+        const endTimeStr = `${String(endTime.getHours()).padStart(2, '0')}:${String(endTime.getMinutes()).padStart(2, '0')}`;
+
+        if (!newCancellations.some(nc => nc.slotId === prevSlotId)) {
+          sessionItemsHtml += `<li>${datePart.split('-').reverse().join('/')}: <strong>${timePart} às ${endTimeStr}</strong></li>`;
+        }
+      }
+
+      const bodyHtml = `
+            <p style="margin:0 0 20px 0;">Uma reserva foi cancelada no sistema.</p>
+            <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:1px solid #eee; border-radius:8px; overflow:hidden; margin-bottom:8px;">
+              <tr style="background-color:#f9f9f9;">
+                <td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0; width:120px;">Cliente</td>
+                <td style="padding:8px 12px; color:#1a1a1a; font-size:14px; font-weight:700; border-bottom:1px solid #f0f0f0;">${mainClientName}</td>
+              </tr>
+              <tr>
+                <td style="padding:8px 12px; color:#999; font-size:14px;">Sessões</td>
+                <td style="padding:8px 12px; color:#333; font-size:14px;">
+                  <ul style="margin:0; padding-left:18px;">${sessionItemsHtml}</ul>
+                </td>
+              </tr>
+            </table>`;
+      
+      const mailOptions = {
+        from: `"Paulo Morais" <${emailUser.value()}>`,
+        to: adminEmail,
+        subject: `Reserva Cancelada: ${mainClientName}`,
+        html: buildEmailHtml({
+          title: "Reserva Cancelada",
+          bodyHtml,
+          ctaText: "Ver Painel de Gestão",
+          ctaUrl: "https://pmorais.pt/perfil.html"
+        })
+      };
+      await transporter.sendMail(mailOptions).catch(console.error);
+    }
+
     return null;
   });
 

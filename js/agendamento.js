@@ -597,7 +597,7 @@ function renderClientTimeSlots(loadedSlots, isoDateStr, isPublished) {
             const time = baseSlots[i];
             const div = document.createElement('div');
             const isSelected = bookingData.selections.some(s => s.isoDate === isoDateStr && s.time === time);
-            div.className = `time-slot ${serviceClass} ${isSelected ? 'selected' : ''}`;
+            div.className = `time-slot ${serviceClass} ${isSelected ? 'active-selection' : ''}`;
             
             if (isOnlineGroup) {
                 div.innerHTML = `${time}<br><small>${onlineCount} inscrito(s)</small>`;
@@ -621,11 +621,11 @@ function selectTime(time, element, isoDateStr, dateStr) {
     if (idx !== -1) {
         // Deselect
         bookingData.selections.splice(idx, 1);
-        element.classList.remove('selected');
+        element.classList.remove('active-selection');
     } else {
         // Select
         bookingData.selections.push({ isoDate: isoDateStr, dateStr, time });
-        element.classList.add('selected');
+        element.classList.add('active-selection');
     }
     
     document.getElementById('btn-continue-form').disabled = bookingData.selections.length === 0;
@@ -880,7 +880,7 @@ function selectAdminDay(date) {
             const isPublished = publishedAvailability[dateStr] && publishedAvailability[dateStr][time] === 'blocked';
             
             if (isBlocked) {
-                div.className = `time-slot service-blocked selected`;
+                div.className = `time-slot admin-selectable service-blocked active`;
                 div.style.backgroundColor = isPublished ? '#555' : 'var(--color-primary)';
                 div.style.borderColor = isPublished ? '#555' : 'var(--color-primary)';
                 div.style.color = '#fff';
@@ -945,7 +945,7 @@ function toggleAdminTime(dateStr, time, element) {
         // Block it
         adminAvailability[dateStr][time] = 'blocked';
         const isPublished = publishedAvailability[dateStr] && publishedAvailability[dateStr][time] === 'blocked';
-        element.className = `time-slot service-blocked selected`;
+        element.className = `time-slot admin-selectable service-blocked active`;
         element.style.backgroundColor = isPublished ? '#555' : 'var(--color-primary)';
         element.style.borderColor = isPublished ? '#555' : 'var(--color-primary)';
         element.style.color = '#fff';

@@ -421,20 +421,19 @@
                                 <select id="prof-physical-limits" required>
                                     <option value="" disabled selected>Selecionar...</option>
                                     <option value="não">Não</option>
-                                    <option value="sim">Sim</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
+<div class="form-group">
                             <label for="prof-obs" id="label-obs">Observações</label>
                             <textarea id="prof-obs" placeholder="Descreva problemas de saúde ou limitações, se aplicável..."></textarea>
                             <small id="obs-hint" class="form-hint hidden">Por favor, descreva os seus problemas de saúde ou limitações físicas.</small>
                         </div>
 
-                        <div class="wizard-buttons">
-                            <button type="submit" id="btn-save-profile" class="btn btn-primary">Guardar
-                                Alterações</button>
+                        <div style="margin-bottom: 30px; display: flex; align-items: center; gap: 12px; padding: 15px; border-radius: 15px; background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05);">
+                            <input type="checkbox" id="prof-tutorial-seen" style="width: 20px; height: 20px; margin: 0; cursor: pointer; accent-color: #E6AE17;">
+                            <label for="prof-tutorial-seen" style="margin: 0; font-weight: 500; font-size: 0.95rem; cursor: pointer; display: inline; color: var(--color-text);">Completei o tutorial de agendamento</label>
+                        </div>
+
+                        <div class="wizard-buttons" style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap; margin-top: 30px;">
+                            <button type="submit" id="btn-save-profile" class="btn btn-primary">Guardar Alterações</button>
                             <button type="button" id="btn-cancel-wizard" class="btn btn-outline">Cancelar</button>
                             <button type="button" id="btn-deactivate-account" class="btn" style="background-color: var(--color-danger, #ef4444); color: white; margin-left: auto;">Desativar Conta</button>
                         </div>
