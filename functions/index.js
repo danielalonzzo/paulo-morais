@@ -2,8 +2,21 @@ const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
 const nodemailer = require("nodemailer");
 const { defineSecret } = require("firebase-functions/params");
+const { google } = require("googleapis");
 
 admin.initializeApp();
+
+// ===== Google Calendar Integration =====
+const serviceAccount = require("./service-account.json");
+const SCOPES = ['https://www.googleapis.com/auth/calendar.events'];
+const auth = new google.auth.JWT(
+  serviceAccount.client_email,
+  null,
+  serviceAccount.private_key,
+  SCOPES
+);
+const calendar = google.calendar({ version: 'v3', auth });
+const CALENDAR_ID = '787c5415397bcfb7a4e59fd24b2192ee3ab886775a2cc781c3a951540b79d83f@group.calendar.google.com';
 
 // Definir los secretos que se almacenarán en Google Cloud Secret Manager
 const emailUser = defineSecret("EMAIL_USER");
@@ -247,6 +260,46 @@ exports.onWeeklyScheduleUpdated = functions
       if (beforeSlot.status !== "booked" && afterSlot.status === "booked" && afterSlot.bookedBy) {
         console.log(`New booking detected at ${slotId} by ${afterSlot.bookedName}`);
         
+        // --- Google Calendar Integration: Add Event ---
+        try {
+          const [datePart, timePart] = slotId.split('T');
+          let [hour, minute] = timePart.split(':').map(Number);
+          // Assume 1 hour duration
+          let endHour = hour + 1;
+          const endHourStr = endHour.toString().padStart(2, '0');
+          const minuteStr = minute.toString().padStart(2, '0');
+          
+          const startDateTime = `${datePart}T${timePart}:00`;
+          const endDateTime = `${datePart}T${endHourStr}:${minuteStr}:00`;
+
+          const event = {
+            summary: `Reserva: ${afterSlot.bookedName} (${afterSlot.serviceType || 'Serviço'})`,
+            description: `Cliente: ${afterSlot.bookedName}\nServiço: ${afterSlot.serviceType || 'N/A'}\nNotas: ${afterSlot.clientNotes || 'Nenhuma'}`,
+            start: {
+              dateTime: startDateTime,
+              timeZone: 'Europe/Lisbon',
+            },
+            end: {
+              dateTime: endDateTime,
+              timeZone: 'Europe/Lisbon',
+            },
+          };
+
+          const calendarResponse = await calendar.events.insert({
+            calendarId: CALENDAR_ID,
+            resource: event,
+          });
+
+          const eventId = calendarResponse.data.id;
+          console.log(`Google Calendar event created: ${eventId}`);
+          
+          await admin.firestore().document(`weekly_schedules/${weekId}`).update({
+            [`slots.${slotId}.googleEventId`]: eventId
+          });
+        } catch (error) {
+          console.error("Error creating Google Calendar event:", error);
+        }
+
         const notesRow = afterSlot.clientNotes
           ? `<tr><td style="padding:8px 12px; color:#999; font-size:14px; border-bottom:1px solid #f0f0f0;">Nota</td><td style="padding:8px 12px; color:#333; font-size:14px; border-bottom:1px solid #f0f0f0;">${afterSlot.clientNotes}</td></tr>`
           : "";
@@ -286,6 +339,19 @@ exports.onWeeklyScheduleUpdated = functions
       // Cancellation Detection
       if (beforeSlot.status === "booked" && beforeSlot.bookedBy && afterSlot.status === "available" && !afterSlot.bookedBy) {
          console.log(`Booking cancelled at ${slotId} by ${beforeSlot.bookedName}`);
+
+         // --- Google Calendar Integration: Delete Event ---
+         if (beforeSlot.googleEventId) {
+           try {
+             await calendar.events.delete({
+               calendarId: CALENDAR_ID,
+               eventId: beforeSlot.googleEventId,
+             });
+             console.log(`Google Calendar event deleted: ${beforeSlot.googleEventId}`);
+           } catch (error) {
+             console.error("Error deleting Google Calendar event:", error);
+           }
+         }
 
          const bodyHtml = `
               <p style="margin:0 0 20px 0;">Uma reserva foi cancelada no sistema.</p>
