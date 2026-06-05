@@ -30,13 +30,15 @@ document.addEventListener('DOMContentLoaded', () => {
             mobileToggle.classList.toggle('active');
 
             // Icon switching
-            const icon = mobileToggle.querySelector('i');
-            if (mobileToggle.classList.contains('active')) {
-                icon.setAttribute('data-lucide', 'x');
-            } else {
-                icon.setAttribute('data-lucide', 'menu');
+            const icon = mobileToggle.querySelector('i, svg');
+            if (icon) {
+                if (mobileToggle.classList.contains('active')) {
+                    icon.setAttribute('data-lucide', 'x');
+                } else {
+                    icon.setAttribute('data-lucide', 'menu');
+                }
+                lucide.createIcons();
             }
-            lucide.createIcons();
         });
 
         // Keyboard Accessibility
@@ -52,9 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
             link.addEventListener('click', () => {
                 navMenu.classList.remove('active');
                 mobileToggle.classList.remove('active');
-                const icon = mobileToggle.querySelector('i');
-                icon.setAttribute('data-lucide', 'menu');
-                lucide.createIcons();
+                const icon = mobileToggle.querySelector('i, svg');
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'menu');
+                    lucide.createIcons();
+                }
             });
         });
     }
