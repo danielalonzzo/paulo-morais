@@ -4,7 +4,6 @@ const nodemailer = require("nodemailer");
 const { defineSecret } = require("firebase-functions/params");
 const { google } = require("googleapis");
 
-admin.initializeApp();
 
 // ===== Google Calendar Integration =====
 const serviceAccount = require("./service-account.json");
@@ -18,7 +17,7 @@ const auth = new google.auth.GoogleAuth({
   scopes: SCOPES,
 });
 const calendar = google.calendar({ version: 'v3', auth });
-const CALENDAR_ID = '787c5415397bcfb7a4e59fd24b2192ee3ab886775a2cc781c3a951540b79d83f@group.calendar.google.com';
+const CALENDAR_ID = 'pt.pmorais.agenda@gmail.com';
 
 // Definir los secretos que se almacenarán en Google Cloud Secret Manager
 const emailUser = defineSecret("EMAIL_USER");
@@ -243,8 +242,7 @@ exports.onWeeklyScheduleUpdated = functions
             };
             await transporter.sendMail(mailOptions);
           }
-          console.log(`Broadcast sent individually to ${bccList.length} clients.`);
-        }
+          console.log(`Broadcast sent individually to ${bccList.length} clients.`);        }
       } catch (error) {
         console.error("Error sending broadcast:", error);
       }

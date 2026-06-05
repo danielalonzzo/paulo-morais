@@ -1,0 +1,22 @@
+{
+  "name": "Paulo Morais - Your Own Workout",
+  "short_name": "Paulo Morais",
+  "description": "Treino personalizado e osteopatia em Lisboa. Paulo Morais oferece uma abordagem integrada para a sua saúde e bem-estar.",
+  "start_url": "/perfil.html",
+  "display": "standalone",
+  "background_color": "#121212",
+  "theme_color": "#E6AE17",
+  "icons": [
+    {
+      "src": "images/logo/logo_amarelo_alpha.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "images/logo/logo_amarelo_alpha.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["health", "fitness"]
+}

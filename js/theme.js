@@ -192,7 +192,421 @@ applyDynamicTheme();
 // Ensure logos/icons update once DOM is ready
 document.addEventListener('DOMContentLoaded', () => {
     applyDynamicTheme();
+    injectPwaInstallButton();
+    maybeAutoShowPwaTutorial();
 });
 
 // Continuous update every minute for auto mode
 setInterval(applyDynamicTheme, 60000);
+
+// Global deferred prompt for PWA installation
+let deferredPrompt;
+const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+const PWA_DISMISSED_KEY = 'pm_pwa_tutorial_dismissed';
+let pwaCurrentSlide = 0;
+let pwaTotalSlides = 3;
+
+window.addEventListener('beforeinstallprompt', (e) => {
+    // Prevent Chrome from automatically showing the prompt
+    e.preventDefault();
+    deferredPrompt = e;
+    console.log('PWA installation prompt captured.');
+    
+    // Ensure button is injected
+    injectPwaInstallButton();
+});
+
+function injectPwaInstallButton() {
+    if (isStandalone) return;
+    
+    const fabOptions = document.querySelector('.fab-options');
+    if (!fabOptions) return;
+    
+    // Check if button already exists
+    if (document.getElementById('pwa-install-btn')) return;
+    
+    const pwaBtn = document.createElement('a');
+    pwaBtn.href = 'javascript:void(0)';
+    pwaBtn.id = 'pwa-install-btn';
+    pwaBtn.className = 'fab-action-btn pwa-install';
+    pwaBtn.title = 'Instalar App';
+    pwaBtn.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        openPwaTutorial();
+    };
+    
+    pwaBtn.innerHTML = '<i data-lucide="download"></i>';
+    
+    const themeToggle = document.getElementById('theme-toggle');
+    if (themeToggle) {
+        fabOptions.insertBefore(pwaBtn, themeToggle);
+    } else {
+        fabOptions.appendChild(pwaBtn);
+    }
+    
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+}
+
+function injectPwaInstallOverlay() {
+    if (document.getElementById('pwa-install-overlay')) return;
+    
+    const overlay = document.createElement('div');
+    overlay.id = 'pwa-install-overlay';
+    overlay.className = 'booking-tutorial-overlay';
+    
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    let slidesHTML = '';
+    
+    if (isIOS) {
+        pwaTotalSlides = 4;
+        slidesHTML = `
+            <!-- Slide 0: Welcome -->
+            <div class="tutorial-slide active" data-pwa-slide="0">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Instalar App</span>
+                    <h3 class="tutorial-slide-title">Adicione ao seu Ecrã</h3>
+                    <p class="tutorial-slide-desc">
+                        Adicione a App do <strong>Paulo Morais</strong> ao seu ecrã principal para aceder rapidamente aos treinos e marcações.<br><br>
+                        É simples, rápido e não ocupa espaço de armazenamento!
+                    </p>
+                </div>
+            </div>
+            <!-- Slide 1: Partilhar -->
+            <div class="tutorial-slide" data-pwa-slide="1">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="share"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Passo 1</span>
+                    <h3 class="tutorial-slide-title">Toque em Partilhar</h3>
+                    <p class="tutorial-slide-desc">
+                        No navegador Safari, toque no botão <strong>Partilhar</strong> na barra inferior do seu ecrã (o ícone de um quadrado com uma seta para cima).
+                    </p>
+                    <div class="tutorial-tip">
+                        <i data-lucide="info"></i>
+                        <span>Este botão está normalmente no centro da barra inferior do Safari no seu iPhone.</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 2: Adicionar ao ecrã principal -->
+            <div class="tutorial-slide" data-pwa-slide="2">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="plus-square"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Passo 2</span>
+                    <h3 class="tutorial-slide-title">Ecrã Principal</h3>
+                    <p class="tutorial-slide-desc">
+                        No menu de partilha, deslize para baixo e selecione a opção <strong>"Adicionar ao Ecrã Principal"</strong>.
+                    </p>
+                </div>
+            </div>
+            <!-- Slide 3: Concluir -->
+            <div class="tutorial-slide" data-pwa-slide="3">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Passo 3</span>
+                    <h3 class="tutorial-slide-title">Confirmar e Usar!</h3>
+                    <p class="tutorial-slide-desc">
+                        Toque em <strong>"Adicionar"</strong> no canto superior direito para confirmar. O ícone aparecerá no seu telemóvel e estará pronto a usar.
+                    </p>
+                </div>
+            </div>
+        `;
+    } else {
+        pwaTotalSlides = 3;
+        slidesHTML = `
+            <!-- Slide 0: Welcome -->
+            <div class="tutorial-slide active" data-pwa-slide="0">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="sparkles"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Instalar App</span>
+                    <h3 class="tutorial-slide-title">Paulo Morais no seu Telemóvel</h3>
+                    <p class="tutorial-slide-desc">
+                        Instale a nossa aplicação para aceder diretamente aos seus treinos, agendamentos e gerir o seu perfil de forma rápida e fluida.
+                    </p>
+                    <div class="tutorial-tip" id="android-install-tip-box" style="display:none;">
+                        <i data-lucide="check-circle-2"></i>
+                        <span>Compatível com o seu dispositivo! Toque em 'Instalar' na slide seguinte para configurar instantaneamente.</span>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 1: Install Action -->
+            <div class="tutorial-slide" data-pwa-slide="1">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="download"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Instalação</span>
+                    <h3 class="android-prompt-title" style="font-size: 1.35rem; font-weight: 800; color: var(--color-text); text-align: center; margin-bottom: 14px; line-height: 1.3;">Instalação Direta</h3>
+                    <p class="android-prompt-desc" style="font-size: 0.92rem; color: var(--color-text-dim); text-align: center; line-height: 1.7; margin-bottom: 0;">
+                        Clique no botão abaixo para instalar a aplicação diretamente no seu telemóvel de forma automática.
+                    </p>
+                    
+                    <div id="pwa-install-prompt-action-div" style="margin-top: 25px; text-align: center;">
+                        <button id="pwa-native-install-btn" class="tutorial-btn tutorial-btn-start" style="max-width: 100%; margin: 0 auto; display: inline-flex; align-items: center; justify-content: center; gap: 8px;">
+                            Instalar Agora
+                        </button>
+                    </div>
+
+                    <div id="pwa-manual-install-instructions" style="display:none; text-align: left; margin-top: 15px;">
+                        <p class="tutorial-slide-desc" style="text-align: center;">
+                            Para instalar manualmente, toque no menu de <strong>três pontos</strong> <i data-lucide="more-vertical" style="display:inline-block; width:16px; height:16px; vertical-align:middle;"></i> no canto superior direito do navegador e selecione <strong>"Instalar aplicação"</strong> ou <strong>"Adicionar ao ecrã principal"</strong>.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <!-- Slide 2: Concluir -->
+            <div class="tutorial-slide" data-pwa-slide="2">
+                <div style="text-align:center;">
+                    <div class="tutorial-slide-icon">
+                        <i data-lucide="check-circle"></i>
+                    </div>
+                    <span class="tutorial-step-badge">Concluído</span>
+                    <h3 class="tutorial-slide-title">Pronto a Utilizar!</h3>
+                    <p class="tutorial-slide-desc">
+                        Após confirmar a instalação, o ícone da App do Paulo Morais aparecerá no ecrã do seu dispositivo. Aceda quando quiser com um único toque!
+                    </p>
+                </div>
+            </div>
+        `;
+    }
+    
+    overlay.innerHTML = `
+        <div class="tutorial-card">
+            <button class="tutorial-close-btn" onclick="closePwaTutorial()" title="Fechar">
+                <i data-lucide="x"></i>
+            </button>
+            
+            <!-- Indicators -->
+            <div class="tutorial-indicators" id="pwa-indicators"></div>
+            
+            <!-- Slides -->
+            <div class="tutorial-slides-wrapper" id="pwa-slides-wrapper">
+                ${slidesHTML}
+            </div>
+            
+            <!-- Navigation -->
+            <div class="tutorial-nav" id="pwa-nav"></div>
+        </div>
+    `;
+    
+    document.body.appendChild(overlay);
+    
+    if (!isIOS) {
+        const nativeBtn = document.getElementById('pwa-native-install-btn');
+        if (nativeBtn) {
+            nativeBtn.addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    deferredPrompt.prompt();
+                    const { outcome } = await deferredPrompt.userChoice;
+                    console.log(`User response to install prompt: ${outcome}`);
+                    deferredPrompt = null;
+                    closePwaTutorial();
+                } else {
+                    alert('Por favor, utilize o menu do navegador para instalar manualmente.');
+                }
+            });
+        }
+    }
+}
+
+function initPwaIndicators() {
+    const container = document.getElementById('pwa-indicators');
+    if (!container) return;
+    container.innerHTML = '';
+    for (let i = 0; i < pwaTotalSlides; i++) {
+        const dot = document.createElement('div');
+        dot.className = `tutorial-dot ${i === 0 ? 'active' : ''}`;
+        dot.onclick = () => goToPwaSlide(i);
+        container.appendChild(dot);
+    }
+}
+
+function updatePwaIndicators() {
+    const dots = document.querySelectorAll('#pwa-indicators .tutorial-dot');
+    dots.forEach((dot, i) => {
+        dot.classList.remove('active', 'completed');
+        if (i === pwaCurrentSlide) {
+            dot.classList.add('active');
+        } else if (i < pwaCurrentSlide) {
+            dot.classList.add('completed');
+        }
+    });
+}
+
+function updatePwaNav() {
+    const nav = document.getElementById('pwa-nav');
+    if (!nav) return;
+    
+    const isLast = pwaCurrentSlide === pwaTotalSlides - 1;
+    const isFirst = pwaCurrentSlide === 0;
+    
+    let html = '';
+    if (isFirst) {
+        html += `<button class="tutorial-btn tutorial-btn-skip" onclick="closePwaTutorial()">Saltar</button>`;
+    } else {
+        html += `<button class="tutorial-btn tutorial-btn-prev" onclick="prevPwaSlide()"><i data-lucide="arrow-left"></i> Anterior</button>`;
+    }
+    
+    if (isLast) {
+        html += `<button class="tutorial-btn tutorial-btn-start" onclick="closePwaTutorial()">Concluir</button>`;
+    } else {
+        html += `<button class="tutorial-btn tutorial-btn-next" onclick="nextPwaSlide()">Seguinte <i data-lucide="arrow-right"></i></button>`;
+    }
+    
+    nav.innerHTML = html;
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function goToPwaSlide(index) {
+    if (index < 0 || index >= pwaTotalSlides || index === pwaCurrentSlide) return;
+    
+    const slides = document.querySelectorAll('#pwa-slides-wrapper .tutorial-slide');
+    const currentSlide = slides[pwaCurrentSlide];
+    const nextSlide = slides[index];
+    if (!currentSlide || !nextSlide) return;
+    
+    const goingForward = index > pwaCurrentSlide;
+    
+    currentSlide.classList.remove('active');
+    currentSlide.classList.add(goingForward ? 'exit-left' : '');
+    currentSlide.style.transform = goingForward ? 'translateX(-60px)' : 'translateX(60px)';
+    
+    nextSlide.style.transform = goingForward ? 'translateX(60px)' : 'translateX(-60px)';
+    nextSlide.style.opacity = '0';
+    
+    setTimeout(() => {
+        currentSlide.classList.remove('exit-left');
+        currentSlide.style.transform = '';
+        currentSlide.style.opacity = '';
+        
+        nextSlide.classList.add('active');
+        nextSlide.style.transform = '';
+        nextSlide.style.opacity = '';
+    }, 50);
+    
+    pwaCurrentSlide = index;
+    updatePwaIndicators();
+    updatePwaNav();
+}
+
+function nextPwaSlide() {
+    goToPwaSlide(pwaCurrentSlide + 1);
+}
+
+function prevPwaSlide() {
+    goToPwaSlide(pwaCurrentSlide - 1);
+}
+
+function openPwaTutorial() {
+    injectPwaInstallOverlay();
+    
+    pwaCurrentSlide = 0;
+    
+    const slides = document.querySelectorAll('#pwa-slides-wrapper .tutorial-slide');
+    slides.forEach((slide, i) => {
+        slide.classList.remove('active', 'exit-left');
+        slide.style.transform = '';
+        slide.style.opacity = '';
+        if (i === 0) slide.classList.add('active');
+    });
+    
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+    if (!isIOS) {
+        const actionDiv = document.getElementById('pwa-install-prompt-action-div');
+        const manualDiv = document.getElementById('pwa-manual-install-instructions');
+        const titleEl = document.querySelector('.android-prompt-title');
+        const descEl = document.querySelector('.android-prompt-desc');
+        const tipEl = document.getElementById('android-install-tip-box');
+        
+        if (deferredPrompt) {
+            if (actionDiv) actionDiv.style.display = 'block';
+            if (manualDiv) manualDiv.style.display = 'none';
+            if (titleEl) titleEl.innerText = 'Instalação Direta';
+            if (descEl) descEl.innerText = 'Clique no botão abaixo para instalar a aplicação diretamente no seu telemóvel de forma automática.';
+            if (tipEl) tipEl.style.display = 'flex';
+        } else {
+            if (actionDiv) actionDiv.style.display = 'none';
+            if (manualDiv) manualDiv.style.display = 'block';
+            if (titleEl) titleEl.innerText = 'Adicionar Manualmente';
+            if (descEl) descEl.innerText = 'A instalação direta automática não está disponível no seu navegador atual.';
+            if (tipEl) tipEl.style.display = 'none';
+        }
+    }
+    
+    initPwaIndicators();
+    updatePwaNav();
+    
+    const overlay = document.getElementById('pwa-install-overlay');
+    if (overlay) {
+        overlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+    
+    if (window.lucide) window.lucide.createIcons();
+}
+
+function closePwaTutorial() {
+    const overlay = document.getElementById('pwa-install-overlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+    try {
+        localStorage.setItem(PWA_DISMISSED_KEY, 'true');
+    } catch (e) {
+        console.warn('Could not save PWA state to localStorage:', e);
+    }
+}
+
+function maybeAutoShowPwaTutorial() {
+    if (isStandalone) return;
+    
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    if (!isMobile) return;
+    
+    try {
+        const dismissed = localStorage.getItem(PWA_DISMISSED_KEY);
+        if (dismissed === 'true') return;
+    } catch (e) {
+        console.warn(e);
+    }
+    
+    setTimeout(() => {
+        const currentStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+        if (!currentStandalone) {
+            openPwaTutorial();
+        }
+    }, 4000);
+}
+
+// Expose functions to window
+window.closePwaTutorial = closePwaTutorial;
+window.nextPwaSlide = nextPwaSlide;
+window.prevPwaSlide = prevPwaSlide;
+window.openPwaTutorial = openPwaTutorial;
+
+// PWA Service Worker Registration
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+      })
+      .catch(err => {
+        console.log('ServiceWorker registration failed: ', err);
+      });
+  });
+}
+

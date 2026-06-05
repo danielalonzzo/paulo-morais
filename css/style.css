@@ -7001,3 +7001,22 @@ body.loaded #preloader {
 .admin-tutorial-slide.active .tutorial-slide-icon {
     animation: iconPulse 2s ease-in-out infinite;
 }
+
+/* ===== PWA INSTALL FAB BUTTON ===== */
+.fab-action-btn.pwa-install { 
+    bottom: 5px; 
+    right: 140px; 
+    transform: translateX(20px); 
+}
+
+.fab-action-btn.pwa-install:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .fab-container:hover .fab-action-btn.pwa-install { transition-delay: 0s; }
+}
+
+.fab-container.active .fab-action-btn.pwa-install { transition-delay: 0s; }
+
