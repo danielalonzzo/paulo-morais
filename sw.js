@@ -7,8 +7,7 @@ const ASSETS_TO_CACHE = [
   '/sobre-mim.html',
   '/css/style.css',
   '/js/theme.js',
-  '/images/logo/logo_amarelo_alpha.png',
-  '/images/logo/logo_branco_alpha.png',
+  '/images/logo/logo_f_amarelo.png',
   '/images/logo/logo_bw_loading.png',
   '/images/logo/paulo_morais-08.png'
 ];

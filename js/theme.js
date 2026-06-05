@@ -224,6 +224,12 @@ window.addEventListener('beforeinstallprompt', (e) => {
 function injectPwaInstallButton() {
     if (isStandalone) return;
     
+    if (localStorage.getItem('pm_is_logged_in') !== 'true') {
+        const existingBtn = document.getElementById('pwa-install-btn');
+        if (existingBtn) existingBtn.remove();
+        return;
+    }
+    
     const fabOptions = document.querySelector('.fab-options');
     if (!fabOptions) return;
     
@@ -578,6 +584,8 @@ function closePwaTutorial() {
 function maybeAutoShowPwaTutorial() {
     if (isStandalone) return;
     
+    if (localStorage.getItem('pm_is_logged_in') !== 'true') return;
+    
     const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
     if (!isMobile) return;
     
@@ -601,6 +609,8 @@ window.closePwaTutorial = closePwaTutorial;
 window.nextPwaSlide = nextPwaSlide;
 window.prevPwaSlide = prevPwaSlide;
 window.openPwaTutorial = openPwaTutorial;
+window.injectPwaInstallButton = injectPwaInstallButton;
+window.maybeAutoShowPwaTutorial = maybeAutoShowPwaTutorial;
 
 // PWA Service Worker Registration
 if ('serviceWorker' in navigator) {

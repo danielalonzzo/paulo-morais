@@ -82,6 +82,10 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // User is signed in
+            localStorage.setItem('pm_is_logged_in', 'true');
+            if (window.injectPwaInstallButton) window.injectPwaInstallButton();
+            if (window.maybeAutoShowPwaTutorial) window.maybeAutoShowPwaTutorial();
+            
             console.log('User signed in:', user.email);
             authCard.classList.add('hidden');
             userDashboard.classList.remove('hidden');
@@ -162,6 +166,10 @@ document.addEventListener('DOMContentLoaded', () => {
             initCalendarMode(user, db, userData?.role, isCompleted);
         } else {
             // User is signed out
+            localStorage.setItem('pm_is_logged_in', 'false');
+            const pwaBtn = document.getElementById('pwa-install-btn');
+            if (pwaBtn) pwaBtn.remove();
+            
             console.log('User signed out');
             authCard.classList.remove('hidden');
             userDashboard.classList.add('hidden');
@@ -328,6 +336,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 const clientSeen = localStorage.getItem('pm_booking_tutorial_seen') === 'true';
                 const adminSeen = localStorage.getItem('pm_admin_tutorial_seen') === 'true';
                 tutorialCheckbox.checked = clientSeen || adminSeen;
+            }
+
+            const pwaTutorialCheckbox = document.getElementById('pwa-tutorial-seen');
+            if (pwaTutorialCheckbox) {
+                pwaTutorialCheckbox.checked = localStorage.getItem('pm_pwa_tutorial_dismissed') === 'true';
             }
 
             // Scroll to the wizard
@@ -498,6 +511,15 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
+            const pwaTutorialCheckbox = document.getElementById('pwa-tutorial-seen');
+            if (pwaTutorialCheckbox) {
+                if (pwaTutorialCheckbox.checked) {
+                    localStorage.setItem('pm_pwa_tutorial_dismissed', 'true');
+                } else {
+                    localStorage.removeItem('pm_pwa_tutorial_dismissed');
+                }
+            }
+
             try {
                 await setDoc(doc(db, "users", user.uid), {
                     birthdate,
@@ -542,6 +564,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const adminSeen = localStorage.getItem('pm_admin_tutorial_seen') === 'true';
             // Mark checked if EITHER one is seen (handles both roles intuitively)
             tutorialCheckbox.checked = clientSeen || adminSeen;
+        }
+
+        const pwaTutorialCheckbox = document.getElementById('pwa-tutorial-seen');
+        if (pwaTutorialCheckbox) {
+            pwaTutorialCheckbox.checked = localStorage.getItem('pm_pwa_tutorial_dismissed') === 'true';
         }
     }
 });
