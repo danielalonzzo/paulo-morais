@@ -1,4 +1,4 @@
-const CACHE_NAME = 'paulo-morais-pwa-v4';
+const CACHE_NAME = 'paulo-morais-pwa-v5';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,10 +7,10 @@ const ASSETS_TO_CACHE = [
   '/sobre-mim.html',
   '/css/style.css',
   '/js/theme.js',
-  '/images/logo/logo_f_amarelo.png',
-  '/images/logo/logo_f_amarelo_192.png',
-  '/images/logo/logo_f_amarelo_512.png',
-  '/images/logo/logo_f_amarelo_180.png',
+  '/images/logo/logo_ios_andorid.png',
+  '/images/logo/logo_ios_andorid_192.png',
+  '/images/logo/logo_ios_andorid_512.png',
+  '/images/logo/logo_ios_andorid_180.png',
   '/images/logo/logo_bw_loading.png',
   '/images/logo/paulo_morais-08.png'
 ];
