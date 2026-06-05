@@ -7,10 +7,10 @@ const ASSETS_TO_CACHE = [
   '/sobre-mim.html',
   '/css/style.css',
   '/js/theme.js',
-  '/images/logo/logo_ios_andorid.png',
-  '/images/logo/logo_ios_andorid.png',
-  '/images/logo/logo_ios_andorid.png',
-  '/images/logo/logo_ios_andorid.png',
+  '/images/logo/logo_ios_android.png',
+  '/images/logo/logo_ios_android.png',
+  '/images/logo/logo_ios_android.png',
+  '/images/logo/logo_ios_android.png',
   '/images/logo/logo_bw_loading.png',
   '/images/logo/paulo_morais-08.png'
 ];
