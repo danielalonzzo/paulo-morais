@@ -1,4 +1,4 @@
-const CACHE_NAME = 'paulo-morais-pwa-v3';
+const CACHE_NAME = 'paulo-morais-pwa-v4';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -8,6 +8,9 @@ const ASSETS_TO_CACHE = [
   '/css/style.css',
   '/js/theme.js',
   '/images/logo/logo_f_amarelo.png',
+  '/images/logo/logo_f_amarelo_192.png',
+  '/images/logo/logo_f_amarelo_512.png',
+  '/images/logo/logo_f_amarelo_180.png',
   '/images/logo/logo_bw_loading.png',
   '/images/logo/paulo_morais-08.png'
 ];
