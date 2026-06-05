@@ -8,9 +8,9 @@ const ASSETS_TO_CACHE = [
   '/css/style.css',
   '/js/theme.js',
   '/images/logo/logo_ios_andorid.png',
-  '/images/logo/logo_ios_andorid_192.png',
-  '/images/logo/logo_ios_andorid_512.png',
-  '/images/logo/logo_ios_andorid_180.png',
+  '/images/logo/logo_ios_andorid.png',
+  '/images/logo/logo_ios_andorid.png',
+  '/images/logo/logo_ios_andorid.png',
   '/images/logo/logo_bw_loading.png',
   '/images/logo/paulo_morais-08.png'
 ];
