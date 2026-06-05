@@ -721,6 +721,15 @@ let publishedAvailability = {}; // Tracks what is currently in Firestore
 let adminWeekIsPublished = false; // Tracks if the current week is published
 
 window.openAdminBookingWizard = function() {
+    // Força a agenda a abrir sempre na semana atual
+    adminCurrentDate = new Date();
+    let dayOfWeek = adminCurrentDate.getDay();
+    adminCurrentDate.setDate(adminCurrentDate.getDate() - dayOfWeek);
+    adminSelectedDay = null;
+    
+    const timeSlotsContainer = document.getElementById('admin-time-slots-container');
+    if (timeSlotsContainer) timeSlotsContainer.style.display = 'none';
+
     const wrapper = document.getElementById('admin-calendar-grid-wrapper');
     if (wrapper) {
         wrapper.style.opacity = '1';
