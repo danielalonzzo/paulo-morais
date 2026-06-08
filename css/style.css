@@ -564,6 +564,13 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
     transform: translateX(20px); 
 }
 
+/* Position Language Toggle (Left) */
+.fab-action-btn.lang-toggle { 
+    bottom: 5px; 
+    right: 205px; 
+    transform: translateX(20px); 
+}
+
 /* Staggered expansion on Hover/Active */
 @media (hover: hover) and (pointer: fine) {
     .fab-container:hover .fab-action-btn {
@@ -575,6 +582,7 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
     .fab-container:hover .fab-action-btn:nth-child(2) { transition-delay: 0.1s; }
     .fab-container:hover .fab-action-btn:nth-child(3) { transition-delay: 0.05s; }
     .fab-container:hover .fab-action-btn.theme-toggle { transition-delay: 0s; }
+    .fab-container:hover .fab-action-btn.lang-toggle { transition-delay: 0s; }
 }
 
 .fab-container.active .fab-action-btn {
@@ -586,9 +594,15 @@ header:not(.scrolled) .logo-img:not(.logo-initial):not(.logo-scrolled-icon) {
 .fab-container.active .fab-action-btn:nth-child(2) { transition-delay: 0.1s; }
 .fab-container.active .fab-action-btn:nth-child(3) { transition-delay: 0.05s; }
 .fab-container.active .fab-action-btn.theme-toggle { transition-delay: 0s; }
+.fab-container.active .fab-action-btn.lang-toggle { transition-delay: 0s; }
 
 
 .fab-action-btn.theme-toggle:hover {
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.fab-action-btn.lang-toggle:hover {
     color: var(--color-primary);
     border-color: var(--color-primary);
 }

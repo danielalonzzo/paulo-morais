@@ -1,4 +1,4 @@
-const CACHE_NAME = 'paulo-morais-pwa-v5';
+const CACHE_NAME = 'paulo-morais-pwa-v9';
 const ASSETS_TO_CACHE = [
   '/',
   '/index.html',
@@ -7,6 +7,7 @@ const ASSETS_TO_CACHE = [
   '/sobre-mim.html',
   '/css/style.css',
   '/js/theme.js',
+  '/js/lang.js',
   '/images/logo/logo_ios_android.png',
   '/images/logo/logo_ios_android.png',
   '/images/logo/logo_ios_android.png',

@@ -317,7 +317,7 @@ function injectPwaInstallOverlay() {
                     <div class="tutorial-slide-icon">
                         <i data-lucide="share"></i>
                     </div>
-                    <span class="tutorial-step-badge">Passo 1</span>
+                    <span class="tutorial-step-badge">Step 1</span>
                     <h3 class="tutorial-slide-title">Toque em Partilhar</h3>
                     <p class="tutorial-slide-desc">
                         No navegador Safari, toque no botão <strong>Partilhar</strong> na barra inferior do seu ecrã (o ícone de um quadrado com uma seta para cima).
@@ -334,7 +334,7 @@ function injectPwaInstallOverlay() {
                     <div class="tutorial-slide-icon">
                         <i data-lucide="plus-square"></i>
                     </div>
-                    <span class="tutorial-step-badge">Passo 2</span>
+                    <span class="tutorial-step-badge">Step 2</span>
                     <h3 class="tutorial-slide-title">Ecrã Principal</h3>
                     <p class="tutorial-slide-desc">
                         No menu de partilha, deslize para baixo e selecione a opção <strong>"Adicionar ao Ecrã Principal"</strong>.
@@ -347,10 +347,10 @@ function injectPwaInstallOverlay() {
                     <div class="tutorial-slide-icon">
                         <i data-lucide="check-circle"></i>
                     </div>
-                    <span class="tutorial-step-badge">Passo 3</span>
+                    <span class="tutorial-step-badge">Step 3</span>
                     <h3 class="tutorial-slide-title">Confirmar e Usar!</h3>
                     <p class="tutorial-slide-desc">
-                        Toque em <strong>"Adicionar"</strong> no canto superior direito para confirmar. O ícone aparecerá no seu telemóvel e estará pronto a usar.
+                        Tap <strong>"Add"</strong> in the top right corner to confirm. The icon will appear on your phone and will be ready to use.
                     </p>
                 </div>
             </div>
@@ -365,7 +365,7 @@ function injectPwaInstallOverlay() {
                         <i data-lucide="sparkles"></i>
                     </div>
                     <span class="tutorial-step-badge">Instalar App</span>
-                    <h3 class="tutorial-slide-title">Paulo Morais no seu Telemóvel</h3>
+                    <h3 class="tutorial-slide-title">Paulo Morais no seu Phone</h3>
                     <p class="tutorial-slide-desc">
                         Instale a nossa aplicação para aceder diretamente aos seus treinos, agendamentos e gerir o seu perfil de forma rápida e fluida.
                     </p>
@@ -382,9 +382,9 @@ function injectPwaInstallOverlay() {
                         <i data-lucide="download"></i>
                     </div>
                     <span class="tutorial-step-badge">Instalação</span>
-                    <h3 class="android-prompt-title" style="font-size: 1.35rem; font-weight: 800; color: var(--color-text); text-align: center; margin-bottom: 14px; line-height: 1.3;">Instalação Direta</h3>
+                    <h3 class="android-prompt-title" style="font-size: 1.35rem; font-weight: 800; color: var(--color-text); text-align: center; margin-bottom: 14px; line-height: 1.3;">Direct Installation</h3>
                     <p class="android-prompt-desc" style="font-size: 0.92rem; color: var(--color-text-dim); text-align: center; line-height: 1.7; margin-bottom: 0;">
-                        Clique no botão abaixo para instalar a aplicação diretamente no seu telemóvel de forma automática.
+                        Click the button below to install the application directly to your phone automatically.
                     </p>
                     
                     <div id="pwa-install-prompt-action-div" style="margin-top: 25px; text-align: center;">
@@ -409,7 +409,7 @@ function injectPwaInstallOverlay() {
                     <span class="tutorial-step-badge">Concluído</span>
                     <h3 class="tutorial-slide-title">Pronto a Utilizar!</h3>
                     <p class="tutorial-slide-desc">
-                        Após confirmar a instalação, o ícone da App do Paulo Morais aparecerá no ecrã do seu dispositivo. Aceda quando quiser com um único toque!
+                        After confirming the installation, the Paulo Morais App icon will appear on your device's screen. Access it anytime with a single tap!
                     </p>
                 </div>
             </div>
@@ -418,7 +418,7 @@ function injectPwaInstallOverlay() {
     
     overlay.innerHTML = `
         <div class="tutorial-card">
-            <button class="tutorial-close-btn" onclick="closePwaTutorial()" title="Fechar">
+            <button class="tutorial-close-btn" onclick="closePwaTutorial()" title="Close">
                 <i data-lucide="x"></i>
             </button>
             
@@ -448,7 +448,7 @@ function injectPwaInstallOverlay() {
                     deferredPrompt = null;
                     closePwaTutorial();
                 } else {
-                    alert('Por favor, utilize o menu do navegador para instalar manualmente.');
+                    alert('Please use the browser menu to install manually.');
                 }
             });
         }
@@ -488,7 +488,7 @@ function updatePwaNav() {
     
     let html = '';
     if (isFirst) {
-        html += `<button class="tutorial-btn tutorial-btn-skip" onclick="closePwaTutorial()">Saltar</button>`;
+        html += `<button class="tutorial-btn tutorial-btn-skip" onclick="closePwaTutorial()">Skip</button>`;
     } else {
         html += `<button class="tutorial-btn tutorial-btn-prev" onclick="prevPwaSlide()"><i data-lucide="arrow-left"></i> Anterior</button>`;
     }
@@ -496,7 +496,7 @@ function updatePwaNav() {
     if (isLast) {
         html += `<button class="tutorial-btn tutorial-btn-start" onclick="closePwaTutorial()">Concluir</button>`;
     } else {
-        html += `<button class="tutorial-btn tutorial-btn-next" onclick="nextPwaSlide()">Seguinte <i data-lucide="arrow-right"></i></button>`;
+        html += `<button class="tutorial-btn tutorial-btn-next" onclick="nextPwaSlide()">Next <i data-lucide="arrow-right"></i></button>`;
     }
     
     nav.innerHTML = html;
@@ -567,14 +567,14 @@ function openPwaTutorial() {
         if (deferredPrompt) {
             if (actionDiv) actionDiv.style.display = 'block';
             if (manualDiv) manualDiv.style.display = 'none';
-            if (titleEl) titleEl.innerText = 'Instalação Direta';
-            if (descEl) descEl.innerText = 'Clique no botão abaixo para instalar a aplicação diretamente no seu telemóvel de forma automática.';
+            if (titleEl) titleEl.innerText = 'Direct Installation';
+            if (descEl) descEl.innerText = 'Click the button below to install the application directly to your phone automatically.';
             if (tipEl) tipEl.style.display = 'flex';
         } else {
             if (actionDiv) actionDiv.style.display = 'none';
             if (manualDiv) manualDiv.style.display = 'block';
-            if (titleEl) titleEl.innerText = 'Adicionar Manualmente';
-            if (descEl) descEl.innerText = 'A instalação direta automática não está disponível no seu navegador atual.';
+            if (titleEl) titleEl.innerText = 'Add Manually';
+            if (descEl) descEl.innerText = 'Automatic direct installation is not available in your current browser.';
             if (tipEl) tipEl.style.display = 'none';
         }
     }
