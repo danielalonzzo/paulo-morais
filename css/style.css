@@ -5039,6 +5039,16 @@ body.loaded #preloader {
     pointer-events: none;
 }
 
+.indisponivel-text {
+    font-size: 0.65rem;
+    font-weight: 700;
+    opacity: 0.8;
+    margin-top: 2px;
+    display: block;
+    text-align: center;
+    text-transform: uppercase;
+}
+
 /* Service Selection Styling */
 .service-selection-container {
     margin-top: 80px;

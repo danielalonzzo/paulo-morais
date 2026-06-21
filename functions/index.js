@@ -223,7 +223,7 @@ exports.onWeeklyScheduleUpdated = functions
           // Send individually so each user gets their own unsubscribe link
           for (const clientEmail of bccList) {
             const token = Buffer.from(clientEmail).toString("base64");
-            const unsubUrl = `https://pmorais.pt/desinscrever?token=${encodeURIComponent(token)}`;
+            const unsubUrl = `https://pmorais.pt/desinscrever.html?token=${encodeURIComponent(token)}`;
             const mailOptions = {
               from: `"Paulo Morais" <${emailUser.value()}>`,
               to: clientEmail,
@@ -232,7 +232,7 @@ exports.onWeeklyScheduleUpdated = functions
                 title: "Agenda Semanal Disponível",
                 bodyHtml,
                 ctaText: "&#128197;&nbsp;&nbsp;Agendar Agora",
-                ctaUrl: "https://pmorais.pt/perfil?booking=true",
+                ctaUrl: "https://pmorais.pt/perfil.html?booking=true",
                 unsubscribeUrl: unsubUrl
               }),
               headers: {

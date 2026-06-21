@@ -277,7 +277,7 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}, isR
                 }
             } else {
                 // CLIENT VIEW
-                if (data && data.slots && data.slots[slotId]) {
+                if (data && data.slots && data.slots[slotId] && data.slots[slotId].status !== 'blocked') {
                     const slotInfo = data.slots[slotId];
                     const sType = slotInfo.serviceType || 'treino';
                     
@@ -335,6 +335,7 @@ function buildGrid(wrapper, data, isAdmin, db, user, weekId, userNames = {}, isR
                 } else {
                     btn.className = 'time-slot empty';
                     btn.style.pointerEvents = 'none';
+                    btn.innerHTML = `${hourStr}<br><span class="indisponivel-text">Indisponível</span>`;
                 }
             }
                 slotsContainer.appendChild(btn);

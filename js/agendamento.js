@@ -607,6 +607,14 @@ function renderClientTimeSlots(loadedSlots, isoDateStr, isPublished) {
             
             div.onclick = (e) => selectTime(time, div, isoDateStr, bookingData.date);
             timeSlotsDiv.appendChild(div);
+        } else {
+            hasAvailableSlots = true;
+            const time = baseSlots[i];
+            const div = document.createElement('div');
+            div.className = 'time-slot empty';
+            div.style.pointerEvents = 'none';
+            div.innerHTML = `${time}<br><span class="indisponivel-text">Indisponível</span>`;
+            timeSlotsDiv.appendChild(div);
         }
     }
     
