@@ -265,13 +265,19 @@ exports.onWeeklyScheduleUpdated = functions
 
       if (isNewPersonal || isNewGroupJoin) {
         let name = afterSlot.bookedName;
-        if (isNewGroupJoin && !name) {
+        let clientUid = afterSlot.bookedBy;
+        if (isNewGroupJoin) {
           const beforeUsers = beforeSlot.bookedUsers || [];
           const afterUsers = afterSlot.bookedUsers || [];
           const joiner = afterUsers.find(au => !beforeUsers.some(bu => bu.uid === au.uid));
-          name = joiner ? joiner.name : "Novo Aluno";
+          if (joiner) {
+            name = joiner.name;
+            clientUid = joiner.uid;
+          } else {
+            name = "Novo Aluno";
+          }
         }
-        newBookings.push({ slotId, data: afterSlot, clientName: name });
+        newBookings.push({ slotId, data: afterSlot, clientName: name, clientUid });
       }
 
       // Cancellation Detection: Detect if it WAS booked but NOW it isn't (available, blocked, or deleted)
@@ -307,6 +313,7 @@ exports.onWeeklyScheduleUpdated = functions
       newBookings.sort((a, b) => a.slotId.localeCompare(b.slotId));
 
       let sessionItemsHtml = "";
+      let vEventsICS = ""; // For ICS file
       for (const b of newBookings) {
         // --- Google Calendar Integration ---
         // Avoid duplicate/overlapping events for contiguous 30-min slots in the same batch
@@ -374,6 +381,20 @@ exports.onWeeklyScheduleUpdated = functions
           const startTime = timePart;
           const endTime = `${String(endMoment.getHours()).padStart(2, '0')}:${String(endMoment.getMinutes()).padStart(2, '0')}`;
           sessionItemsHtml += `<li style="margin-bottom:4px;">${datePart.split('-').reverse().join('/')}: <strong>${startTime} às ${endTime}</strong></li>`;
+          
+          // Build ICS VEVENT
+          const dtStartICSLocal = startDateTime.replace(/[-:]/g, ''); 
+          const dtEndICSLocal = endDateTime.replace(/[-:]/g, '');
+          const nowICS = new Date().toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+          
+          vEventsICS += `BEGIN:VEVENT\r\n` +
+                        `UID:${b.slotId}-${mainClientName.replace(/\\s+/g, '')}@pmorais.pt\r\n` +
+                        `DTSTAMP:${nowICS}\r\n` +
+                        `DTSTART;TZID=Europe/Lisbon:${dtStartICSLocal}\r\n` +
+                        `DTEND;TZID=Europe/Lisbon:${dtEndICSLocal}\r\n` +
+                        `SUMMARY:Sessão de ${serviceType} com Paulo Morais\r\n` +
+                        `DESCRIPTION:${clientNotes !== "Nenhuma" ? clientNotes : "Reserva confirmada."}\r\n` +
+                        `END:VEVENT\r\n`;
         }
       }
 
@@ -413,6 +434,60 @@ exports.onWeeklyScheduleUpdated = functions
         })
       };
       await transporter.sendMail(mailOptions).catch(console.error);
+
+      // --- Send Client Confirmation Email with ICS ---
+      const clientUid = newBookings[0].clientUid;
+      if (clientUid) {
+        try {
+          const clientSnap = await admin.firestore().collection("users").doc(clientUid).get();
+          if (clientSnap.exists) {
+            const clientData = clientSnap.data();
+            if (clientData.email && clientData.unsubscribed !== true) {
+              const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Paulo Morais//Agenda//PT\r\nCALSCALE:GREGORIAN\r\n${vEventsICS}END:VCALENDAR`;
+              
+              const clientBodyHtml = `
+                <p style="margin:0 0 20px 0;">Olá ${mainClientName.split(' ')[0]},</p>
+                <p style="margin:0 0 20px 0;">A sua reserva para <strong>${serviceType}</strong> foi confirmada com sucesso!</p>
+                <p style="margin:0 0 8px 0;"><strong>Resumo das Sessões:</strong></p>
+                <ul style="margin:0 0 20px 0; padding-left:18px;">${sessionItemsHtml}</ul>
+                <p style="margin:0 0 20px 0;">Em anexo encontra um ficheiro para adicionar rapidamente as sessões ao seu calendário digital.</p>
+              `;
+
+              const token = Buffer.from(clientData.email).toString("base64");
+              const unsubUrl = `https://pmorais.pt/desinscrever.html?token=${encodeURIComponent(token)}`;
+
+              const clientMailOptions = {
+                from: `"Paulo Morais" <${emailUser.value()}>`,
+                to: clientData.email,
+                subject: `Reserva Confirmada: ${serviceType}`,
+                html: buildEmailHtml({
+                  title: "Reserva Confirmada",
+                  bodyHtml: clientBodyHtml,
+                  ctaText: "Ver no meu Perfil",
+                  ctaUrl: "https://pmorais.pt/perfil.html",
+                  unsubscribeUrl: unsubUrl
+                }),
+                attachments: [
+                  {
+                    filename: 'reserva_paulo_morais.ics',
+                    content: icsContent,
+                    contentType: 'text/calendar'
+                  }
+                ],
+                headers: {
+                  "List-Unsubscribe": `<${unsubUrl}>`,
+                  "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
+                }
+              };
+
+              await transporter.sendMail(clientMailOptions);
+              console.log(`Confirmation email sent to client: ${clientData.email}`);
+            }
+          }
+        } catch (e) {
+          console.error("Error sending client confirmation email:", e);
+        }
+      }
     }
 
     // --- HANDLE CANCELLATIONS (Unified Email + GCal) ---

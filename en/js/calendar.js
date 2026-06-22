@@ -797,8 +797,14 @@ function updateBookingSummary(db, user, weekId) {
                 await setDoc(bDocRef, { uid: user.uid, email: user.email, bookings: existingBookings }, { merge: true });
             }
             
-            alert(`Operation completed successfully!`);
-            window.location.reload();
+            // Combine personal and group bookings for calendar integration
+            const allNewBookings = [
+                ...bookingsToSave,
+                ...groupBookActions.filter(ga => ga.action === 'add').map(ga => ga.bookingHistory)
+            ];
+            
+            showSuccessScreen(allNewBookings);
+
         } catch (e) {
             console.error(e);
             alert("Error processing changes.");
@@ -931,3 +937,84 @@ window.changeGlobalWeek = async function(offset) {
     const { auth, db } = await import('./firebase-config.js');
     renderAdminGrid(db, auth.currentUser);
 };
+
+// --- Calendar Integration ---
+function showSuccessScreen(bookings) {
+    const container = document.getElementById('calendar-sync-container');
+    if (!container) return; // Se por acaso não existir
+    container.innerHTML = ''; // Clear
+
+    if (!bookings || bookings.length === 0) {
+        goToStep(5);
+        return;
+    }
+
+    // Build ICS string
+    let vEvents = '';
+    const now = new Date();
+    const nowICS = now.toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+    
+    bookings.forEach((b, index) => {
+        const dateStr = b.date; // YYYY-MM-DD
+        const timeStr = b.time; // HH:mm
+        const duration = b.serviceType === 'osteopatia' ? 60 : 30;
+        
+        const startMoment = new Date(`${dateStr}T${timeStr}:00`);
+        const endMoment = new Date(startMoment.getTime() + duration * 60000);
+        
+        const dtStartICSLocal = `${dateStr.replace(/-/g, '')}T${timeStr.replace(':', '')}00`;
+        const dtEndICSLocal = `${endMoment.getFullYear()}${String(endMoment.getMonth()+1).padStart(2,'0')}${String(endMoment.getDate()).padStart(2,'0')}T${String(endMoment.getHours()).padStart(2,'0')}${String(endMoment.getMinutes()).padStart(2,'0')}00`;
+        
+        // Add to global ICS
+        vEvents += `BEGIN:VEVENT\r\n` +
+                   `UID:${dateStr}T${timeStr}-${index}@pmorais.pt\r\n` +
+                   `DTSTAMP:${nowICS}\r\n` +
+                   `DTSTART;TZID=Europe/Lisbon:${dtStartICSLocal}\r\n` +
+                   `DTEND;TZID=Europe/Lisbon:${dtEndICSLocal}\r\n` +
+                   `SUMMARY:${b.serviceType} Session with Paulo Morais\r\n` +
+                   `DESCRIPTION:Booking confirmed.\r\n` +
+                   `END:VEVENT\r\n`;
+
+        // Let's add Google Calendar link for each booking (up to 3 to not clutter UI)
+        if (index < 3) {
+            const gcalUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(b.serviceType)}+Session+with+Paulo+Morais&dates=${dtStartICSLocal}/${dtEndICSLocal}&details=Booking+confirmed.&ctz=Europe/Lisbon`;
+            
+            const btnGcal = document.createElement('a');
+            btnGcal.href = gcalUrl;
+            btnGcal.target = "_blank";
+            btnGcal.className = "btn btn-outline";
+            btnGcal.style = "width: 100%; max-width: 300px; display: flex; align-items: center; justify-content: center; gap: 8px;";
+            btnGcal.innerHTML = `<svg viewBox="0 0 24 24" width="20" height="20" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.24 16L12 14.34 7.76 18l-.94-.94L11.06 12 6.82 7.76l.94-.94L12 10.06l4.24-3.24.94.94L13.94 12l4.24 4.24-.94.94z" fill="#4285F4"/></svg> Google Calendar (${dateStr.split('-').reverse().join('/')})`;
+            container.appendChild(btnGcal);
+        }
+    });
+
+    // If there's more than 3 bookings, show a note
+    if (bookings.length > 3) {
+        const note = document.createElement('p');
+        note.className = "color-text-dim";
+        note.style.fontSize = "0.85rem";
+        note.innerText = `+${bookings.length - 3} additional sessions. Download the ICS file below to add all.`;
+        container.appendChild(note);
+    }
+
+    if (vEvents) {
+        const icsContent = `BEGIN:VCALENDAR\r\nVERSION:2.0\r\nPRODID:-//Paulo Morais//Agenda//EN\r\nCALSCALE:GREGORIAN\r\n${vEvents}END:VCALENDAR`;
+        const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        
+        const btnICS = document.createElement('a');
+        btnICS.href = url;
+        btnICS.download = 'booking_paulo_morais.ics';
+        btnICS.className = "btn btn-primary";
+        btnICS.style = "width: 100%; max-width: 300px; display: flex; align-items: center; justify-content: center; gap: 8px;";
+        btnICS.innerHTML = `<i data-lucide="calendar"></i> Apple / Outlook (.ics)`;
+        container.appendChild(btnICS);
+    }
+
+    if (window.lucide) {
+        window.lucide.createIcons();
+    }
+
+    goToStep(5);
+}
