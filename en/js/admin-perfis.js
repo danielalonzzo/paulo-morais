@@ -34,7 +34,7 @@ onAuthStateChanged(auth, async (user) => {
         console.log("User data from Firestore:", userData);
 
         if (userData?.role !== 'admin' && user.email !== ADMIN_EMAIL) {
-            alert("Acesso restrito a administradores.");
+            alert("Access restricted to administrators.");
             window.location.href = 'perfil.html';
             return;
         }
@@ -43,7 +43,7 @@ onAuthStateChanged(auth, async (user) => {
         loadProfiles();
     } catch (err) {
         console.error("Auth/Admin check error:", err);
-        profilesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Erro de autenticação/permissão: ${err.message}</p>`;
+        profilesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Authentication/permission error: ${err.message}</p>`;
     }
 });
 
@@ -61,22 +61,22 @@ async function loadProfiles() {
         const clients = users.filter(u => u.role !== 'admin' && u.email !== ADMIN_EMAIL).sort((a,b) => (a.name || "").localeCompare(b.name || ""));
 
         if (clients.length === 0) {
-            profilesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.5;">Nenhum aluno registado.</p>`;
+            profilesGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.5;">No students registered.</p>`;
             return;
         }
 
         clients.forEach(userData => {
-            const isDeact = userData.isDeactivated ? '<span style="display:inline-block; margin-top:8px; font-size:0.7rem; background:var(--color-danger, #ef4444); color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">Conta Desativada</span>' : '';
+            const isDeact = userData.isDeactivated ? '<span style="display:inline-block; margin-top:8px; font-size:0.7rem; background:var(--color-danger, #ef4444); color:#fff; padding:3px 8px; border-radius:4px; font-weight:bold; letter-spacing:1px; text-transform:uppercase;">Account Deactivated</span>' : '';
             const card = document.createElement('div');
             card.className = 'user-card';
             card.innerHTML = `
                 <div>
-                    <h4>${userData.name || "Sem Nome"}</h4>
+                    <h4>${userData.name || "No Name"}</h4>
                     <p>${userData.email}</p>
                     ${isDeact}
                 </div>
                 <div class="card-footer-link">
-                    VER FICHA COMPLETA <i data-lucide="external-link" style="width: 14px;"></i>
+                    VIEW FULL PROFILE <i data-lucide="external-link" style="width: 14px;"></i>
                 </div>
             `;
 
@@ -90,11 +90,11 @@ async function loadProfiles() {
         console.error("Error loading profiles:", error);
         let errorMsg = error.message;
         if (error.code === 'permission-denied') {
-            errorMsg = "Permissão negada. Verifique se a sua conta tem privilégios de administrador no Firestore.";
+            errorMsg = "Permission denied. Verify if your account has administrator privileges in Firestore.";
         }
         profilesGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center;">
-                <p style="color: #ff6b6b; font-weight: 600;">Ocorreu um erro ao carregar os dados.</p>
+                <p style="color: #ff6b6b; font-weight: 600;">An error occurred while loading data.</p>
                 <p style="opacity: 0.7; font-size: 0.9rem;">${errorMsg}</p>
             </div>
         `;
@@ -102,20 +102,20 @@ async function loadProfiles() {
 }
 
 async function showUserDetails(data) {
-    modalName.innerHTML = (data.name || "Sem Nome") + (data.isDeactivated ? ' <span style="font-size:0.8rem; background:var(--color-danger, #ef4444); color:#fff; padding:3px 8px; border-radius:4px; vertical-align:middle; margin-left:10px;">CONTA DESATIVADA PELO UTILIZADOR</span>' : '');
+    modalName.innerHTML = (data.name || "No Name") + (data.isDeactivated ? ' <span style="font-size:0.8rem; background:var(--color-danger, #ef4444); color:#fff; padding:3px 8px; border-radius:4px; vertical-align:middle; margin-left:10px;">ACCOUNT DEACTIVATED BY USER</span>' : '');
     modalContainer.innerHTML = "";
 
     const details = [
         { label: "Email", value: data.email },
         { label: "Phone", value: data.phone || "---" },
         { label: "Date of Birth", value: data.birthdate || "---" },
-        { label: "Idade", value: data.age ? `${data.age} anos` : "---" },
-        { label: "Peso", value: data.weight ? `${data.weight} kg` : "---" },
-        { label: "Altura", value: data.height ? `${data.height} cm` : "---" },
-        { label: "Massa Gorda", value: data.fatMass ? `${data.fatMass} %` : "---" },
-        { label: "Massa Muscular", value: data.muscleMass ? `${data.muscleMass} kg` : "---" },
+        { label: "Age", value: data.age ? `${data.age} years` : "---" },
+        { label: "Weight", value: data.weight ? `${data.weight} kg` : "---" },
+        { label: "Height", value: data.height ? `${data.height} cm` : "---" },
+        { label: "Fat Mass", value: data.fatMass ? `${data.fatMass} %` : "---" },
+        { label: "Muscle Mass", value: data.muscleMass ? `${data.muscleMass} kg` : "---" },
         { label: "Health Issues", value: data.healthIssues || "---" },
-        { label: "Limitações Físicas", value: data.physicalLimits || "---" }
+        { label: "Physical Limitations", value: data.physicalLimits || "---" }
     ];
 
     details.forEach(item => {
@@ -132,7 +132,7 @@ async function showUserDetails(data) {
         const obsBox = document.createElement('div');
         obsBox.className = 'observations-box';
         obsBox.innerHTML = `
-            <span class="observations-title">Observações</span>
+            <span class="observations-title">Observations</span>
             <p style="margin: 0; line-height: 1.6; opacity: 0.8;">${data.observations}</p>
         `;
         modalContainer.appendChild(obsBox);
@@ -155,7 +155,7 @@ async function showUserDetails(data) {
                 });
 
                 historyBox.innerHTML = `
-                    <span class="history-title">Histórico de Reservas <i data-lucide="history" style="width:16px;"></i></span>
+                    <span class="history-title">Booking History <i data-lucide="history" style="width:16px;"></i></span>
                     <div class="history-list">
                         ${sortedHistory.map(item => `
                             <div class="history-item">

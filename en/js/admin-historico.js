@@ -27,7 +27,7 @@ onAuthStateChanged(auth, async (user) => {
         const userData = userDoc.data();
         const isAdmin = userData?.role === 'admin' || user.email === "pt@pmorais.pt";
         
-        pageTitle.textContent = isAdmin ? "Histórico Global de Reservas" : "O Seu Histórico";
+        pageTitle.textContent = isAdmin ? "Global Booking History" : "Your History";
         
         let consolidatedHistory = [];
         
@@ -38,7 +38,7 @@ onAuthStateChanged(auth, async (user) => {
                 const data = docSnap.data();
                 // User booking docs have IDs starting with "user_"
                 if (docSnap.id.startsWith('user_') && data.bookings && data.bookings.length > 0) {
-                    const userName = data.name || data.email || "Utilizador";
+                    const userName = data.name || data.email || "User";
                     data.bookings.forEach(booking => {
                         consolidatedHistory.push({
                             ...booking,
@@ -102,7 +102,7 @@ onAuthStateChanged(auth, async (user) => {
                 historyContent.innerHTML = `
                     <div class="empty-history" style="text-align: center; padding: 100px; opacity: 0.5;">
                         <i data-lucide="calendar"></i>
-                        <p>Ainda não há registos de reservas passadas.</p>
+                        <p>No records of past bookings yet.</p>
                     </div>
                 `;
             }
@@ -110,7 +110,7 @@ onAuthStateChanged(auth, async (user) => {
             historyContent.innerHTML = `
                 <div class="empty-history" style="text-align: center; padding: 100px; opacity: 0.5;">
                     <i data-lucide="calendar-off"></i>
-                    <p>O historial está vazio.</p>
+                    <p>The history is empty.</p>
                 </div>
             `;
         }
@@ -120,7 +120,7 @@ onAuthStateChanged(auth, async (user) => {
     } catch (error) {
         console.error("Error loading history page:", error);
         if (historyContent) {
-            historyContent.innerHTML = `<p style="color:red; text-align:center;">Erro ao carregar os dados.</p>`;
+            historyContent.innerHTML = `<p style="color:red; text-align:center;">Error loading data.</p>`;
         }
     }
 });

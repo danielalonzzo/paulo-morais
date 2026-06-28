@@ -4,11 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Osteopatia</title>
+    <title>Osteopatia Lisboa · Alívio de Dores e Mobilidade | Paulo Morais</title>
     <link rel="shortcut icon" type="image/png" href="images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="images/logo/logo_ios_android.png">
     <meta name="description"
-        content="Osteopatia ajuda a aliviar tensões, melhorar a mobilidade e dar leveza ao corpo. Especialista qualificado com abordagem personalizada.">
+        content="Osteopatia em Lisboa com Paulo Morais — tratamento personalizado para alívio de dores, melhoria de mobilidade e bem-estar. Especialista qualificado com abordagem integrativa. Agende já.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -25,19 +25,98 @@
 
     <!-- SEO Meta Tags -->
     <link rel="canonical" href="https://pmorais.pt/osteopatia.html">
+    <link rel="alternate" hreflang="pt" href="https://pmorais.pt/osteopatia.html">
+    <link rel="alternate" hreflang="pt-PT" href="https://pmorais.pt/osteopatia.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://pmorais.pt/osteopatia.html">
+    <link rel="alternate" hreflang="en" href="https://pmorais.pt/en/osteopatia.html">
+    <link rel="alternate" hreflang="en-GB" href="https://pmorais.pt/en/osteopatia.html">
+    <link rel="alternate" hreflang="x-default" href="https://pmorais.pt/osteopatia.html">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pmorais.pt/osteopatia.html">
-    <meta property="og:title" content="Osteopatia | Paulo Morais - Your Own Workout">
+    <meta property="og:locale" content="pt_PT">
+    <meta property="og:locale:alternate" content="en_GB">
+    <meta property="og:title" content="Osteopatia Lisboa | Paulo Morais — Alívio de Dores e Mobilidade">
     <meta property="og:description"
-        content="Osteopatia ajuda a aliviar tensões, melhorar a mobilidade e dar leveza ao corpo. Especialista qualificado com abordagem personalizada.">
+        content="Osteopatia em Lisboa com Paulo Morais. Tratamento personalizado para alívio de dores, melhoria de mobilidade e bem-estar. Especialista certificado.">
     <meta property="og:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Osteopatia Lisboa | Paulo Morais">
+    <meta name="twitter:description" content="Tratamento osteopático personalizado em Lisboa. Alívio de dores, mobilidade e bem-estar. Agende já.">
     <meta name="twitter:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
     
     <!-- PWA Meta Tags -->
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#E6AE17">
     <link rel="apple-touch-icon" href="/images/logo/logo_ios_android.png">
+
+    <!-- Schema.org JSON-LD: MedicalBusiness + BreadcrumbList -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["MedicalBusiness", "LocalBusiness"],
+          "@id": "https://pmorais.pt/osteopatia.html#service",
+          "name": "Osteopatia | Paulo Morais",
+          "description": "Tratamento osteopático personalizado em Lisboa. Alívio de dores, melhoria de mobilidade e bem-estar geral.",
+          "url": "https://pmorais.pt/osteopatia.html",
+          "telephone": "+351960471537",
+          "email": "pt@pmorais.pt",
+          "image": "https://pmorais.pt/images/logo/paulo_morais-08.png",
+          "medicalSpecialty": {
+            "@type": "MedicalSpecialty",
+            "name": "Osteopathy"
+          },
+          "address": {
+            "@type": "PostalAddress",
+            "addressLocality": "Lisboa",
+            "addressRegion": "Lisboa",
+            "addressCountry": "PT"
+          },
+          "parentOrganization": {"@id": "https://pmorais.pt/#business"},
+          "hasOfferCatalog": {
+            "@type": "OfferCatalog",
+            "name": "Serviços de Osteopatia",
+            "itemListElement": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "MedicalTherapy",
+                  "name": "Consulta de Osteopatia",
+                  "description": "Avaliação e tratamento osteopático completo, abordagem manual integrativa."
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "MedicalTherapy",
+                  "name": "Tratamento de Dores Crónicas",
+                  "description": "Intervenção especializada em dores musculares, articulares e posturais."
+                }
+              }
+            ]
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Início",
+              "item": "https://pmorais.pt/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Osteopatia",
+              "item": "https://pmorais.pt/osteopatia.html"
+            }
+          ]
+        }
+      ]
+    }
+    </script>
     
     <script src="js/lang.js"></script>
     <script src="js/theme.js"></script>
@@ -104,7 +183,13 @@
         <section class="osteopatia-hero-section">
             <div class="container">
                 <div class="osteopatia-page-header fade-in">
-                    <a href="index.html" class="breadcrumb-link">Está a precisar de um Treino Personalizado?</a>
+                    <nav aria-label="breadcrumb" class="breadcrumb-nav">
+                        <ol class="breadcrumb-list">
+                            <li class="breadcrumb-item"><a href="index.html">Início</a></li>
+                            <li class="breadcrumb-item breadcrumb-separator" aria-hidden="true">/</li>
+                            <li class="breadcrumb-item active" aria-current="page">Osteopatia</li>
+                        </ol>
+                    </nav>
                     <div class="header-line"></div>
                     <h1 class="osteopatia-title">Osteopatia</h1>
                 </div>
@@ -574,8 +659,7 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Elysium λ
-                    Development & Research</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a></div>
         </div>
     </footer>
 
@@ -655,6 +739,7 @@
             }
         });
     </script>
+    <script src="js/cookie-consent.js" defer></script>
 </body>
 
 </html>

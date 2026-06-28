@@ -1,5 +1,6 @@
 const functions = require("firebase-functions/v1");
 const admin = require("firebase-admin");
+admin.initializeApp();
 const nodemailer = require("nodemailer");
 const { defineSecret } = require("firebase-functions/params");
 const { google } = require("googleapis");
@@ -184,10 +185,15 @@ exports.onWeeklyScheduleUpdated = functions
     const wasPublished = beforeData.publishedByAdmin === true;
     const isPublished = afterData.publishedByAdmin === true;
 
-    // Trigger email ONLY when the agenda is published for the first time
-    // This corresponds to the "Publicar Agenda da Semana" button, NOT "Atualizar Agenda"
-    if (!wasPublished && isPublished) {
-      console.log(`Agenda ${weekId} published. Sending broadcast to clients...`);
+    // Also check if admin explicitly requested a resend
+    const forceBroadcastBefore = beforeData.forceBroadcast ? beforeData.forceBroadcast.toMillis() : 0;
+    const forceBroadcastAfter = afterData.forceBroadcast ? afterData.forceBroadcast.toMillis() : 0;
+    const isForceBroadcast = forceBroadcastAfter > forceBroadcastBefore;
+
+    // Trigger email ONLY when the agenda is published for the first time OR when forced
+    // This corresponds to the "Publicar Agenda da Semana" or "Notificar libertação de agenda novamente" buttons
+    if ((!wasPublished && isPublished) || isForceBroadcast) {
+      console.log(`Agenda ${weekId} published or forced. Sending broadcast to clients...`);
       try {
         const usersSnap = await admin.firestore().collection("users").where("role", "==", "client").get();
         const bccList = [];

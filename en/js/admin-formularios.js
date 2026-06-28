@@ -29,7 +29,7 @@ onAuthStateChanged(auth, async (user) => {
         const userData = userDoc.data();
 
         if (userData?.role !== 'admin' && user.email !== ADMIN_EMAIL) {
-            alert("Acesso restrito a administradores.");
+            alert("Access restricted to administrators.");
             window.location.href = 'perfil.html';
             return;
         }
@@ -38,7 +38,7 @@ onAuthStateChanged(auth, async (user) => {
         loadContactForms();
     } catch (err) {
         console.error("Auth/Admin check error:", err);
-        if (formsGrid) formsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Erro de autenticação/permissão: ${err.message}</p>`;
+        if (formsGrid) formsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; color: red;">Authentication/permission error: ${err.message}</p>`;
     }
 });
 
@@ -50,13 +50,13 @@ async function loadContactForms() {
         if (formsGrid) formsGrid.innerHTML = "";
         
         if (querySnapshot.empty) {
-            if (formsGrid) formsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.5;">Nenhum formulário de contacto recebido.</p>`;
+            if (formsGrid) formsGrid.innerHTML = `<p style="grid-column: 1/-1; text-align: center; opacity: 0.5;">No contact forms received.</p>`;
             return;
         }
 
         querySnapshot.forEach((doc) => {
             const formData = doc.data();
-            const date = formData.timestamp?.toDate ? formData.timestamp.toDate().toLocaleString('pt-PT') : "Data desconhecida";
+            const date = formData.timestamp?.toDate ? formData.timestamp.toDate().toLocaleString('en-GB') : "Unknown date";
             
             const card = document.createElement('div');
             card.className = 'user-card';
@@ -67,7 +67,7 @@ async function loadContactForms() {
                     <p style="font-size: 0.8rem; opacity: 0.4;">${date}</p>
                 </div>
                 <div class="card-footer-link">
-                    VER MENSAGEM <i data-lucide="mail-open" style="width: 14px;"></i>
+                    VIEW MESSAGE <i data-lucide="mail-open" style="width: 14px;"></i>
                 </div>
             `;
 
@@ -81,7 +81,7 @@ async function loadContactForms() {
         console.error("Error loading forms:", error);
         if (formsGrid) formsGrid.innerHTML = `
             <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                <p style="color: #ff6b6b; font-weight: 600;">Ocorreu um erro ao carregar os formulários.</p>
+                <p style="color: #ff6b6b; font-weight: 600;">An error occurred while loading the forms.</p>
                 <p style="opacity: 0.7; font-size: 0.9rem;">${error.message}</p>
             </div>
         `;
@@ -96,8 +96,8 @@ function showFormDetails(data, dateStr) {
 
     const details = [
         { label: "Email", value: data.email },
-        { label: "Data de Envio", value: dateStr },
-        { label: "Origem", value: data.page || "Desconhecida" }
+        { label: "Date Sent", value: dateStr },
+        { label: "Source", value: data.page || "Unknown" }
     ];
 
     details.forEach(item => {
@@ -113,8 +113,8 @@ function showFormDetails(data, dateStr) {
     const msgBox = document.createElement('div');
     msgBox.className = 'message-box';
     msgBox.innerHTML = `
-        <span class="message-title">Mensagem</span>
-        <p style="margin: 0; line-height: 1.6; opacity: 0.9; white-space: pre-wrap;">${data.descricao || "Sem conteúdo."}</p>
+        <span class="message-title">Message</span>
+        <p style="margin: 0; line-height: 1.6; opacity: 0.9; white-space: pre-wrap;">${data.descricao || "No content."}</p>
     `;
     modalContainer.appendChild(msgBox);
 

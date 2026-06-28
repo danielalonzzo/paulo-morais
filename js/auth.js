@@ -17,7 +17,8 @@ import {
     getDoc,
     getDocs,
     collection,
-    updateDoc
+    updateDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initCalendarMode } from './calendar.js';
 
@@ -863,6 +864,19 @@ window.saveAdminWizardSchedule = async function(slotsMap, weekId) {
     } catch (e) {
         console.error("Erro ao guardar na base de dados:", e);
         alert("Erro ao publicar: " + e.message);
+    }
+};
+
+window.resendWeeklyBroadcast = async function(weekId) {
+    try {
+        const docRef = doc(db, "weekly_schedules", weekId);
+        await updateDoc(docRef, {
+            forceBroadcast: serverTimestamp()
+        });
+        alert("Aviso de agenda reenviado com sucesso!");
+    } catch (e) {
+        console.error("Erro ao reenviar aviso:", e);
+        alert("Ocorreu um erro ao reenviar o aviso.");
     }
 };
 

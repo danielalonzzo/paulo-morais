@@ -801,6 +801,12 @@ function syncPublishButton() {
     }
     
     btnPublish.style.display = isDirty ? 'inline-flex' : 'none';
+    
+    const btnResend = document.getElementById('btn-resend-broadcast');
+    if (btnResend) {
+        btnResend.style.display = adminWeekIsPublished ? 'inline-flex' : 'none';
+    }
+    
     if (window.lucide) window.lucide.createIcons();
 }
 

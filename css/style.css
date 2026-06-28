@@ -3,6 +3,44 @@
  * Developed by Elysium λ Development & Research
  * A European company
  */
+
+/* ── Breadcrumb Navigation ──────────────────────────────── */
+.breadcrumb-nav {
+    margin-bottom: 12px;
+}
+.breadcrumb-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.breadcrumb-item {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: var(--color-text-dim);
+    letter-spacing: 0.3px;
+}
+.breadcrumb-item a {
+    color: var(--color-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+}
+.breadcrumb-item a:hover {
+    opacity: 0.75;
+    text-decoration: underline;
+}
+.breadcrumb-item.active {
+    color: var(--color-text);
+}
+.breadcrumb-separator {
+    color: var(--color-text-dim);
+    opacity: 0.5;
+    font-size: 0.75rem;
+}
+
 :root {
     /* Colors */
     --color-bg: #0B0B0B;

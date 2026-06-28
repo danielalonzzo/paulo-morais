@@ -17,7 +17,8 @@ import {
     getDoc,
     getDocs,
     collection,
-    updateDoc
+    updateDoc,
+    serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { initCalendarMode } from './calendar.js';
 
@@ -74,7 +75,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const checkSnap = await getDoc(doc(db, "users", user.uid));
                 if (checkSnap.exists() && checkSnap.data().isDeactivated) {
                     await signOut(auth);
-                    alert("A sua conta está desativada. Para reativá-la, por favor faça um novo registo com os mesmos dados.");
+                    alert("Your account is deactivated. To reactivate it, please register again using the same details.");
                     return;
                 }
             } catch(e) {
@@ -189,7 +190,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('login-password').value;
 
             if (!email || !password) {
-                alert("Por favor, preencha o email e a palavra-passe.");
+                alert("Please fill in both email and password.");
                 return;
             }
 
@@ -197,16 +198,16 @@ document.addEventListener('DOMContentLoaded', () => {
                 const loginBtn = document.getElementById('btn-login');
                 if (loginBtn) {
                     loginBtn.disabled = true;
-                    loginBtn.textContent = "A entrar...";
+                    loginBtn.textContent = "Logging in...";
                 }
                 await signInWithEmailAndPassword(auth, email, password);
             } catch (error) {
                 console.error("Login error:", error);
-                alert("Erro ao iniciar sessão: " + translateError(error.code));
+                alert("Error logging in: " + translateError(error.code));
                 const loginBtn = document.getElementById('btn-login');
                 if (loginBtn) {
                     loginBtn.disabled = false;
-                    loginBtn.textContent = "Entrar";
+                    loginBtn.textContent = "Log In";
                 }
             }
         });
@@ -221,7 +222,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const password = document.getElementById('reg-password').value;
 
             if (!name || !email || !password) {
-                alert("Por favor, preencha todos os campos.");
+                alert("Please fill in all fields.");
                 return;
             }
 
@@ -229,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const registerBtn = document.getElementById('btn-register');
                 if (registerBtn) {
                     registerBtn.disabled = true;
-                    registerBtn.textContent = "A criar conta...";
+                    registerBtn.textContent = "Creating account...";
                 }
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
@@ -256,26 +257,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         
                         if (docSnap.exists() && docSnap.data().isDeactivated) {
                             await updateDoc(docRef, { isDeactivated: false });
-                            alert("A sua conta foi reativada com sucesso! Bem-vindo de volta.");
+                            alert("Your account has been successfully reactivated! Welcome back.");
                             window.location.reload();
                             return;
                         } else {
                             await signOut(auth);
                             window.isReactivating = false;
-                            alert("Este email já está registado e a conta está ativa. Por favor, inicie sessão no separador 'Iniciar Sessão'.");
+                            alert("This email is already registered and active. Please log in on the 'Log In' tab.");
                         }
                     } catch (loginErr) {
                         window.isReactivating = false;
-                        alert("Este email já está registado. Se for o seu, inicie sessão ou recupere a palavra-passe.");
+                        alert("This email is already registered. If it's yours, log in or recover your password.");
                     }
                 } else {
                     console.error("Registration error:", error);
-                    alert("Erro ao registar: " + translateError(error.code));
+                    alert("Error registering: " + translateError(error.code));
                 }
                 const registerBtn = document.getElementById('btn-register');
                 if (registerBtn) {
                     registerBtn.disabled = false;
-                    registerBtn.textContent = "Criar Conta";
+                    registerBtn.textContent = "Create Account";
                 }
             }
         });
@@ -288,7 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
             const email = document.getElementById('login-email').value;
             if (!email) {
-                alert("Por favor, introduza o seu email no campo de login primeiro.");
+                alert("Please enter your email in the log in field first.");
                 return;
             }
 
@@ -298,10 +299,10 @@ document.addEventListener('DOMContentLoaded', () => {
                     handleCodeInApp: false
                 };
                 await sendPasswordResetEmail(auth, email, actionCodeSettings);
-                alert("Email de recuperação enviado! Verifique a sua caixa de entrada.");
+                alert("Recovery email sent! Check your inbox.");
             } catch (error) {
                 console.error("Reset password error:", error);
-                alert("Erro ao enviar email: " + translateError(error.code));
+                alert("Error sending email: " + translateError(error.code));
             }
         });
     }
@@ -361,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnDeactivateAccount = document.getElementById('btn-deactivate-account');
     if (btnDeactivateAccount) {
         btnDeactivateAccount.addEventListener('click', async () => {
-            const confirmDeactivation = confirm("Tem a certeza que deseja desativar a sua conta? Não poderá iniciar sessão novamente até realizar um novo registo.");
+            const confirmDeactivation = confirm("Are you sure you want to deactivate your account? You will not be able to log in again until you register a new account.");
             if (confirmDeactivation) {
                 const user = auth.currentUser;
                 if (user) {
@@ -369,12 +370,12 @@ document.addEventListener('DOMContentLoaded', () => {
                         await updateDoc(doc(db, "users", user.uid), {
                             isDeactivated: true
                         });
-                        alert("Conta desativada com sucesso.");
+                        alert("Account successfully deactivated.");
                         await signOut(auth);
                         window.location.reload();
                     } catch (error) {
-                        console.error("Erro ao desativar conta:", error);
-                        alert("Ocorreu um erro ao desativar a sua conta.");
+                        console.error("Error deactivating account:", error);
+                        alert("An error occurred while deactivating your account.");
                     }
                 }
             }
@@ -489,13 +490,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Mandatory Validation
             if (!birthdate || !weight || !height || !healthIssues || !physicalLimits) {
-                alert("Por favor, preencha todos os campos obrigatórios (*)");
+                alert("Please fill in all mandatory fields (*)");
                 return;
             }
 
             // Conditional Validation for Observations
             if ((healthIssues === 'sim' || physicalLimits === 'sim') && !observations.trim()) {
-                alert("Por favor, descreva os seus problemas de saúde o limitações nas Observações.");
+                alert("Please describe your health issues or physical limitations in the Observations field.");
                 document.getElementById('prof-obs').focus();
                 return;
             }
@@ -536,7 +537,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     updatedAt: new Date().toISOString()
                 }, { merge: true });
 
-                alert("Perfil actualizado com sucesso!");
+                alert("Profile updated successfully!");
                 const updatedData = await loadUserProfile(user);
                 // Refresh calendar state
                 initCalendarMode(user, db, updatedData?.role, updatedData?.profileCompleted);
@@ -553,7 +554,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             } catch (error) {
                 console.error("Error updating profile:", error);
-                alert("Erro ao actualizar o perfil.");
+                alert("Error updating profile.");
             }
         });
 
@@ -812,21 +813,21 @@ async function loadUserProfile(user) {
 function translateError(code) {
     switch (code) {
         case 'auth/user-not-found':
-            return 'Utilizador não encontrado. Verifique o email.';
+            return 'User not found. Verify your email.';
         case 'auth/wrong-password':
-            return 'Palavra-passe incorrecta.';
+            return 'Incorrect password.';
         case 'auth/invalid-credential':
-            return 'Email ou palavra-passe incorretos.';
+            return 'Incorrect email or password.';
         case 'auth/email-already-in-use':
-            return 'Este email já está a ser utilizado.';
+            return 'This email is already in use.';
         case 'auth/invalid-email':
-            return 'Email inválido.';
+            return 'Invalid email.';
         case 'auth/weak-password':
-            return 'A palavra-passe é demasiado fraca (mínimo 6 caracteres).';
+            return 'The password is too weak (minimum 6 characters).';
         case 'auth/popup-closed-by-user':
-            return 'A janela de login foi fechada antes de completar o processo.';
+            return 'The login popup was closed before completing the process.';
         default:
-            return 'Ocorreu um erro inesperado. Tente novamente.';
+            return 'An unexpected error occurred. Please try again.';
     }
 }
 
@@ -863,6 +864,19 @@ window.saveAdminWizardSchedule = async function(slotsMap, weekId) {
     } catch (e) {
         console.error("Erro ao guardar na base de dados:", e);
         alert("Error publishing: " + e.message);
+    }
+};
+
+window.resendWeeklyBroadcast = async function(weekId) {
+    try {
+        const docRef = doc(db, "weekly_schedules", weekId);
+        await updateDoc(docRef, {
+            forceBroadcast: serverTimestamp()
+        });
+        alert("Agenda release notification resent successfully!");
+    } catch (e) {
+        console.error("Error resending notification:", e);
+        alert("An error occurred while resending the notification.");
     }
 };
 
@@ -943,7 +957,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                     
                     // Check if user already has a booking in this slot (prevent double-booking)
                     if (existingSlot.status === 'booked' && existingSlot.bookedBy === user.uid) {
-                        throw new Error(`Já tem uma reserva at ${timeStr} no dia ${sel.dateStr}. Não é possível reservar dois serviços na mesma hora.`);
+                        throw new Error(`You already have a booking at ${timeStr} on ${sel.dateStr}. It is not possible to book two services at the same time.`);
                     }
                     
                     if (payload.modality === 'tr_online') {
@@ -956,7 +970,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                         
                         // Check if user is already in this group slot
                         if (users.some(u => u.uid === user.uid)) {
-                            throw new Error(`Já está inscrito na aula online at ${timeStr} no dia ${sel.dateStr}.`);
+                            throw new Error(`You are already registered for the online class at ${timeStr} on ${sel.dateStr}.`);
                         }
                         
                         // Add this user
@@ -973,7 +987,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                     } else {
                         // Personal or Osteopatia
                         if (existingSlot.status === 'booked' || existingSlot.status === 'blocked') {
-                            throw new Error(`Slot de ${sel.dateStr} at ${timeStr} já não está disponível.`);
+                            throw new Error(`Slot on ${sel.dateStr} at ${timeStr} is no longer available.`);
                         }
                         
                         let sType = 'treino_personalizado';
@@ -996,7 +1010,7 @@ window.submitWizardBooking = async function(payload, durationSlots) {
                     }
                 }
                 
-                if (groupFull) throw new Error(`A aula online de ${sel.dateStr} at ${sel.time} já está cheia.`);
+                if (groupFull) throw new Error(`The online class on ${sel.dateStr} at ${sel.time} is already full.`);
                 
                 // Add to history list
                 let sType = payload.category === 'osteopatia' ? 'osteopatia' : 'treino';
@@ -1047,7 +1061,7 @@ window.cancelClientBooking = async function(bookingId, isoDate, startTime, servi
 
     try {
         const user = auth.currentUser;
-        if (!user) throw new Error("Não autenticado");
+        if (!user) throw new Error("Not authenticated");
 
         // 1. Calculate duration slots
         let durationSlots = 1;
@@ -1214,7 +1228,7 @@ async function loadDashboardPreview(isAdmin, user, data) {
             item.innerHTML = `
                 <div class="preview-item-info">
                     <strong>${b.date}</strong>
-                    <span>às ${b.time}</span>
+                    <span>at ${b.time}</span>
                 </div>
                 <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 5px;">
                     <div class="preview-badge ${sClass}">
@@ -1256,7 +1270,7 @@ async function loadDashboardPreview(isAdmin, user, data) {
                     if (bDate < now) return; // Skip past bookings
                     
                     upcomingAdmin.push({
-                        name: b.bookedName || data.name || data.email || 'Cliente',
+                        name: b.bookedName || data.name || data.email || 'Client',
                         date: b.date,
                         time: b.time || '---',
                         type: b.serviceType

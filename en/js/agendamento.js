@@ -416,7 +416,7 @@ const currentMonth = currentDate.getMonth();
 const currentYear = currentDate.getFullYear();
 let displayDate = new Date(currentYear, currentMonth, 1);
 
-const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
+const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
 
 function renderCalendar() {
     const month = displayDate.getMonth();
@@ -430,8 +430,8 @@ function renderCalendar() {
     const grid = document.getElementById('calendar-days');
     // Keep header (7 days)
     grid.innerHTML = `
-        <div class="day-name">Dom</div><div class="day-name">Seg</div><div class="day-name">Ter</div>
-        <div class="day-name">Qua</div><div class="day-name">Qui</div><div class="day-name">Sex</div><div class="day-name">Sáb</div>
+        <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div>
+        <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
     `;
     
     // Empty slots before 1st
@@ -492,7 +492,7 @@ function selectDate(day, month, year) {
     renderCalendar(); // re-render to show selected style
     
     const timeSlotsDiv = document.getElementById('time-slots');
-    timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">A carregar horários...</p>';
+    timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">Loading times...</p>';
     document.getElementById('time-slots-container').style.display = 'block';
 
     // Calculate Week ID
@@ -509,7 +509,7 @@ function selectDate(day, month, year) {
             renderClientTimeSlots(loadedSlots, isoDateStr, isPublished);
         });
     } else {
-        timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">Erro ao carregar horários.</p>';
+        timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">Error loading times.</p>';
     }
 }
 
@@ -518,7 +518,7 @@ function renderClientTimeSlots(loadedSlots, isoDateStr, isPublished) {
     timeSlotsDiv.innerHTML = '';
     
     if (isPublished !== true) {
-        timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">A agenda para esta semana ainda não foi publicada. Estará disponível no Domingo.</p>';
+        timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">The schedule for this week has not been published yet. It will be available on Sunday.</p>';
         return;
     }
     
@@ -600,7 +600,7 @@ function renderClientTimeSlots(loadedSlots, isoDateStr, isPublished) {
             div.className = `time-slot ${serviceClass} ${isSelected ? 'active-selection' : ''}`;
             
             if (isOnlineGroup) {
-                div.innerHTML = `${time}<br><small>${onlineCount} inscrito(s)</small>`;
+                div.innerHTML = `${time}<br><small>${onlineCount} registered</small>`;
             } else {
                 div.innerText = time;
             }
@@ -611,7 +611,7 @@ function renderClientTimeSlots(loadedSlots, isoDateStr, isPublished) {
     }
     
     if (!hasAvailableSlots) {
-        timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">Sem vagas para esta duração.</p>';
+        timeSlotsDiv.innerHTML = '<p class="color-text-dim text-center">No slots available for this duration.</p>';
     }
 }
 
@@ -646,9 +646,9 @@ function renderCartSummary() {
     const sessionsList = sortedSelections.map(s => `<li>${s.dateStr} at ${s.time}</li>`).join('');
     
     summary.innerHTML = `
-        <h4 style="margin-bottom:10px; font-weight:800; text-transform:uppercase;">Resumo da Reserva</h4>
-        <p><strong>Serviço:</strong> ${bookingData.serviceName}</p>
-        <p><strong>Sessões Selecionadas:</strong></p>
+        <h4 style="margin-bottom:10px; font-weight:800; text-transform:uppercase;">Booking Summary</h4>
+        <p><strong>Service:</strong> ${bookingData.serviceName}</p>
+        <p><strong>Selected Sessions:</strong></p>
         <ul style="margin-bottom: 15px; padding-left: 20px;">${sessionsList}</ul>
         <p><strong>Additional notes (Optional)</strong></p>
     `;
@@ -661,7 +661,7 @@ async function submitBooking(e) {
     const btnSubmit = document.getElementById('btn-submit-booking');
     if (btnSubmit) {
         btnSubmit.disabled = true;
-        btnSubmit.innerText = "A agendar...";
+        btnSubmit.innerText = "Booking...";
     }
     
     const name = document.getElementById('b_name')?.value || '';
@@ -692,14 +692,14 @@ async function submitBooking(e) {
             // Clear selections after success
             bookingData.selections = [];
         } catch (err) {
-            alert(err.message || "Erro ao efetuar reserva.");
+            alert(err.message || "Error making booking.");
             if (btnSubmit) {
                 btnSubmit.disabled = false;
                 btnSubmit.innerText = "Confirm Booking";
             }
         }
     } else {
-        alert("Sistema de reservas temporariamente indisponível.");
+        alert("Booking system temporarily unavailable.");
         if (btnSubmit) {
             btnSubmit.disabled = false;
             btnSubmit.innerText = "Confirm Booking";
@@ -785,14 +785,19 @@ function syncPublishButton() {
         isDirty = true; // Always allow publishing an unpublished week
         btnPublish.style.backgroundColor = '#e74c3c';
         btnPublish.style.borderColor = '#e74c3c';
-        btnPublish.innerHTML = '<i data-lucide="upload-cloud"></i> Publicar Agenda da Semana';
+        btnPublish.innerHTML = '<i data-lucide="upload-cloud"></i> Publish Week\'s Agenda';
     } else {
         btnPublish.style.backgroundColor = ''; // Reset to default
         btnPublish.style.borderColor = '';
-        btnPublish.innerHTML = '<i data-lucide="upload-cloud"></i> Atualizar Agenda';
+        btnPublish.innerHTML = '<i data-lucide="upload-cloud"></i> Update Agenda';
+    }
+    btnPublish.style.display = isDirty ? 'inline-flex' : 'none';
+    
+    const btnResend = document.getElementById('btn-resend-broadcast');
+    if (btnResend) {
+        btnResend.style.display = adminWeekIsPublished ? 'inline-flex' : 'none';
     }
     
-    btnPublish.style.display = isDirty ? 'inline-flex' : 'none';
     if (window.lucide) window.lucide.createIcons();
 }
 
@@ -839,8 +844,8 @@ function renderAdminWeek() {
     
     const grid = document.getElementById('admin-calendar-days');
     grid.innerHTML = `
-        <div class="day-name">Dom</div><div class="day-name">Seg</div><div class="day-name">Ter</div>
-        <div class="day-name">Qua</div><div class="day-name">Qui</div><div class="day-name">Sex</div><div class="day-name">Sáb</div>
+        <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div>
+        <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
     `;
     
     for (let i = 0; i < 7; i++) {
@@ -893,7 +898,7 @@ function selectAdminDay(date) {
                 div.style.backgroundColor = isPublished ? '#555' : 'var(--color-primary)';
                 div.style.borderColor = isPublished ? '#555' : 'var(--color-primary)';
                 div.style.color = '#fff';
-                div.innerHTML = `${time}<br><small style="font-size:0.7em;">${isPublished ? '(Bloqueado)' : 'Por Bloquear'}</small>`;
+                div.innerHTML = `${time}<br><small style="font-size:0.7em;">${isPublished ? '(Blocked)' : 'To Block'}</small>`;
             } else {
                 div.className = `time-slot available`;
                 div.innerText = time;
@@ -958,7 +963,7 @@ function toggleAdminTime(dateStr, time, element) {
         element.style.backgroundColor = isPublished ? '#555' : 'var(--color-primary)';
         element.style.borderColor = isPublished ? '#555' : 'var(--color-primary)';
         element.style.color = '#fff';
-        element.innerHTML = `${time}<br><small style="font-size:0.7em;">${isPublished ? '(Bloqueado)' : 'Por Bloquear'}</small>`;
+        element.innerHTML = `${time}<br><small style="font-size:0.7em;">${isPublished ? '(Blocked)' : 'To Block'}</small>`;
     }
     
     // re-render week to show "has-slots" indicator if needed
@@ -1045,12 +1050,12 @@ window.publishAdminWeek = function() {
         window.saveAdminWizardSchedule(slotsMap, weekId);
     } else {
         console.error("saveAdminWizardSchedule not found!");
-        alert("Erro de conexão ao servidor.");
+        alert("Server connection error.");
     }
 };
 window.clearAdminDay = function() {
     if (!adminSelectedDay) return;
-    if (confirm("Tem a certeza que deseja limpar os bloqueios deste dia?")) {
+    if (confirm("Are you sure you want to clear the blocks for this day?")) {
         const dateStr = adminSelectedDay.toISOString().split('T')[0];
         if (adminAvailability[dateStr]) {
             adminAvailability[dateStr] = {};

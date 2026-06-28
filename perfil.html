@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Perfil</title>
+    <title>Área de Cliente · Login e Agendamento | Paulo Morais</title>
     <link rel="shortcut icon" type="image/png" href="images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="images/logo/logo_ios_android.png">
-    <meta name="description" content="Faça o login ou registe-se no perfil de Paulo Morais - Your Own Workout.">
+    <meta name="description" content="Aceda à sua área de cliente: agende sessões de treino personalizado ou osteopatia, consulte o seu histórico e gira os seus dados. Paulo Morais · Lisboa.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -23,12 +23,22 @@
 
     <!-- SEO Meta Tags -->
     <link rel="canonical" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="pt" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="pt-PT" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="en" href="https://pmorais.pt/en/perfil.html">
+    <link rel="alternate" hreflang="en-GB" href="https://pmorais.pt/en/perfil.html">
+    <link rel="alternate" hreflang="x-default" href="https://pmorais.pt/perfil.html">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://pmorais.pt/perfil.html">
-    <meta property="og:title" content="Perfil | Inicio de sessão - Paulo Morais">
-    <meta property="og:description" content="Faça o login ou registe-se no perfil de Paulo Morais - Your Own Workout.">
+    <meta property="og:locale" content="pt_PT">
+    <meta property="og:locale:alternate" content="en_GB">
+    <meta property="og:title" content="Área de Cliente | Login e Agendamento · Paulo Morais">
+    <meta property="og:description" content="Aceda à sua área de cliente: agende sessões e consulte o seu histórico. Paulo Morais · Lisboa.">
     <meta property="og:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Área de Cliente | Paulo Morais">
+    <meta name="twitter:description" content="Login e agendamento de treino personalizado e osteopatia em Lisboa.">
     <meta name="twitter:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
     
     <!-- PWA Meta Tags -->
@@ -328,6 +338,11 @@
                                     <i data-lucide="arrow-left"></i> Voltar ao Lobby
                                 </button>
                             </div>
+                        </div>
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                            <button id="btn-resend-broadcast" onclick="if(window.resendWeeklyBroadcast) window.resendWeeklyBroadcast(currentLoadedWeekId)" class="btn btn-outline" style="padding: 5px 15px; font-size: 13px; opacity: 0.8; display: none;">
+                                <i data-lucide="send" style="width: 16px; height: 16px;"></i> Notificar libertação de agenda novamente
+                            </button>
                         </div>
                         <p class="text-center color-text-dim" style="margin-bottom: 30px;">
                             Clique nos dias e horas que deseja <strong>BLOQUEAR</strong> (marcar como indisponíveis). A agenda é gerada por defeito.
@@ -830,8 +845,7 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Elysium λ
-                    Development & Research</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a></div>
         </div>
     </footer>
 

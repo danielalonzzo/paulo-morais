@@ -4,10 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
+    <title>Client Area · Login &amp; Booking | Paulo Morais</title>
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
-    <meta name="description" content="Faça o login ou registe-se no perfil de Paulo Morais - Your Own Workout.">
+    <meta name="description" content="Access your client area: book personal training or osteopathy sessions, view your history and manage your account. Paulo Morais · Lisbon.">
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,13 +22,23 @@
     <link rel="stylesheet" href="../css/style.css">
 
     <!-- SEO Meta Tags -->
-    <link rel="canonical" href="https://pmorais.pt/perfil.html">
+    <link rel="canonical" href="https://pmorais.pt/en/perfil.html">
+    <link rel="alternate" hreflang="pt" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="pt-PT" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="pt-BR" href="https://pmorais.pt/perfil.html">
+    <link rel="alternate" hreflang="en" href="https://pmorais.pt/en/perfil.html">
+    <link rel="alternate" hreflang="en-GB" href="https://pmorais.pt/en/perfil.html">
+    <link rel="alternate" hreflang="x-default" href="https://pmorais.pt/perfil.html">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="https://pmorais.pt/perfil.html">
-    <meta property="og:title" content="Perfil | Inicio de sessão - Paulo Morais">
-    <meta property="og:description" content="Faça o login ou registe-se no perfil de Paulo Morais - Your Own Workout.">
+    <meta property="og:url" content="https://pmorais.pt/en/perfil.html">
+    <meta property="og:locale" content="en_GB">
+    <meta property="og:locale:alternate" content="pt_PT">
+    <meta property="og:title" content="Client Area | Login &amp; Booking · Paulo Morais">
+    <meta property="og:description" content="Access your client area: book sessions and view your history. Paulo Morais · Lisbon.">
     <meta property="og:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Client Area | Paulo Morais">
+    <meta name="twitter:description" content="Login and book personal training and osteopathy sessions in Lisbon.">
     <meta name="twitter:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
     
     <!-- PWA Meta Tags -->
@@ -136,7 +146,7 @@
                     <form id="register-form" class="auth-form hidden">
                         <div class="form-group">
                             <label for="reg-name">Full Name</label>
-                            <input type="text" id="reg-name" placeholder="Seu Nome" required>
+                            <input type="text" id="reg-name" placeholder="Your Name" required>
                         </div>
                         <div class="form-group">
                             <label for="reg-email">Email</label>
@@ -144,7 +154,7 @@
                         </div>
                         <div class="form-group">
                             <label for="reg-password">Password</label>
-                            <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
+                            <input type="password" id="reg-password" placeholder="Minimum 6 characters" required>
                         </div>
                         <button type="submit" id="btn-register" class="btn btn-primary btn-block">Create Account</button>
                     </form>
@@ -154,7 +164,7 @@
 
             <!-- Dashboard (Hidden by default) -->
             <div id="user-dashboard" class="user-dashboard hidden fade-in">
-                <div class="help-icon-trigger" id="dashboard-help-icon" onclick="openRoleTutorial()" title="Ajuda / Tutorial">
+                <div class="help-icon-trigger" id="dashboard-help-icon" onclick="openRoleTutorial()" title="Help / Tutorial">
                     <i data-lucide="help-circle"></i>
                 </div>
                 <h2 id="user-welcome">Hello!</h2>
@@ -182,7 +192,7 @@
                 <!-- Client Booking Wizard Section -->
                 <div id="booking-wizard-section" class="calendar-section border-top-fade hidden">
                     <div class="booking-container">
-                        <div class="help-icon-trigger" onclick="openTutorial()" title="Ajuda / Tutorial">
+                        <div class="help-icon-trigger" onclick="openTutorial()" title="Help / Tutorial">
                             <i data-lucide="help-circle"></i>
                         </div>
                         <div class="breadcrumbs" id="booking-breadcrumbs">
@@ -227,17 +237,17 @@
                             <div class="calendar-wrapper">
                                 <div class="calendar-header">
                                     <button class="btn btn-outline" style="padding:5px 15px;" onclick="changeMonth(-1)">&lt;</button>
-                                    <h3 id="calendar-month-year">Novembro 2026</h3>
+                                    <h3 id="calendar-month-year">November 2026</h3>
                                     <button class="btn btn-outline" style="padding:5px 15px;" onclick="changeMonth(1)">&gt;</button>
                                 </div>
                                 <div class="calendar-grid" id="calendar-days">
-                                    <div class="day-name">Dom</div><div class="day-name">Seg</div><div class="day-name">Ter</div>
-                                    <div class="day-name">Qua</div><div class="day-name">Qui</div><div class="day-name">Sex</div><div class="day-name">Sáb</div>
+                                    <div class="day-name">Sun</div><div class="day-name">Mon</div><div class="day-name">Tue</div>
+                                    <div class="day-name">Wed</div><div class="day-name">Thu</div><div class="day-name">Fri</div><div class="day-name">Sat</div>
                                     <!-- Days injected via JS -->
                                 </div>
                                 
                                 <div id="time-slots-container" style="display:none;">
-                                    <h4 style="margin-top:20px; text-align:center;">Horários Disponíveis</h4>
+                                    <h4 style="margin-top:20px; text-align:center;">Available Times</h4>
                                     <div class="time-slots" id="time-slots">
                                         <!-- Slots injected via JS -->
                                     </div>
@@ -329,6 +339,11 @@
                                 </button>
                             </div>
                         </div>
+                        <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                            <button id="btn-resend-broadcast" onclick="if(window.resendWeeklyBroadcast) window.resendWeeklyBroadcast(currentLoadedWeekId)" class="btn btn-outline" style="padding: 5px 15px; font-size: 13px; opacity: 0.8; display: none;">
+                                <i data-lucide="send" style="width: 16px; height: 16px;"></i> Resend Agenda Notification
+                            </button>
+                        </div>
                         <p class="text-center color-text-dim" style="margin-bottom: 30px;">
                             Click the days and times you wish to <strong>BLOCK</strong> (mark as unavailable). The agenda is generated by default.
                         </p>
@@ -355,13 +370,13 @@
 
                             <div class="controls" style="justify-content: center; gap: 15px; flex-wrap: wrap;">
                                 <button class="btn btn-outline" id="btn-block-all-day" style="display: none;" onclick="window.blockAllDay()">
-                                    <i data-lucide="lock"></i> Bloquear todo o dia
+                                    <i data-lucide="lock"></i> Block all day
                                 </button>
                                 <button class="btn btn-outline" id="btn-clear-blocks" style="display: none;" onclick="window.clearAdminDay()">
-                                    <i data-lucide="trash-2"></i> Limpar Bloqueios do Dia
+                                    <i data-lucide="trash-2"></i> Clear Day's Blocks
                                 </button>
                                 <button id="btn-publish-week" class="btn btn-primary btn-premium-metallic" style="display: none;" onclick="window.publishAdminWeek()">
-                                    <i data-lucide="send"></i> Publicar
+                                    <i data-lucide="send"></i> Publish
                                 </button>
                             </div>
                         </div>
@@ -379,7 +394,7 @@
                         <form id="profile-form" class="auth-form">
                         <div class="form-row">
                             <div class="form-group">
-                                <label for="prof-name">Nome</label>
+                                <label for="prof-name">Name</label>
                                 <input type="text" id="prof-name" readonly>
                             </div>
                             <div class="form-group">
@@ -435,9 +450,13 @@
                                 <select id="prof-physical-limits" required>
                                     <option value="" disabled selected>Select...</option>
                                     <option value="não">No</option>
-<div class="form-group">
-                            <label for="prof-obs" id="label-obs">Observações</label>
-                            <textarea id="prof-obs" placeholder="Descreva problemas de saúde ou limitações, se aplicável..."></textarea>
+                                    <option value="sim">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="prof-obs" id="label-obs">Observations</label>
+                            <textarea id="prof-obs" placeholder="Describe health issues or limitations, if applicable..."></textarea>
                             <small id="obs-hint" class="form-hint hidden">Please describe your health problems or physical limitations.</small>
                         </div>
 
@@ -485,7 +504,7 @@
                         <span class="tutorial-step-badge">Welcome</span>
                         <h3 class="tutorial-slide-title">How to make your Booking</h3>
                         <p class="tutorial-slide-desc">
-                            Vamos guiá-lo passo a passo pelo processo de reserva. É rápido e simples!<br><br>
+                            We will guide you step by step through the booking process. It's quick and simple!<br><br>
                             Start by <strong>choosing the type of service</strong> you are looking for: <strong>Osteopathy</strong> or <strong>Training</strong>.
                         </p>
                     </div>
@@ -498,10 +517,10 @@
                             <i data-lucide="calendar-days"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 1</span>
-                        <h3 class="tutorial-slide-title">Selecione o Dia</h3>
+                        <h3 class="tutorial-slide-title">Select the Day</h3>
                         <p class="tutorial-slide-desc">
                             After choosing the service, you will see a <strong>monthly calendar</strong>. Tap the day you want for your session.<br><br>
-                            Os dias <strong>disponíveis</strong> aparecerão a branco e os dias passados ou domingos estarão desativados.
+                            Available days will appear in white, and past days or Sundays will be disabled.
                         </p>
                     </div>
                 </div>
@@ -513,13 +532,13 @@
                             <i data-lucide="clock"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 2</span>
-                        <h3 class="tutorial-slide-title">Selecione a Hora</h3>
+                        <h3 class="tutorial-slide-title">Select the Time</h3>
                         <p class="tutorial-slide-desc">
                             Upon selecting a day, the <strong>available times</strong> for that day will appear. Tap the time that suits you to select it.
                         </p>
                         <div class="tutorial-tip">
                             <i data-lucide="info"></i>
-                            <span>Os horários bloqueados pelo Paulo não aparecerão. Só verá os que estão realmente livres.</span>
+                            <span>Times blocked by Paulo will not appear. You will only see those that are truly free.</span>
                         </div>
                     </div>
                 </div>
@@ -567,7 +586,7 @@
                             <i data-lucide="check-circle"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 5</span>
-                        <h3 class="tutorial-slide-title">Reserva Confirmada!</h3>
+                        <h3 class="tutorial-slide-title">Booking Confirmed!</h3>
                         <p class="tutorial-slide-desc">
                             After confirming, you will see a success message. Click <strong>"Back to Lobby"</strong> to return to the main dashboard.
                         </p>
@@ -638,7 +657,7 @@
                         <h3 class="tutorial-slide-title">Welcome to your Dashboard</h3>
                         <p class="tutorial-slide-desc">
                             Here you manage your entire operation. In the <strong>Lobby</strong> you will see a summary with the <strong>upcoming clients</strong> scheduled and have quick access to all tools.<br><br>
-                            Vamos guiá-lo pelas funcionalidades principais.
+                            We will guide you through the main features.
                         </p>
                     </div>
                 </div>
@@ -665,10 +684,10 @@
                             <i data-lucide="lock"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 2</span>
-                        <h3 class="tutorial-slide-title">Bloquear Horários</h3>
+                        <h3 class="tutorial-slide-title">Block Times</h3>
                         <p class="tutorial-slide-desc">
                             Upon selecting a day, the <strong>times from 06h to 20h</strong> will appear. Tap each time you wish to <strong>block</strong> (mark as unavailable).<br><br>
-                            Pode bloquear <strong>vários dias e horários</strong> de uma só vez antes de publicar.
+                            You can block <strong>multiple days and times</strong> at once before publishing.
                         </p>
                         <div class="tutorial-tip">
                             <i data-lucide="mouse-pointer-click"></i>
@@ -684,9 +703,9 @@
                             <i data-lucide="zap"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 3</span>
-                        <h3 class="tutorial-slide-title">Ferramentas Rápidas</h3>
+                        <h3 class="tutorial-slide-title">Quick Tools</h3>
                         <p class="tutorial-slide-desc">
-                            Dois botões de ação rápida facilitam a gestão diária:
+                            Two quick action buttons facilitate daily management:
                         </p>
                         <div class="tutorial-tip">
                             <i data-lucide="lock"></i>
@@ -706,7 +725,7 @@
                             <i data-lucide="send"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 4</span>
-                        <h3 class="tutorial-slide-title">Publicar a Agenda</h3>
+                        <h3 class="tutorial-slide-title">Publish the Agenda</h3>
                         <p class="tutorial-slide-desc">
                             When you finish configuring the blocks, tap <strong>"Publish Week Agenda"</strong>. The entire week will be <strong>open for client bookings</strong>.
                         </p>
@@ -724,9 +743,9 @@
                             <i data-lucide="users"></i>
                         </div>
                         <span class="tutorial-step-badge">Step 5</span>
-                        <h3 class="tutorial-slide-title">Perfis e Formulários</h3>
+                        <h3 class="tutorial-slide-title">Profiles and Forms</h3>
                         <p class="tutorial-slide-desc">
-                            No Lobby tem dois botões adicionais:
+                            In the Lobby you have two additional buttons:
                         </p>
                         <div class="tutorial-tip">
                             <i data-lucide="user-check"></i>
@@ -734,7 +753,7 @@
                         </div>
                         <div class="tutorial-tip" style="margin-top: 10px;">
                             <i data-lucide="file-text"></i>
-                            <span><strong>Forms</strong> — Consulte os formulários de contacto enviados pelos visitantes a partir da página de Osteopatia.</span>
+                            <span><strong>Forms</strong> — Consult the contact forms sent by visitors from the Osteopathy page.</span>
                         </div>
                     </div>
                 </div>
@@ -745,11 +764,11 @@
                         <div class="tutorial-slide-icon">
                             <i data-lucide="history"></i>
                         </div>
-                        <span class="tutorial-step-badge">Passo 6</span>
-                        <h3 class="tutorial-slide-title">History Global</h3>
+                        <span class="tutorial-step-badge">Step 6</span>
+                        <h3 class="tutorial-slide-title">Global History</h3>
                         <p class="tutorial-slide-desc">
                             Tap <strong>"History"</strong> to access the complete record of <strong>all bookings</strong> from all clients in one place.<br><br>
-                            Pode consultar marcações passadas, ativas e canceladas.
+                            You can consult past, active, and cancelled bookings.
                         </p>
                     </div>
                 </div>
@@ -760,14 +779,14 @@
                         <div class="tutorial-slide-icon">
                             <i data-lucide="bell-ring"></i>
                         </div>
-                        <span class="tutorial-step-badge">Notificações</span>
-                        <h3 class="tutorial-slide-title">Emails Automáticos</h3>
+                        <span class="tutorial-step-badge">Notifications</span>
+                        <h3 class="tutorial-slide-title">Automatic Emails</h3>
                         <p class="tutorial-slide-desc">
                             Whenever a client <strong>makes a booking</strong> or <strong>cancels a session</strong>, you will automatically receive a <strong>notification email</strong> with all the details.
                         </p>
                         <div class="tutorial-tip">
                             <i data-lucide="shield-check"></i>
-                            <span>Não precisa de verificar a agenda constantemente. O sistema mantém-no sempre atualizado em tempo real por email.</span>
+                            <span>You do not need to check the agenda constantly. The system always keeps you updated in real time via email.</span>
                         </div>
                     </div>
                 </div>
@@ -830,8 +849,7 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Elysium λ
-                    Development & Research</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a></div>
         </div>
     </footer>
 
