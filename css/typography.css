@@ -1,0 +1,141 @@
+/* --- FONTS --- */
+/* Utilizing Variable Fonts for Core Web Vitals optimization */
+@font-face {
+    font-family: 'Patron';
+    src: url('../assets/fonts/Patron-Variable.woff2') format('woff2 supports variations'),
+         url('../assets/fonts/Patron-Variable.woff2') format('woff2-variations');
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Patron';
+    src: url('../assets/fonts/Patron-VariableItalic.woff2') format('woff2 supports variations'),
+         url('../assets/fonts/Patron-VariableItalic.woff2') format('woff2-variations');
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+/* Reset & Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+    overflow-x: hidden;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-body);
+    line-height: 1.6;
+    overflow-x: hidden;
+    /* Scrollbar natural del sistema, sin personalización */
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: var(--transition-smooth);
+}
+
+ul {
+    list-style: none;
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+.container {
+    max-width: var(--container-width);
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 0 15px;
+        /* Tighter padding for mobile */
+    }
+}
+
+/* Typography */
+h1,
+h2,
+h3,
+h4 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -1px;
+    line-height: 1.1;
+}
+
+/* Fluid Typography Scale */
+h1 {
+    font-size: clamp(2.5rem, 5vw + 1rem, 5rem);
+}
+
+h2 {
+    font-size: clamp(2rem, 4vw + 1rem, 3.5rem);
+}
+
+h3 {
+    font-size: clamp(1.5rem, 3vw + 1rem, 2.5rem);
+}
+
+h4 {
+    font-size: clamp(1.2rem, 2vw + 1rem, 1.8rem);
+}
+
+.section-title {
+    font-size: 2.5rem;
+    margin-bottom: 3rem;
+    position: relative;
+    display: inline-block;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background: var(--color-primary);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-center.section-title::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 34px;
+    border-radius: 50px;
+    font-weight: 700;
+    font-family: var(--font-heading);
+    text-transform: capitalize;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+    border: none;
+}
+

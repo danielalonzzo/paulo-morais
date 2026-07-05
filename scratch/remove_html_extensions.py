@@ -18,7 +18,7 @@ files_to_process = [
     "js/admin-formularios.js"
 ]
 
-base_path = "/Users/danielalonzzo/Library/Mobile Documents/com~apple~CloudDocs/Elysium λ/Paulo Morais/paulo-morais"
+base_path = "/Users/danielalonzzo/Library/Mobile Documents/com~apple~CloudDocs/Elysium λ/Paulo Morais/pmorais"
 
 for filename in files_to_process:
     filepath = os.path.join(base_path, filename)

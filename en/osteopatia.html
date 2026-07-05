@@ -2,9 +2,14 @@
 <html lang="en-GB">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Osteopathy Lisbon · Pain Relief &amp; Mobility Treatment | Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css?v=1.5.1" as="style">
+
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <meta name="description"
@@ -18,10 +23,10 @@
         rel="stylesheet">
 
     <!-- Icons (Lucide) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@latest" defer></script>
 
     <!-- Custom Style -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=1.5.1">
 
     <!-- SEO Meta Tags -->
     <link rel="canonical" href="https://pmorais.pt/en/osteopatia.html">
@@ -50,7 +55,7 @@
     <link rel="apple-touch-icon" href="/images/logo/logo_ios_android.png">
 
     <!-- Schema.org JSON-LD: MedicalBusiness + BreadcrumbList (EN) -->
-    <script type="application/ld+json">
+    <script nonce="pmorais-2026" type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
@@ -83,15 +88,15 @@
     }
     </script>
     
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body class="page-osteopatia">
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <img src="../images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <img src="../images/logo/logo_bw_loading.png" width="3487" height="2867" alt="Paulo Morais" class="loader-logo">
             <div class="shimmer-effect"></div>
         </div>
     </div>
@@ -104,22 +109,22 @@
         </div>
         <div class="fab-options">
             <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer" aria-label="WhatsApp">
                 <i data-lucide="message-circle"></i>
             </a>
             <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email">
+            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email" aria-label="Email">
                 <i data-lucide="mail"></i>
             </a>
-            <a href="javascript:void(0)" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
                 <i data-lucide="globe"></i>
-            </a>
-            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
                 <i data-lucide="sun-moon"></i>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -127,15 +132,17 @@
     <header id="header">
         <div class="container header-container">
             <a href="index.html">
-                <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+                <img src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
             </a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="sobre-mim.html">About Me</a></li>
-                    <li><a href="perfil.html">Profile</a></li>
-                    <li><a href="osteopatia.html" class="active">OSTEOPATHY</a></li>
-                </ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="sobre-mim.html">About Me</a></li>
+<li><a href="osteopatia.html" class="active">OSTEOPATHY</a></li>
+<li><a href="perfil.html">Profile</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="perfil.html?booking=true" class="btn-header-premium">BOOK NOW</a></li>
+</ul>
             </nav>
             <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
                 <i data-lucide="menu"></i>
@@ -160,7 +167,7 @@
                 <!-- Video/Image Section -->
                 <div class="osteopatia-media-card ipad-frame-wrapper fade-in delay-2">
                     <div class="ipad-frame-container">
-                        <img src="../images/osteopatia/ipad-model.png" alt="iPad Frame" class="ipad-frame-image">
+                        <img loading="lazy" src="../images/osteopatia/ipad-model.png" width="6000" height="4500" alt="iPad Frame" class="ipad-frame-image">
                         <div class="ipad-video-iframe">
                             <video class="video-auto-play osteopatia-video" autoplay muted loop playsinline
                                 style="width: 100%; height: 100%; object-fit: cover; border-radius: 2px;">
@@ -181,36 +188,36 @@
                 <div class="partners-marquee">
                     <div class="partners-track">
                         <!-- Osteopathy Specific Logos -->
-                        <img src="../images/osteopatia/entidades/aim-cancer-center.png" alt="AIM Cancer Center">
-                        <img src="../images/osteopatia/entidades/american-heart-association.png"
-                            alt="American Heart Association">
-                        <img src="../images/osteopatia/entidades/cancer-exercise-training-institute.png" alt="CETI">
-                        <img src="../images/osteopatia/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
-                            alt="Cruz Vermelha">
-                        <img src="../images/osteopatia/entidades/faculdade-de-medicina-u-lisboa.png"
-                            alt="Facultade de Medicina ULisboa">
-                        <img src="../images/osteopatia/entidades/gnosies.png" alt="Gnosies">
-                        <img src="../images/osteopatia/entidades/gtf-formacao-profissional.png" alt="GTF">
-                        <img src="../images/osteopatia/entidades/institute-of-motion.png" alt="Institute of Motion">
-                        <img src="../images/osteopatia/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png"
-                            alt="ISCE">
-                        <img src="../images/osteopatia/entidades/universidade-lusofona.png" alt="Universidade Lusófona">
+                        <img loading="lazy" src="../images/osteopatia/entidades/aim-cancer-center.png" width="960" height="415" alt="AIM Cancer Center">
+                        <img loading="lazy" src="../images/osteopatia/entidades/american-heart-association.png"
+                            width="960" height="415" alt="American Heart Association">
+                        <img loading="lazy" src="../images/osteopatia/entidades/cancer-exercise-training-institute.png" width="960" height="415" alt="CETI">
+                        <img loading="lazy" src="../images/osteopatia/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
+                            width="960" height="415" alt="Cruz Vermelha">
+                        <img loading="lazy" src="../images/osteopatia/entidades/faculdade-de-medicina-u-lisboa.png"
+                            width="960" height="415" alt="Facultade de Medicina ULisboa">
+                        <img loading="lazy" src="../images/osteopatia/entidades/gnosies.png" width="960" height="415" alt="Gnosies">
+                        <img loading="lazy" src="../images/osteopatia/entidades/gtf-formacao-profissional.png" width="960" height="415" alt="GTF">
+                        <img loading="lazy" src="../images/osteopatia/entidades/institute-of-motion.png" width="960" height="415" alt="Institute of Motion">
+                        <img loading="lazy" src="../images/osteopatia/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png"
+                            width="960" height="415" alt="ISCE">
+                        <img loading="lazy" src="../images/osteopatia/entidades/universidade-lusofona.png" width="960" height="415" alt="Universidade Lusófona">
 
                         <!-- Duplicate for infinite scroll effect -->
-                        <img src="../images/osteopatia/entidades/aim-cancer-center.png" alt="AIM Cancer Center">
-                        <img src="../images/osteopatia/entidades/american-heart-association.png"
-                            alt="American Heart Association">
-                        <img src="../images/osteopatia/entidades/cancer-exercise-training-institute.png" alt="CETI">
-                        <img src="../images/osteopatia/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
-                            alt="Cruz Vermelha">
-                        <img src="../images/osteopatia/entidades/faculdade-de-medicina-u-lisboa.png"
-                            alt="Facultade de Medicina ULisboa">
-                        <img src="../images/osteopatia/entidades/gnosies.png" alt="Gnosies">
-                        <img src="../images/osteopatia/entidades/gtf-formacao-profissional.png" alt="GTF">
-                        <img src="../images/osteopatia/entidades/institute-of-motion.png" alt="Institute of Motion">
-                        <img src="../images/osteopatia/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png"
-                            alt="ISCE">
-                        <img src="../images/osteopatia/entidades/universidade-lusofona.png" alt="Universidade Lusófona">
+                        <img loading="lazy" src="../images/osteopatia/entidades/aim-cancer-center.png" width="960" height="415" alt="AIM Cancer Center">
+                        <img loading="lazy" src="../images/osteopatia/entidades/american-heart-association.png"
+                            width="960" height="415" alt="American Heart Association">
+                        <img loading="lazy" src="../images/osteopatia/entidades/cancer-exercise-training-institute.png" width="960" height="415" alt="CETI">
+                        <img loading="lazy" src="../images/osteopatia/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
+                            width="960" height="415" alt="Cruz Vermelha">
+                        <img loading="lazy" src="../images/osteopatia/entidades/faculdade-de-medicina-u-lisboa.png"
+                            width="960" height="415" alt="Facultade de Medicina ULisboa">
+                        <img loading="lazy" src="../images/osteopatia/entidades/gnosies.png" width="960" height="415" alt="Gnosies">
+                        <img loading="lazy" src="../images/osteopatia/entidades/gtf-formacao-profissional.png" width="960" height="415" alt="GTF">
+                        <img loading="lazy" src="../images/osteopatia/entidades/institute-of-motion.png" width="960" height="415" alt="Institute of Motion">
+                        <img loading="lazy" src="../images/osteopatia/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png"
+                            width="960" height="415" alt="ISCE">
+                        <img loading="lazy" src="../images/osteopatia/entidades/universidade-lusofona.png" width="960" height="415" alt="Universidade Lusófona">
                     </div>
                 </div>
             </div>
@@ -277,7 +284,7 @@
                         <p class="testimonials-subtext">Paulo is a specialist in Osteopathy, possessing a solid set of clinical skills that allow him to practice osteopathy, promoting integration and providing excellent healthcare services.</p>
 
                         <div class="testimonials-image-wrapper">
-                            <img src="../images/osteopatia/nossos-clientes.jpg" alt="Consulta de Osteopatia">
+                            <img loading="lazy" src="../images/osteopatia/nossos-clientes.jpg" width="1600" height="1066" alt="Consulta de Osteopatia">
                         </div>
                     </div>
 
@@ -350,7 +357,7 @@
                             <!-- Testimonial 8: Ana Casaca -->
                             <div class="testimonial-card-yellow" data-index="7">
                                 <div class="testimonial-content">
-                                    <h4 class="testimonial-name">ANA CASACA</h4>
+                                    <h4 class="testimonial-name">ANA CASACA <i data-lucide="badge-check" style="width:18px; height:18px; color:#000; fill:#000; vertical-align: text-bottom;"></i></h4>
                                     <p class="testimonial-role">CLIENT SINCE 2019</p>
                                     <p class="testimonial-text">I finally found the training I was looking for: personalized with a focus on the person! Personalized, focused on my goals, and with a "come on, finish that" when I complain. Paulo focuses every day on making me surpass myself.</p>
                                 </div>
@@ -368,7 +375,7 @@
                             <!-- Testimonial 10: Ana Tomatas -->
                             <div class="testimonial-card-yellow" data-index="9">
                                 <div class="testimonial-content">
-                                    <h4 class="testimonial-name">ANA TOMATAS</h4>
+                                    <h4 class="testimonial-name">ANA TOMATAS <i data-lucide="badge-check" style="width:18px; height:18px; color:#000; fill:#000; vertical-align: text-bottom;"></i></h4>
                                     <p class="testimonial-role">CLIENT SINCE 2016</p>
                                     <p class="testimonial-text">I started training very afraid, because I was never very sporty. He made me discover a desire to train that I didn't know I had, and my body changed over time. He embraced me when I thought I couldn't do it anymore, believed when not even I believed, and pushed me to a limit I didn't know existed. Our paths parted with me embracing an international challenge.<br><br>More than losing weight, training with Paulo is therapeutic; it is knowing myself better and liking myself more.</p>
                                 </div>
@@ -401,7 +408,7 @@
                                 </div>
                             </div>
 
-                            <!-- Shared Pagination -->
+                            <!-- Testimonial pagination -->
                             <div class="testimonial-pagination">
                                 <span class="dot active"></span>
                                 <span class="dot"></span>
@@ -417,6 +424,12 @@
                                 <span class="dot"></span>
                                 <span class="dot"></span>
                             </div>
+                            </div>
+                        </div>
+
+                        <!-- Leave Review CTA (Hidden by default, shown via auth.js if logged in) -->
+                        <div id="leave-review-cta" style="display: none; text-align: center; margin-top: 30px;">
+                            <a href="perfil.html?tab=review-osteopatia" class="btn btn-primary" style="padding: 12px 30px; border-radius: 50px; font-weight: 600;">Leave a review</a>
                         </div>
                     </div>
                 </div>
@@ -432,7 +445,7 @@
                 <div class="cta-wrapper shadow-gold no-padding-mobile">
                     <!-- Right Side - Form -->
                     <div class="contact-form-wrapper dark-form fade-in">
-                        <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="contact-form-logo">
+                        <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="contact-form-logo">
                         <h3 class="contact-form-title">Get in touch with us</h3>
 
                         <!-- Contact Form -->
@@ -478,7 +491,7 @@
 
                     <!-- Left Side - Image -->
                     <div class="contact-image-wrapper fade-in delay-1">
-                        <img src="../images/osteopatia/contacto.jpg" alt="Osteopathy">
+                        <img loading="lazy" src="../images/osteopatia/contacto.jpg" width="1185" height="1065" alt="Osteopathy">
                     </div>
                 </div>
             </div>
@@ -490,7 +503,7 @@
         <div class="footer-container-new">
             <div class="footer-col branding-col">
                 <a href="index.html" class="footer-logo-link">
-                    <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                    <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
                 </a>
                 <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
                 <p class="brand-sub">Personalised patient approach</p>
@@ -510,11 +523,18 @@
                     <li>
                         <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
                             rel="noopener noreferrer" class="complaint-book-elysium">
-                            <img src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                            <img loading="lazy" src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
                         </a>
                     </li>
                     <li><a href="politica-privacidade.html">Privacy Policy</a></li>
                     <li><a href="termos-e-condicoes.html">Terms and Conditions</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" class="active" title="English">EN</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
 
@@ -531,19 +551,19 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/script.js"></script>
+    <script nonce="pmorais-2026" src="js/script.js?v=1.5.1" defer></script>
 
     <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script nonce="pmorais-2026" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script nonce="pmorais-2026" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
 
     <!-- Firebase Configuration & Form Handler -->
-    <script>
+    <script nonce="pmorais-2026">
         // Firebase configuration
         const firebaseConfig = {
             apiKey: "AIzaSyCROYGriQ-5RWiLVCRwGz9KaDUKE6zNR2w",
@@ -608,6 +628,105 @@
                 // Re-enable button
                 submitButton.disabled = false;
                 submitButton.textContent = originalButtonText;
+            }
+        });
+    </script>
+    <script nonce="pmorais-2026" src="../js/cookie-consent.js" defer></script>
+    <!-- Dynamic Reviews Loader for Osteopatia -->
+    <script nonce="pmorais-2026">
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                // Load reviews for 'osteopatia' service
+                const snap = await db.collection('reviews')
+                    .where('service', '==', 'osteopatia')
+                    .where('hidden', '==', false)
+                    .get();
+
+                if (snap.empty) return;
+
+                const dbReviews = [];
+                snap.forEach(function (docSnap) {
+                    const data = docSnap.data();
+                    if (!data.isFromHTML) {
+                        dbReviews.push(data);
+                    }
+                });
+                dbReviews.sort(function (a, b) {
+                    return new Date(b.timestamp) - new Date(a.timestamp);
+                });
+
+                const carousel = document.querySelector('.testimonial-carousel-wrapper');
+                const dotsContainer = document.querySelector('.testimonial-pagination');
+                if (!carousel) return;
+
+                const firstCard = carousel.querySelector('.testimonial-card-gold, .testimonial-card-yellow');
+                let firstDot = null;
+                if (dotsContainer) {
+                    firstDot = dotsContainer.firstElementChild;
+                }
+
+                let nextIndex = carousel.querySelectorAll('.testimonial-card-gold, .testimonial-card-yellow').length;
+
+                dbReviews.forEach(function (r) {
+                    const year = new Date(r.timestamp).getFullYear();
+                    
+                    // Use exact original black badge
+                    const badgeSvg = ' <i data-lucide="badge-check" style="width:18px; height:18px; color:#000; fill:#000; vertical-align: text-bottom;" aria-hidden="true"></i>';
+
+                    const div = document.createElement('div');
+                    div.className = 'testimonial-card-yellow';
+                    div.setAttribute('data-index', nextIndex);
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'testimonial-content';
+
+                    const nameEl = document.createElement('h4');
+                    nameEl.className = 'testimonial-name';
+                    const safeUserName = (typeof r.userName === 'string' ? r.userName : 'Anonymous').trim() || 'Anonymous';
+                    nameEl.innerHTML = safeUserName.toUpperCase() + badgeSvg;
+
+                    const roleEl = document.createElement('p');
+                    roleEl.className = 'testimonial-role';
+                    roleEl.textContent = 'CLIENT SINCE ' + year;
+
+                    const textEl = document.createElement('p');
+                    textEl.className = 'testimonial-text';
+                    textEl.textContent = typeof r.text === 'string' ? r.text.slice(0, 1000) : '';
+
+                    contentDiv.appendChild(nameEl);
+                    contentDiv.appendChild(roleEl);
+                    contentDiv.appendChild(textEl);
+                    div.appendChild(contentDiv);
+                    
+                    if (firstCard) {
+                        carousel.insertBefore(div, firstCard);
+                    } else {
+                        if (dotsContainer) {
+                            carousel.insertBefore(div, dotsContainer);
+                        } else {
+                            carousel.appendChild(div);
+                        }
+                    }
+
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    if (firstDot) {
+                        dotsContainer.insertBefore(dot, firstDot);
+                    } else {
+                        dotsContainer.appendChild(dot);
+                    }
+
+                    nextIndex++;
+                });
+
+                if (typeof window.setupCarousel === 'function') {
+                    window.setupCarousel();
+                }
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            } catch (err) {
+                console.error("Error loading osteopatia reviews:", err);
             }
         });
     </script>

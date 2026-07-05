@@ -2,9 +2,14 @@
 <html lang="en-GB">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Personal Training &amp; Osteopathy | Paulo Morais · Lisbon</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="../css/style.css?v=1.5.1" as="style">
+
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <meta name="description"
@@ -13,10 +18,10 @@
     <!-- Patron local font is defined in style.css -->
 
     <!-- Icons (Lucide) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@latest" defer></script>
 
     <!-- Custom Style -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=1.5.1">
     <!-- SEO Meta Tags -->
     <link rel="canonical" href="https://pmorais.pt/en/">
     <link rel="alternate" hreflang="pt" href="https://pmorais.pt/">
@@ -39,12 +44,12 @@
     <meta name="twitter:image" content="https://pmorais.pt/images/logo/paulo_morais-08.png">
 
     <!-- Schema.org JSON-LD: LocalBusiness + Person (EN) -->
-    <script type="application/ld+json">
+    <script nonce="pmorais-2026" type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@graph": [
         {
-          "@type": ["LocalBusiness", "HealthAndBeautyBusiness"],
+          "@type": ["LocalBusiness", "MedicalBusiness"],
           "@id": "https://pmorais.pt/#business",
           "name": "Paulo Morais - Your Own Workout",
           "description": "Personal training, online training and osteopathy in Lisbon. Integrated approach to health and performance.",
@@ -123,15 +128,15 @@
     <meta name="theme-color" content="#E6AE17">
     <link rel="apple-touch-icon" href="/images/logo/logo_ios_android.png">
     
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body>
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <img src="../images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <img src="../images/logo/logo_bw_loading.png" width="3487" height="2867" alt="Paulo Morais" class="loader-logo">
             <div class="shimmer-effect"></div>
         </div>
     </div>
@@ -140,16 +145,17 @@
     <header id="header">
         <div class="container header-container">
             <a href="index.html">
-                <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+                <img src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
             </a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="index.html" class="active">Home</a></li>
-                    <li><a href="sobre-mim.html">About Me</a></li>
-                    <li><a href="perfil.html">Profile</a></li>
-                    <li><a href="osteopatia.html">OSTEOPATHY</a></li>
-                    <li><a href="perfil.html?booking=true" class="highlight" style="border-radius:20px;">BOOK NOW</a></li>
-                </ul>
+<li><a href="index.html" class="active">Home</a></li>
+<li><a href="sobre-mim.html">About Me</a></li>
+<li><a href="osteopatia.html">OSTEOPATHY</a></li>
+<li><a href="perfil.html">Profile</a></li>
+<li><a href="blog.html">Blog</a></li>
+<li><a href="perfil.html?booking=true" class="btn-header-premium">BOOK NOW</a></li>
+</ul>
             </nav>
             <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
                 <i data-lucide="menu"></i>
@@ -164,22 +170,22 @@
         </div>
         <div class="fab-options">
             <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer" aria-label="WhatsApp">
                 <i data-lucide="message-circle"></i>
             </a>
             <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email">
+            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email" aria-label="Email">
                 <i data-lucide="mail"></i>
             </a>
-            <a href="javascript:void(0)" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
                 <i data-lucide="globe"></i>
-            </a>
-            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
                 <i data-lucide="sun-moon"></i>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -237,36 +243,36 @@
             <div class="partners-marquee">
                 <div class="partners-track">
                     <!-- Logos -->
-                    <img src="../images/index/entidades/aim-cancer-center.png" alt="AIM Cancer Center">
-                    <img src="../images/index/entidades/cancer-exercise-training-institute.png" alt="CETI">
-                    <img src="../images/index/entidades/gtf-formacao-profissional.png" alt="GTF">
-                    <img src="../images/index/entidades/universidade-lusofona.png" alt="Universidade Lusófona">
-                    <img src="../images/index/entidades/american-heart-association.png"
-                        alt="American Heart Association">
-                    <img src="../images/index/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
-                        alt="Cruz Vermelha">
-                    <img src="../images/index/entidades/faculdade-de-medicina-u-lisboa.png"
-                        alt="Faculdade de Medicina ULisboa">
-                    <img src="../images/index/entidades/gnosies.png" alt="Gnosies">
-                    <img src="../images/index/entidades/institute-of-motion.png" alt="Institute of Motion">
-                    <img src="../images/index/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png" alt="ISCE">
-                    <img src="../images/index/entidades/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                    <img loading="lazy" src="../images/index/entidades/aim-cancer-center.png" width="960" height="415" alt="AIM Cancer Center">
+                    <img loading="lazy" src="../images/index/entidades/cancer-exercise-training-institute.png" width="960" height="415" alt="CETI">
+                    <img loading="lazy" src="../images/index/entidades/gtf-formacao-profissional.png" width="960" height="415" alt="GTF">
+                    <img loading="lazy" src="../images/index/entidades/universidade-lusofona.png" width="960" height="415" alt="Universidade Lusófona">
+                    <img loading="lazy" src="../images/index/entidades/american-heart-association.png"
+                        width="960" height="415" alt="American Heart Association">
+                    <img loading="lazy" src="../images/index/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
+                        width="960" height="415" alt="Cruz Vermelha">
+                    <img loading="lazy" src="../images/index/entidades/faculdade-de-medicina-u-lisboa.png"
+                        width="960" height="415" alt="Faculdade de Medicina ULisboa">
+                    <img loading="lazy" src="../images/index/entidades/gnosies.png" width="960" height="415" alt="Gnosies">
+                    <img loading="lazy" src="../images/index/entidades/institute-of-motion.png" width="960" height="415" alt="Institute of Motion">
+                    <img loading="lazy" src="../images/index/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png" width="960" height="415" alt="ISCE">
+                    <img loading="lazy" src="../images/index/entidades/livro-de-reclamacoes.png" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
 
                     <!-- Duplicate for infinite scroll effect -->
-                    <img src="../images/index/entidades/aim-cancer-center.png" alt="AIM Cancer Center">
-                    <img src="../images/index/entidades/cancer-exercise-training-institute.png" alt="CETI">
-                    <img src="../images/index/entidades/gtf-formacao-profissional.png" alt="GTF">
-                    <img src="../images/index/entidades/universidade-lusofona.png" alt="Universidade Lusófona">
-                    <img src="../images/index/entidades/american-heart-association.png"
-                        alt="American Heart Association">
-                    <img src="../images/index/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
-                        alt="Cruz Vermelha">
-                    <img src="../images/index/entidades/faculdade-de-medicina-u-lisboa.png"
-                        alt="Faculdade de Medicina ULisboa">
-                    <img src="../images/index/entidades/gnosies.png" alt="Gnosies">
-                    <img src="../images/index/entidades/institute-of-motion.png" alt="Institute of Motion">
-                    <img src="../images/index/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png" alt="ISCE">
-                    <img src="../images/index/entidades/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                    <img loading="lazy" src="../images/index/entidades/aim-cancer-center.png" width="960" height="415" alt="AIM Cancer Center">
+                    <img loading="lazy" src="../images/index/entidades/cancer-exercise-training-institute.png" width="960" height="415" alt="CETI">
+                    <img loading="lazy" src="../images/index/entidades/gtf-formacao-profissional.png" width="960" height="415" alt="GTF">
+                    <img loading="lazy" src="../images/index/entidades/universidade-lusofona.png" width="960" height="415" alt="Universidade Lusófona">
+                    <img loading="lazy" src="../images/index/entidades/american-heart-association.png"
+                        width="960" height="415" alt="American Heart Association">
+                    <img loading="lazy" src="../images/index/entidades/escola-superior-de-saude-norte-cruz-vermelha-portuguesa.png"
+                        width="960" height="415" alt="Cruz Vermelha">
+                    <img loading="lazy" src="../images/index/entidades/faculdade-de-medicina-u-lisboa.png"
+                        width="960" height="415" alt="Faculdade de Medicina ULisboa">
+                    <img loading="lazy" src="../images/index/entidades/gnosies.png" width="960" height="415" alt="Gnosies">
+                    <img loading="lazy" src="../images/index/entidades/institute-of-motion.png" width="960" height="415" alt="Institute of Motion">
+                    <img loading="lazy" src="../images/index/entidades/instituto-superior-de-lisboa-e-vale-do-tejo.png" width="960" height="415" alt="ISCE">
+                    <img loading="lazy" src="../images/index/entidades/livro-de-reclamacoes.png" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
                 </div>
             </div>
         </section>
@@ -280,7 +286,7 @@
                         <span class="cta-label">About Me</span>
                         <h2>Paulo Morais</h2>
                         <h3 class="box-subtitle">Osteopath and Personal Training Specialist</h3>
-                        <a href="sobre-mim.html" class="btn btn-primary">Learn More <i data-lucide="chevron-right"></i></a>
+                        <a href="sobre-mim.html" class="btn btn-primary" aria-label="Learn more about Paulo Morais">Learn More <i data-lucide="chevron-right"></i></a>
                     </div>
                     <div class="cta-divider"></div>
                     <div class="cta-box">
@@ -304,51 +310,51 @@
                             <div class="ig-feed-grid">
                                 <div class="ig-feed-column">
                                     <div class="ig-feed-scroll ig-scroll-up">
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-01.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-01.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-04.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-04.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-07.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-07.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-10.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-10.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
                                         <!-- Duplicates for infinite scroll -->
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-01.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-01.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-04.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-04.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-07.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-07.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-10.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-10.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
@@ -357,51 +363,51 @@
                                 </div>
                                 <div class="ig-feed-column">
                                     <div class="ig-feed-scroll ig-scroll-down">
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-02.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-02.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-05.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-05.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-08.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-08.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-11.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-11.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
                                         <!-- Duplicates for infinite scroll -->
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-02.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-02.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-05.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-05.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-08.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-08.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-11.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-11.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
@@ -410,51 +416,51 @@
                                 </div>
                                 <div class="ig-feed-column">
                                     <div class="ig-feed-scroll ig-scroll-up ig-scroll-slow">
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-03.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-03.jpg" width="1284" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-06.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-06.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-09.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-09.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-12.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-12.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
                                         <!-- Duplicates for infinite scroll -->
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-03.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-03.jpg" width="1284" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-06.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-06.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-09.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-09.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
                                         </a>
-                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item">
-                                            <img src="../images/instagram/ig-12.jpg" alt="Instagram Post" loading="lazy">
+                                        <a href="https://www.instagram.com/pt.paulomorais/" target="_blank" rel="noopener noreferrer" class="ig-feed-item" aria-label="Instagram Post">
+                                            <img src="../images/instagram/ig-12.jpg" width="1346" height="1674" alt="Instagram Post" loading="lazy">
                                             <div class="ig-feed-overlay">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
                                             </div>
@@ -518,7 +524,7 @@
                             <!-- Testimonial 5 -->
                             <div class="testimonial-card-yellow" data-index="4">
                                 <div class="testimonial-content">
-                                    <h4 class="testimonial-name">ANA CASACA</h4>
+                                    <h4 class="testimonial-name">ANA CASACA <i data-lucide="badge-check" style="width:18px; height:18px; color:#000; fill:#000; vertical-align: text-bottom;"></i></h4>
                                     <p class="testimonial-role">CLIENT SINCE 2019</p>
                                     <p class="testimonial-text">Finalmente encontrei o treino que procurava: personalizado com foco na pessoa!
                                         Personalizado, focado nos meus objectivos e com "bora lá, acaba lá isso" quando
@@ -541,7 +547,7 @@
                             <!-- Testimonial 7 -->
                             <div class="testimonial-card-yellow" data-index="6">
                                 <div class="testimonial-content">
-                                    <h4 class="testimonial-name">ANA TOMATAS</h4>
+                                    <h4 class="testimonial-name">ANA TOMATAS <i data-lucide="badge-check" style="width:18px; height:18px; color:#000; fill:#000; vertical-align: text-bottom;"></i></h4>
                                     <p class="testimonial-role">CLIENT SINCE 2016</p>
                                     <p class="testimonial-text">I started training very afraid, because I was never very sporty. He made me discover a desire to train that I didn't know I had, and my body changed over time. He embraced me when I thought I couldn't do it anymore, believed when not even I believed, and pushed me to a limit I didn't know existed. Our paths parted with me embracing an international challenge.<br><br>More than losing weight, training with Paulo is therapeutic; it is knowing myself better and liking myself more.</p>
                                 </div>
@@ -583,32 +589,107 @@
                                 <span class="dot"></span>
                             </div>
                         </div>
+                        <!-- Leave Review CTA (Hidden by default, shown via auth.js if logged in) -->
+                        <div id="leave-review-cta" style="display: none; text-align: center; margin-top: 30px;">
+                            <a href="perfil.html?tab=review-treino" class="btn btn-primary" style="padding: 12px 30px; border-radius: 50px; font-weight: 600;">Leave a review</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <!-- Oncology Section -->
+        <section id="oncologia" class="oncologia-section">
+            <!-- Background decorative glow -->
+            <div class="oncologia-glow-left"></div>
+            <div class="oncologia-glow-right"></div>
 
+            <div class="container-wide">
+                <!-- Header -->
+                <div class="oncologia-header reveal">
+                    <span class="oncologia-eyebrow">Specialty  —  Oncology Training</span>
+                    <h2>Physical Exercise<br><span class="oncologia-highlight">in Oncology</span></h2>
+                    <p>Science is clear: physical activity is a powerful tool in cancer <strong>prevention</strong>, <strong>treatment</strong>, and <strong>recovery</strong>.</p>
+                </div>
+
+                <!-- Layout principal -->
+                <div class="oncologia-layout">
+
+                    <!-- Imagem principal (poster fixo) -->
+                    <div class="oncologia-image-main reveal reveal-left">
+                        <div class="oncologia-img-wrapper" id="trigger-oncologia-modal" style="cursor: pointer;">
+                            <img src="../images/oncologia-main.jpg"
+                                 alt="Physical exercise can make a difference in oncology"
+                                 loading="lazy">
+                            <div class="oncologia-badge">
+                                <i data-lucide="shield-check" aria-hidden="true"></i>
+                                <span>Scientific evidence</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Imagem com scroll interno -->
+                    <div class="oncologia-image-scroll-wrap reveal reveal-right">
+                        <div class="oncologia-scroll-label">
+                            <i data-lucide="mouse" style="width:14px;height:14px;" aria-hidden="true"></i>
+                            Scroll to explore
+                        </div>
+                        <div class="oncologia-image-scroll-inner">
+                            <div class="oncologia-image-scroll">
+                                <img src="../images/oncologia-scroll.jpg"
+                                     alt="Physical activity and cancer"
+                                     loading="lazy">
+                            </div>
+                            <div class="oncologia-scroll-fade"></div>
+                        </div>
+                        
+                        <!-- CTA inserido diretamente debaixo da imagem -->
+                        <div class="oncologia-column-cta">
+                            <a href="perfil.html?booking=true" class="btn btn-primary">
+                                Schedule Oncology Assessment <i data-lucide="chevron-right" aria-hidden="true"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
 
         <!-- Post-Testimonials Video Section -->
         <section class="post-testimonials-video">
             <div class="container-wide">
                 <div class="video-split">
-                    <div class="video-half">
-                        <iframe width="100%" height="100%"
-                            src="https://www.youtube-nocookie.com/embed/qv3cppvowhQ?autoplay=1&amp;mute=1&amp;controls=0&amp;loop=1&amp;playlist=qv3cppvowhQ&amp;playsinline=1&amp;start=61"
-                            title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen></iframe>
+                    <div class="video-item">
+                        <a href="https://www.youtube.com/watch?v=qv3cppvowhQ" target="_blank" class="video-title-link">
+                            <h3 class="video-title">Strength Training <i data-lucide="external-link" style="width: 18px; height: 18px; margin-left: 5px;"></i></h3>
+                        </a>
+                        <div class="video-half">
+                            <iframe width="100%" height="100%"
+                                src="https://www.youtube-nocookie.com/embed/qv3cppvowhQ?autoplay=1&amp;mute=1&amp;controls=1&amp;loop=1&amp;playlist=qv3cppvowhQ&amp;playsinline=1&amp;start=61"
+                                title="Strength Training" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
+                        </div>
                     </div>
 
-                    <div class="video-half">
-                        <iframe width="100%" height="100%"
-                            src="https://www.youtube-nocookie.com/embed/LVbyFwdJEQg?autoplay=1&amp;mute=1&amp;controls=0&amp;loop=1&amp;playlist=LVbyFwdJEQg&amp;playsinline=1&amp;start=8"
-                            title="YouTube video player" frameborder="0"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                            allowfullscreen></iframe>
+                    <div class="video-item">
+                        <a href="https://www.youtube.com/watch?v=LVbyFwdJEQg" target="_blank" class="video-title-link">
+                            <h3 class="video-title">Cardio Training <i data-lucide="external-link" style="width: 18px; height: 18px; margin-left: 5px;"></i></h3>
+                        </a>
+                        <div class="video-half">
+                            <iframe width="100%" height="100%"
+                                src="https://www.youtube-nocookie.com/embed/LVbyFwdJEQg?autoplay=1&amp;mute=1&amp;controls=1&amp;loop=1&amp;playlist=LVbyFwdJEQg&amp;playsinline=1&amp;start=8"
+                                title="Cardio Training" frameborder="0"
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                                allowfullscreen></iframe>
+                        </div>
                     </div>
+                </div>
+
+                <div class="video-playlist-cta">
+                    <a href="https://youtube.com/playlist?list=PLAVjxmF9QISo&si=BpSZXGwG75UhmK7g" target="_blank" class="video-cta-text">
+                        Train with us
+                    </a>
                 </div>
             </div>
         </section>
@@ -618,14 +699,14 @@
             <div class="container-wide">
                 <div class="cta-wrapper">
                     <div class="cta-box">
-                        <span class="cta-label">Agende Connosco</span>
+                        <span class="cta-label">Book With Us</span>
                         <h2>Book Now</h2>
                         <p>Discover the passion and experience behind the Your Own Workout method.</p>
                         <a href="perfil.html?booking=true" class="btn btn-primary">Book Now <i data-lucide="chevron-right"></i></a>
                     </div>
                     <div class="cta-divider"></div>
                     <div class="cta-box">
-                        <span class="cta-label">Cuidado Integrado</span>
+                        <span class="cta-label">Integrated Care</span>
                         <h2>Osteopathy</h2>
                         <p>Tension relief and improved mobility for a life without limits.</p>
                         <a href="osteopatia.html" class="btn btn-primary-black">Explore <i data-lucide="chevron-right"></i></a>
@@ -640,7 +721,7 @@
         <div class="footer-container-new">
             <div class="footer-col branding-col">
                 <a href="index.html" class="footer-logo-link">
-                    <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                    <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
                 </a>
                 <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
                 <p class="brand-sub">The true personal training that adapts to your life.</p>
@@ -660,11 +741,19 @@
                     <li>
                         <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
                             rel="noopener noreferrer" class="complaint-book-elysium">
-                            <img src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                            <img loading="lazy" src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
                         </a>
                     </li>
                     <li><a href="politica-privacidade.html">Privacy Policy</a></li>
                     <li><a href="termos-e-condicoes.html">Terms and Conditions</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" class="active" title="English">EN</a>
+                        </div>
+                    </li>
+                    
                 </ul>
             </div>
 
@@ -681,12 +770,135 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
         </div>
     </footer>
 
+    <!-- Lightbox Modal para Oncologia -->
+    <div id="oncologia-lightbox" class="oncologia-lightbox">
+        <span class="oncologia-lightbox-close"><i data-lucide="x" aria-hidden="true"></i></span>
+        <img class="oncologia-lightbox-content" id="oncologia-lightbox-img" src="" alt="Enlarged Image">
+    </div>
+
     <!-- Scripts -->
-    <script src="js/script.js"></script>
+    <script nonce="pmorais-2026" src="js/script.js?v=1.5.1" defer></script>
+    <script nonce="pmorais-2026" src="../js/cookie-consent.js" defer></script>
+
+    <!-- Firebase SDK for Reviews -->
+    <script nonce="pmorais-2026" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script nonce="pmorais-2026" src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
+    <!-- Firebase Configuration & Reviews Loader -->
+    <script nonce="pmorais-2026">
+        const firebaseConfig = {
+            apiKey: "AIzaSyCROYGriQ-5RWiLVCRwGz9KaDUKE6zNR2w",
+            authDomain: "paulo-morais.firebaseapp.com",
+            projectId: "paulo-morais",
+            storageBucket: "paulo-morais.firebasestorage.app",
+            messagingSenderId: "431406968000",
+            appId: "1:431406968000:web:01e40cb3eb4044ddc69125"
+        };
+        if (!firebase.apps.length) {
+            firebase.initializeApp(firebaseConfig);
+        }
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            try {
+                const badgeSvg = ' <i data-lucide="badge-check" style="width:18px; height:18px; color:#000; fill:#000; vertical-align: text-bottom;" aria-hidden="true"></i>';
+
+                const snap = await db.collection('reviews')
+                    .where('service', '==', 'treino')
+                    .where('hidden', '==', false)
+                    .get();
+
+                if (snap.empty) return;
+
+                const dbReviews = [];
+                snap.forEach(function (docSnap) {
+                    const data = docSnap.data();
+                    if (!data.isFromHTML) {
+                        dbReviews.push(data);
+                    }
+                });
+                dbReviews.sort(function (a, b) {
+                    return new Date(b.timestamp) - new Date(a.timestamp);
+                });
+
+                const carousel = document.querySelector('.testimonial-carousel-wrapper');
+                const dotsContainer = document.querySelector('.testimonial-pagination');
+                if (!carousel) return;
+
+                const firstCard = carousel.querySelector('.testimonial-card-gold, .testimonial-card-yellow');
+                let firstDot = null;
+                if (dotsContainer) {
+                    firstDot = dotsContainer.firstElementChild;
+                }
+
+                let nextIndex = carousel.querySelectorAll('.testimonial-card-gold, .testimonial-card-yellow').length;
+
+                dbReviews.forEach(function (r) {
+                    const year = new Date(r.timestamp).getFullYear();
+                    const safeUserName = (typeof r.userName === 'string' ? r.userName : 'Anonymous').trim() || 'Anonymous';
+                    
+                    const div = document.createElement('div');
+                    div.className = 'testimonial-card-yellow';
+                    div.setAttribute('data-index', nextIndex);
+
+                    const contentDiv = document.createElement('div');
+                    contentDiv.className = 'testimonial-content';
+
+                    const nameEl = document.createElement('h4');
+                    nameEl.className = 'testimonial-name';
+                    nameEl.innerHTML = safeUserName.toUpperCase() + badgeSvg;
+
+                    const roleEl = document.createElement('p');
+                    roleEl.className = 'testimonial-role';
+                    roleEl.textContent = 'CLIENT SINCE ' + year;
+
+                    const textEl = document.createElement('p');
+                    textEl.className = 'testimonial-text';
+                    textEl.textContent = typeof r.text === 'string' ? r.text.slice(0, 1000) : '';
+
+                    contentDiv.appendChild(nameEl);
+                    contentDiv.appendChild(roleEl);
+                    contentDiv.appendChild(textEl);
+                    div.appendChild(contentDiv);
+                    
+                    if (firstCard) {
+                        carousel.insertBefore(div, firstCard);
+                    } else {
+                        if (dotsContainer) {
+                            carousel.insertBefore(div, dotsContainer);
+                        } else {
+                            carousel.appendChild(div);
+                        }
+                    }
+
+                    const dot = document.createElement('span');
+                    dot.className = 'dot';
+                    if (firstDot) {
+                        dotsContainer.insertBefore(dot, firstDot);
+                    } else {
+                        dotsContainer.appendChild(dot);
+                    }
+
+                    nextIndex++;
+                });
+                
+                if (typeof window.setupCarousel === 'function') {
+                    window.setupCarousel();
+                } else if (typeof window.initTestimonialCarousel === 'function') {
+                    window.initTestimonialCarousel();
+                }
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            } catch (err) {
+                console.error("Error loading index reviews:", err);
+            }
+        });
+    </script>
 </body>
 
 </html>

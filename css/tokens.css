@@ -1,0 +1,39 @@
+:root {
+    /* Colors */
+    --color-bg: #0B0B0B;
+    --color-surface: #111111;
+    --color-primary: #E6AE17;
+    /* Updated to match target */
+    --color-primary-hover: #d5a015;
+    --color-light-gray: #F2F2F2;
+    /* New split section color */
+    --color-text: #ffffff;
+    --color-text-dim: #cccccc;
+    --color-accent: #ffffff;
+    --color-brand-primary: #ffffff;
+    --color-brand-secondary: var(--color-primary);
+    --color-brand-tertiary: #0A6FE8;
+
+    /* Typography */
+    --font-heading: 'Patron', sans-serif;
+    --font-body: 'Patron', sans-serif;
+    /* Clean, modern sans-serif */
+
+    /* Spacing */
+    --container-width: 1200px;
+    --section-padding: clamp(60px, 10vw, 100px) 20px;
+    /* Fluid section padding */
+
+    /* Transitions */
+    --transition-smooth: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Light Mode Overrides */
+body.light-mode {
+    --color-bg: #ffffff;
+    --color-surface: #f9f9f9;
+    --color-text: #111111;
+    --color-text-dim: #666666;
+    --color-accent: #000000;
+}
+

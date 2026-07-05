@@ -2,9 +2,14 @@
 <html lang="en-GB">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Booking History | Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css" as="style">
+
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_amarelo_alpha.png">
     
     <!-- Google Fonts -->
@@ -13,12 +18,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Icons (Lucide) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@latest" defer></script>
 
     <!-- Custom Style -->
     <link rel="stylesheet" href="../css/style.css">
     
-    <style>
+    <style nonce="pmorais-2026">
         .history-page-container {
             max-width: 1000px;
             margin: 0 auto;
@@ -80,8 +85,8 @@
             }
         }
     </style>
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body class="bg-dark">
@@ -89,7 +94,7 @@
     <header id="header" class="scrolled">
         <div class="container header-container">
             <a href="index.html" class="logo">
-                <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" style="width: 40px;">
+                <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" style="width: 40px;">
                 <span class="logo-text">HISTORY</span>
             </a>
             
@@ -128,8 +133,8 @@
     </footer>
 
     <!-- Scripts -->
-    <script type="module" src="js/admin-historico.js"></script>
-    <script src="js/script.js"></script>
+    <script nonce="pmorais-2026" type="module" src="js/admin-historico.js"></script>
+    <script nonce="pmorais-2026" src="js/script.js" defer></script>
 </body>
 
 </html>

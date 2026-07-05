@@ -9,6 +9,11 @@ import {
 } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
 
+// [SEC-03] Conditional logger — silent in production
+const _isDev = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+const logger = { log: (...a) => _isDev && console.log(...a), warn: (...a) => console.warn(...a), error: (...a) => console.error(...a) };
+
+
 const ADMIN_EMAIL = "pt@pmorais.pt";
 const profilesGrid = document.getElementById('profiles-grid');
 const modal = document.getElementById('modal-details');
@@ -20,18 +25,18 @@ const btnCloseModal = document.getElementById('btn-close-modal');
 onAuthStateChanged(auth, async (user) => {
     try {
         if (!user) {
-            console.log("No user found, redirecting...");
+            logger.log("No user found, redirecting...");
             window.location.href = 'perfil.html';
             return;
         }
 
-        console.log("User authenticated:", user.email);
+        logger.log("User authenticated:", user.email);
 
         // Verify Admin Role in Firestore
         const userDoc = await getDoc(doc(db, "users", user.uid));
         const userData = userDoc.data();
 
-        console.log("User data from Firestore:", userData);
+        logger.log("User data from Firestore:", userData);
 
         if (userData?.role !== 'admin' && user.email !== ADMIN_EMAIL) {
             alert("Acesso restrito a administradores.");

@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta name="view-transition" content="same-origin" />
+    <style nonce="pmorais-2026" id="critical-css">
+    :root {
+        /* Colors */
+        --color-bg: #0B0B0B;
+        --color-surface: #111111;
+        --color-primary: #E6AE17;
+        /* Updated to match target */
+        --color-primary-hover: #d5a015;
+        --color-light-gray: #F2F2F2;
+        /* New split section color */
+        --color-text: #ffffff;
+        --color-text-dim: #cccccc;
+        --color-accent: #ffffff;
+        --color-brand-primary: #ffffff;
+        --color-brand-secondary: var(--color-primary);
+        --color-brand-tertiary: #0A6FE8;
+    
+        /* Typography */
+        --font-heading: 'Patron', sans-serif;
+        --font-body: 'Patron', sans-serif;
+        /* Clean, modern sans-serif */
+    
+        /* Spacing */
+        --container-width: 1200px;
+        --section-padding: clamp(60px, 10vw, 100px) 20px;
+        /* Fluid section padding */
+    
+        /* Transitions */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        overflow-x: hidden;
+        /* Scrollbar natural del sistema, sin personalización */
+    }
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #F4B618;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .loader-content {
+        position: relative;
+        width: 250px;
+        /* Ajustado para el logo */
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .loader-logo {
+        width: 100%;
+        height: auto;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+    .shimmer-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    
+        /* Mask the shimmer to the logo shape */
+        -webkit-mask-image: url('../images/logo/logo_bw_loading.png');
+        mask-image: url('../images/logo/logo_bw_loading.png');
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    
+        /* The Moving Light Gradient */
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.7) 50%,
+                rgba(255, 255, 255, 0) 70%);
+        background-size: 200% 100%;
+        background-position: 150% 0;
+        animation: lightSweep 2s infinite ease-in-out;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog - Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="../css/style.css?v=1.5.1" as="style">
+
+    <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
+    <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
+    <meta name="description" content="Blog and articles about osteopathy, health, wellness and personal training by Paulo Morais in Lisbon.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Icons (Lucide) -->
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" integrity="sha384-ieG+IKD0d/ZPXyCBTMVAbqsQdns8QGJR/e26WMw7M4fkaI/rHcS/YIoi+ah9WGge" crossorigin="anonymous" defer></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="../css/style.css?v=1.5.1">
+    
+    <style nonce="pmorais-2026">
+        .blog-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 40px;
+            padding: 40px 0 100px;
+        }
+        .blog-card {
+            background: color-mix(in srgb, var(--color-text), transparent 97%);
+            border-radius: 20px;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            border: 1px solid rgba(230, 174, 23, 0.1);
+        }
+        .blog-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(230, 174, 23, 0.4);
+        }
+        .blog-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+        .blog-card-img-wrapper {
+            width: 100%;
+            height: 220px;
+            overflow: hidden;
+        }
+        .blog-card-img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+        .blog-card:hover .blog-card-img-wrapper img {
+            transform: scale(1.05);
+        }
+        .blog-card-content {
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+        .blog-date {
+            font-size: 0.85rem;
+            color: var(--color-primary);
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .blog-card h3 {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            font-weight: 700;
+            color: var(--color-text);
+            line-height: 1.3;
+        }
+        .blog-summary {
+            color: var(--color-text-dim);
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            flex-grow: 1;
+        }
+        .blog-read-more {
+            color: var(--color-primary);
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: auto;
+        }
+    </style>
+    
+    <script nonce="pmorais-2026" src="../js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="../js/theme.js" defer></script>
+</head>
+
+<body class="bg-dark">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <picture>
+    <source srcset="../images/logo/logo_bw_loading.webp" type="image/webp">
+    <img src="../images/logo/logo_bw_loading.png" width="500" height="411" fetchpriority="high" alt="Paulo Morais" class="loader-logo">
+</picture>
+            <div class="shimmer-effect"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
+            </a>
+            <nav class="nav-menu">
+                <ul>
+<li><a href="index.html" data-i18n="nav.home">Home</a></li>
+<li><a href="sobre-mim.html" data-i18n="nav.about">About Me</a></li>
+<li><a href="osteopatia.html">Osteopathy</a></li>
+<li><a href="perfil.html" data-i18n="nav.profile">Profile</a></li>
+<li><a href="blog.html" class="active" data-i18n="nav.blog">Blog</a></li>
+<li><a href="perfil.html?booking=true" class="btn-header-premium" data-i18n="nav.book">BOOK NOW</a></li>
+</ul>
+            </nav>
+            <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
+                <i data-lucide="menu" aria-hidden="true"></i>
+            </div>
+        </div>
+    </header>
+
+    <!-- Social FAB -->
+    <div class="fab-container">
+        <div class="fab-trigger">
+            <i data-lucide="plus" aria-hidden="true"></i>
+        </div>
+        <div class="fab-options">
+            <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
+                rel="noopener noreferrer" aria-label="WhatsApp">
+                <i data-lucide="message-circle" aria-hidden="true"></i>
+            </a>
+            <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+                <i data-lucide="instagram" aria-hidden="true"></i>
+            </a>
+            <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email" aria-label="Email">
+                <i data-lucide="mail" aria-hidden="true"></i>
+            </a>
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Mudar Idioma" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+                <i data-lucide="globe" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Mudar Tema" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+                <i data-lucide="sun-moon" aria-hidden="true"></i>
+            </button>
+        </div>
+    </div>
+
+    <main class="blog-main-section">
+        <div class="container">
+            <div class="text-center" style="margin-bottom: 50px;">
+                <p class="article-date" style="color: var(--color-primary); font-weight: 600; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px;">Articles & Knowledge</p>
+                <h1 class="premium-title" style="font-size: clamp(2.5rem, 5vw, 4rem);">The Blog</h1>
+                <p style="opacity: 0.8; max-width: 600px; margin: 20px auto 0; line-height: 1.6;">Tips, knowledge, and reflections on osteopathy, mobility, and wellness, designed to help you in your daily life.</p>
+            </div>
+            
+            <div id="public-blog-grid" class="blog-grid">
+                <!-- Posts will be loaded here via JS -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-index mt-5">
+        <div class="footer-container-new">
+            <div class="footer-col branding-col">
+                <a href="index.html" class="footer-logo-link">
+                    <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
+                </a>
+                <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
+                <p class="brand-sub">The true personal training that adapts to your life.</p>
+            </div>
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li><a href="index.html" data-i18n="nav.home">Home</a></li>
+                    <li><a href="sobre-mim.html" data-i18n="nav.about">About Me</a></li>
+                    <li><a href="osteopatia.html">Osteopathy</a></li>
+                    <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li>
+                        <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
+                            rel="noopener noreferrer" class="complaint-book-elysium">
+                            <img loading="lazy" src="../images/livro-de-reclamacoes.png" width="224" height="80" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
+                        </a>
+                    </li>
+                    <li><a href="politica-privacidade.html">Privacy Policy</a></li>
+                    <li><a href="termos-e-condicoes.html">Terms and Conditions</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" class="active" title="English">EN</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <ul class="footer-links-list social-text-links">
+                    <li><a href="https://www.instagram.com/pt.paulomorais" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+                    <li><a href="https://wa.me/351960471537" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                    <li><a href="mailto:pt@pmorais.pt?subject=Informação">Email</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bar-elysium">
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script nonce="pmorais-2026" type="module">
+        import { loadBlogPosts } from '../js/blog.js';
+        document.addEventListener('DOMContentLoaded', () => {
+            loadBlogPosts('public-blog-grid');
+        });
+    </script>
+    <script nonce="pmorais-2026" src="../js/script.js?v=1.5.1" defer></script>
+    <script nonce="pmorais-2026">
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) window.lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

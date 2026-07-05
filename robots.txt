@@ -1,3 +1,5 @@
 User-agent: *
 Allow: /
+Disallow: /admin-*
+Disallow: /en/admin-*
 Sitemap: https://pmorais.pt/sitemap.xml

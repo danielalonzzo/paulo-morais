@@ -2,9 +2,14 @@
 <html lang="en-GB">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Unsubscribe — Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css" as="style">
+
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <meta name="robots" content="noindex">
@@ -14,12 +19,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@latest" defer></script>
     <!-- Style -->
     <link rel="stylesheet" href="../css/style.css">
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
-    <style>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
+    <style nonce="pmorais-2026">
         .unsub-wrapper {
             display: flex;
             align-items: center;
@@ -146,7 +151,7 @@
 
     <div class="unsub-wrapper">
         <div class="unsub-card">
-            <img src="../images/logo/logo_ios_android.png" alt="Paulo Morais" class="logo">
+            <img src="../images/logo/logo_ios_android.png" width="180" height="180" alt="Paulo Morais" class="logo">
             <h1 id="unsub-title">Unsubscribe</h1>
             <p id="unsub-desc">By confirming, you will stop receiving email notifications from Paulo Morais.
                 Your account will remain active.</p>
@@ -158,7 +163,7 @@
         </div>
     </div>
 
-    <script>
+    <script nonce="pmorais-2026">
         // Get the Cloud Function URL (adjust region if needed)
         const CF_URL = 'https://us-central1-paulo-morais.cloudfunctions.net/handleUnsubscribe';
 

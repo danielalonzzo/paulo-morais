@@ -2,9 +2,110 @@
 <html lang="pt">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
+    <style nonce="pmorais-2026" id="critical-css">
+    :root {
+        /* Colors */
+        --color-bg: #0B0B0B;
+        --color-surface: #111111;
+        --color-primary: #E6AE17;
+        /* Updated to match target */
+        --color-primary-hover: #d5a015;
+        --color-light-gray: #F2F2F2;
+        /* New split section color */
+        --color-text: #ffffff;
+        --color-text-dim: #cccccc;
+        --color-accent: #ffffff;
+        --color-brand-primary: #ffffff;
+        --color-brand-secondary: var(--color-primary);
+        --color-brand-tertiary: #0A6FE8;
+    
+        /* Typography */
+        --font-heading: 'Patron', sans-serif;
+        --font-body: 'Patron', sans-serif;
+        /* Clean, modern sans-serif */
+    
+        /* Spacing */
+        --container-width: 1200px;
+        --section-padding: clamp(60px, 10vw, 100px) 20px;
+        /* Fluid section padding */
+    
+        /* Transitions */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        overflow-x: hidden;
+        /* Scrollbar natural del sistema, sin personalización */
+    }
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #F4B618;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .loader-content {
+        position: relative;
+        width: 250px;
+        /* Ajustado para el logo */
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .loader-logo {
+        width: 100%;
+        height: auto;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+    .shimmer-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    
+        /* Mask the shimmer to the logo shape */
+        -webkit-mask-image: url('images/logo/logo_bw_loading.png');
+        mask-image: url('images/logo/logo_bw_loading.png');
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    
+        /* The Moving Light Gradient */
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.7) 50%,
+                rgba(255, 255, 255, 0) 70%);
+        background-size: 200% 100%;
+        background-position: 150% 0;
+        animation: lightSweep 2s infinite ease-in-out;
+    }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Política de Privacidade</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css" as="style">
+
     <link rel="shortcut icon" type="image/png" href="images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="images/logo/logo_ios_android.png">
     <meta name="robots" content="noindex">
@@ -15,54 +116,55 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" integrity="sha384-ieG+IKD0d/ZPXyCBTMVAbqsQdns8QGJR/e26WMw7M4fkaI/rHcS/YIoi+ah9WGge" crossorigin="anonymous" defer></script>
     <!-- Style -->
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body class="page-legal legal-page">
     <!-- Social FAB -->
     <div class="fab-container">
         <div class="fab-trigger">
-            <i data-lucide="plus"></i>
+            <i data-lucide="plus" aria-hidden="true"></i>
         </div>
         <div class="fab-options">
             <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
-                rel="noopener noreferrer">
-                <i data-lucide="message-circle"></i>
+                rel="noopener noreferrer" aria-label="WhatsApp">
+                <i data-lucide="message-circle" aria-hidden="true"></i>
             </a>
             <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email">
-                <i data-lucide="mail"></i>
+            <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email" aria-label="Email">
+                <i data-lucide="mail" aria-hidden="true"></i>
             </a>
-            <a href="javascript:void(0)" id="lang-toggle" class="fab-action-btn lang-toggle" title="Mudar Idioma" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
-                <i data-lucide="globe"></i>
-            </a>
-            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Mudar Tema" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
-                <i data-lucide="sun-moon"></i>
-            </a>
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Mudar Idioma" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+                <i data-lucide="globe" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Mudar Tema" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+                <i data-lucide="sun-moon" aria-hidden="true"></i>
+            </button>
         </div>
     </div>
     <header id="header">
         <div class="container header-container">
             <a href="index.html">
-                <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+                <img src="images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
             </a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
-                    <li><a href="perfil.html">Perfil</a></li>
-                    <li><a href="osteopatia.html">OSTEOPATIA</a></li>
-                </ul>
+<li><a href="index.html" data-i18n="nav.home">Início</a></li>
+<li><a href="sobre-mim.html" data-i18n="nav.about">Sobre Mim</a></li>
+<li><a href="osteopatia.html" data-i18n="nav.osteo">OSTEOPATIA</a></li>
+<li><a href="perfil.html" data-i18n="nav.profile">Perfil</a></li>
+<li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+</ul>
             </nav>
             <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
-                <i data-lucide="menu"></i>
+                <i data-lucide="menu" aria-hidden="true"></i>
             </div>
         </div>
     </header>
@@ -107,19 +209,26 @@
                 <li><strong>Direito ao Esquecimento/Apagamento:</strong> Exigir a eliminação dos seus dados quando não exista justificação legal.</li>
                 <li><strong>Direito de Limitação, Retificação e Portabilidade:</strong> Atualizar os dados desatualizados ou obter a exportação dos dados estruturados em formato comum.</li>
             </ul>
-            <p>Para exercer quaisquer destes direitos, solicitamos o contacto pelo DPO (Data Protection Officer) disponível no e-mail: <strong>pt@pmorais.pt</strong>.</p>
+            <p>Para exercer quaisquer destes direitos, solicitamos o contacto através do Ponto de Contacto para Proteção de Dados da entidade, disponível no e-mail: <strong>pt@pmorais.pt</strong>. Note que, por se tratar de uma Unipessoal Lda com reduzido número de colaboradores, a designação formal de um DPO (Data Protection Officer) não é legalmente obrigatória nos termos do Artigo 37.º do RGPD, pelo que o contacto de proteção de dados é o próprio Responsável pelo Tratamento.</p>
 
             <h2 class="section-title" style="margin-top: 2rem;">8. Direito de Reclamação à Autoridade de Controlo</h2>
             <p>Caso considere que houve qualquer irregularidade no tratamento dos seus dados, assiste-lhe o direito natural a apresentar uma reclamação à Comissão Nacional de Proteção de Dados (CNPD) ou outra autoridade supervisora europeia.</p>
 
             <h2 class="section-title" style="margin-top: 2rem;">9. Livro de Reclamações</h2>
             <p>Em conformidade com a legislação Portuguesa de direito do consumo, prestamos o acesso digital ao Livro de Reclamações Eletrónico. Poderá acessá-lo facilmente no rodapé desta página no site.</p>
+
+            <h2 class="section-title" style="margin-top: 2rem;">10. Histórico de Versões</h2>
+            <p>Esta política é revista e atualizada sempre que necessário, de acordo com alterações legais, tecnológicas ou operacionais. O utilizador será notificado de alterações significativas.</p>
+            <ul>
+                <li><strong>v1.1 — 29 de Junho de 2026:</strong> Correta ão da descrição do ponto de contacto de Proteção de Dados (não obrigatório para Unipessoal Lda). Adição de consentimento explícito RGPD Art. 9º no registo. Segurança reforçada no mecanismo de dessubscrição (token HMAC-SHA256). Cabeçalhos HTTP de segurança ativados (CSP, HSTS, X-Frame-Options).</li>
+                <li><strong>v1.0 — 18 de Fevereiro de 2026:</strong> Publicação inicial da Política de Privacidade. Inclui base jurídica RGPD, prazos de conservação, direitos dos titulares, e política de cookies ePrivacy.</li>
+            </ul>
         </div>
     </main>
 
     <footer>
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
         </div>
         <div class="container" style="margin-top: 2rem; text-align: center;">
             <a href="termos-e-condicoes.html" class="btn btn-primary" style="margin-right: 1rem;">Termos e Condições</a>
@@ -127,7 +236,7 @@
         </div>
     </footer>
 
-    <script src="js/script.js"></script>
+    <script nonce="pmorais-2026" src="js/script.js" defer></script>
 </body>
 
 </html>

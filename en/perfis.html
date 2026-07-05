@@ -2,9 +2,14 @@
 <html lang="en-GB">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Student Profiles - Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css?v=1.5.1" as="style">
+
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <meta name="description" content="Management of student profiles - Paulo Morais.">
@@ -17,12 +22,12 @@
         rel="stylesheet">
 
     <!-- Icons (Lucide) -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@latest" defer></script>
 
     <!-- Custom Style -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=1.5.1">
 
-    <style>
+    <style nonce="pmorais-2026">
         .profiles-container {
             max-width: var(--container-width);
             margin: 0 auto 80px;
@@ -234,15 +239,15 @@
             letter-spacing: 2px;
         }
     </style>
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body class="bg-dark">
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <img src="../images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <img src="../images/logo/logo_bw_loading.png" width="3487" height="2867" alt="Paulo Morais" class="loader-logo">
             <div class="shimmer-effect"></div>
         </div>
     </div>
@@ -251,15 +256,16 @@
     <header id="header" class="scrolled"> <!-- Force scrolled state for visibility -->
         <div class="container header-container">
             <a href="index.html">
-                <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+                <img src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
             </a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="sobre-mim.html">About Me</a></li>
-                    <li><a href="perfil.html" class="active">Profile</a></li>
-                    <li><a href="osteopatia.html">OSTEOPATHY</a></li>
-                </ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="sobre-mim.html">About Me</a></li>
+<li><a href="osteopatia.html">OSTEOPATHY</a></li>
+<li><a href="perfil.html" class="active">Profile</a></li>
+<li><a href="blog.html">Blog</a></li>
+</ul>
             </nav>
             <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
                 <i data-lucide="menu"></i>
@@ -274,22 +280,22 @@
         </div>
         <div class="fab-options">
             <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer" aria-label="WhatsApp">
                 <i data-lucide="message-circle"></i>
             </a>
             <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email">
+            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email" aria-label="Email">
                 <i data-lucide="mail"></i>
             </a>
-            <a href="javascript:void(0)" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
                 <i data-lucide="globe"></i>
-            </a>
-            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
                 <i data-lucide="sun-moon"></i>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -319,7 +325,7 @@
         <div class="footer-container-new">
             <div class="footer-col branding-col">
                 <a href="index.html" class="footer-logo-link">
-                    <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                    <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
                 </a>
                 <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
                 <p class="brand-sub">The true personal training that adapts to your life.</p>
@@ -330,6 +336,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="sobre-mim.html">About Me</a></li>
                     <li><a href="osteopatia.html">Osteopathy</a></li>
+                    <li><a href="blog.html">Blog</a></li>
                     <li><a href="perfil.html">Profile</a></li>
                 </ul>
             </div>
@@ -339,11 +346,18 @@
                     <li>
                         <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
                             rel="noopener noreferrer" class="complaint-book-elysium">
-                            <img src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                            <img loading="lazy" src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
                         </a>
                     </li>
                     <li><a href="politica-privacidade.html">Privacy Policy</a></li>
                     <li><a href="termos-e-condicoes.html">Terms and Conditions</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" class="active" title="English">EN</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
 
@@ -359,14 +373,14 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script type="module" src="js/admin-perfis.js"></script>
-    <script src="js/script.js"></script>
-    <script>
+    <script nonce="pmorais-2026" type="module" src="js/admin-perfis.js"></script>
+    <script nonce="pmorais-2026" src="js/script.js?v=1.5.1" defer></script>
+    <script nonce="pmorais-2026">
         document.addEventListener('DOMContentLoaded', () => {
             if (window.lucide) window.lucide.createIcons();
         });

@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta name="view-transition" content="same-origin" />
+    <style nonce="pmorais-2026" id="critical-css">
+    :root {
+        /* Colors */
+        --color-bg: #0B0B0B;
+        --color-surface: #111111;
+        --color-primary: #E6AE17;
+        /* Updated to match target */
+        --color-primary-hover: #d5a015;
+        --color-light-gray: #F2F2F2;
+        /* New split section color */
+        --color-text: #ffffff;
+        --color-text-dim: #cccccc;
+        --color-accent: #ffffff;
+        --color-brand-primary: #ffffff;
+        --color-brand-secondary: var(--color-primary);
+        --color-brand-tertiary: #0A6FE8;
+    
+        /* Typography */
+        --font-heading: 'Patron', sans-serif;
+        --font-body: 'Patron', sans-serif;
+        /* Clean, modern sans-serif */
+    
+        /* Spacing */
+        --container-width: 1200px;
+        --section-padding: clamp(60px, 10vw, 100px) 20px;
+        /* Fluid section padding */
+    
+        /* Transitions */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        overflow-x: hidden;
+        /* Scrollbar natural del sistema, sin personalización */
+    }
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #F4B618;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .loader-content {
+        position: relative;
+        width: 250px;
+        /* Ajustado para el logo */
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .loader-logo {
+        width: 100%;
+        height: auto;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+    .shimmer-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    
+        /* Mask the shimmer to the logo shape */
+        -webkit-mask-image: url('images/logo/logo_bw_loading.png');
+        mask-image: url('images/logo/logo_bw_loading.png');
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    
+        /* The Moving Light Gradient */
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.7) 50%,
+                rgba(255, 255, 255, 0) 70%);
+        background-size: 200% 100%;
+        background-position: 150% 0;
+        animation: lightSweep 2s infinite ease-in-out;
+    }
+    </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Artigo - Paulo Morais</title>
+    <meta name="description" content="Artigo de osteopatia e bem-estar por Paulo Morais">
+    
+    <!-- OpenGraph Tags that will be overwritten by JS (for bots that execute JS) -->
+    <meta property="og:title" content="Artigo - Paulo Morais">
+    <meta property="og:description" content="Artigo de osteopatia e bem-estar por Paulo Morais">
+    <meta property="og:type" content="article">
+
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css?v=1.5.1" as="style">
+
+    <link rel="shortcut icon" type="image/png" href="images/logo/logo_ios_android.png">
+    <link rel="icon" type="image/png" href="images/logo/logo_ios_android.png">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Quill Snow Core for viewing content correctly -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+    <!-- Icons (Lucide) -->
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" integrity="sha384-ieG+IKD0d/ZPXyCBTMVAbqsQdns8QGJR/e26WMw7M4fkaI/rHcS/YIoi+ah9WGge" crossorigin="anonymous" defer></script>
+
+    <!-- Custom Style -->
+    <link rel="stylesheet" href="css/style.css?v=1.5.1">
+    
+    <style nonce="pmorais-2026">
+        .article-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px 100px;
+        }
+        
+        /* Overrides for Quill viewer inside dark mode */
+        .ql-editor {
+            padding: 0;
+            overflow-y: visible;
+        }
+        .ql-editor h2, .ql-editor h3, .ql-editor h4 {
+            color: var(--color-text);
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-family: 'Montserrat', sans-serif;
+            font-weight: 700;
+        }
+        .ql-editor p {
+            margin-bottom: 1.2em;
+        }
+        .ql-editor a {
+            color: var(--color-primary);
+            text-decoration: underline;
+        }
+        .ql-editor img {
+            max-width: 100%;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+    </style>
+    
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
+</head>
+
+<body class="bg-dark">
+    <!-- Preloader -->
+    <div id="preloader">
+        <div class="loader-content">
+            <picture>
+    <source srcset="images/logo/logo_bw_loading.webp" type="image/webp">
+    <img src="images/logo/logo_bw_loading.png" width="500" height="411" fetchpriority="high" alt="Paulo Morais" class="loader-logo">
+</picture>
+            <div class="shimmer-effect"></div>
+        </div>
+    </div>
+
+    <!-- Header -->
+    <header id="header">
+        <div class="container header-container">
+            <a href="index.html">
+                <img src="images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
+            </a>
+            <nav class="nav-menu">
+                <ul>
+<li><a href="index.html" data-i18n="nav.home">Início</a></li>
+<li><a href="sobre-mim.html" data-i18n="nav.about">Sobre Mim</a></li>
+<li><a href="osteopatia.html">Osteopatia</a></li>
+<li><a href="perfil.html" data-i18n="nav.profile">Perfil</a></li>
+<li><a href="blog.html" class="active" data-i18n="nav.blog">Blog</a></li>
+<li><a href="perfil.html?booking=true" class="btn-header-premium" data-i18n="nav.book">AGENDAR</a></li>
+</ul>
+            </nav>
+            <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
+                <i data-lucide="menu" aria-hidden="true"></i>
+            </div>
+        </div>
+    </header>
+
+    <main style="padding-top: 150px;">
+        <div class="article-container" id="article-content">
+            <!-- Article will be loaded here via JS -->
+            <div class="text-center w-100" style="padding: 100px 0; opacity: 0.5;">
+                <i data-lucide="loader-2" class="spin" style="width: 40px; height: 40px;" aria-hidden="true"></i>
+                <p>A carregar artigo...</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-index mt-5">
+        <div class="footer-container-new">
+            <div class="footer-col branding-col">
+                <a href="index.html" class="footer-logo-link">
+                    <img loading="lazy" src="images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
+                </a>
+                <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
+                <p class="brand-sub">O verdadeiro treino personalizado que se adapta à tua vida.</p>
+            </div>
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li><a href="index.html" data-i18n="nav.home">Início</a></li>
+                    <li><a href="sobre-mim.html" data-i18n="nav.about">Sobre Mim</a></li>
+                    <li><a href="osteopatia.html">Osteopatia</a></li>
+                    <li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <ul class="footer-links-list">
+                    <li>
+                        <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
+                            rel="noopener noreferrer" class="complaint-book-elysium">
+                            <img loading="lazy" src="images/livro-de-reclamacoes.png" width="224" height="80" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
+                        </a>
+                    </li>
+                    <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
+                    <li><a href="termos-e-condicoes.html">Termos e Condições</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" class="active" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" title="English">EN</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div class="footer-col">
+                <ul class="footer-links-list social-text-links">
+                    <li><a href="https://www.instagram.com/pt.paulomorais" target="_blank" rel="noopener noreferrer">Instagram</a></li>
+                    <li><a href="https://wa.me/351960471537" target="_blank" rel="noopener noreferrer">WhatsApp</a></li>
+                    <li><a href="mailto:pt@pmorais.pt?subject=Informação">Email</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bar-elysium">
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script nonce="pmorais-2026" type="module">
+        import { loadSingleArticle } from './js/blog.js?v=9';
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSingleArticle('article-content');
+        });
+    </script>
+    <script nonce="pmorais-2026" src="js/script.js?v=1.5.1" defer></script>
+    <script nonce="pmorais-2026">
+        document.addEventListener('DOMContentLoaded', () => {
+            if (window.lucide) window.lucide.createIcons();
+        });
+    </script>
+</body>
+</html>

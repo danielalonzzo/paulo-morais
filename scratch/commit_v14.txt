@@ -1,0 +1,19 @@
+chore(release): bump version to 1.4.0 (Oncology & Video Overhaul)
+
+feat(oncologia): Premium Oncology Training section redesign
+- Transitioned from a 2x2 grid to a premium side-by-side layout featuring a static poster and a scrollable image box.
+- Implemented responsive glassmorphism badges, bottom fade gradients, and ambient glows for elevated aesthetics.
+- Enhanced styling with updated border radii (40px) and perfectly synchronized vertical layout alignments.
+
+feat(videos): Interactive video gallery restructuring
+- Removed static transparent overlays blocking interactions with YouTube iframes to enable native playback controls.
+- Added direct hyperlink titles with external-link icons and smooth hover scaling effects.
+- Implemented robust language localization for video titles, sections, and CTAs (PT/EN).
+- Optimized mobile responsiveness by switching to a vertical stacked layout and fixing invisible children bugs.
+
+fix(perfil): Dashboard & Reviews stability improvements
+- Bound missing `onclick` logic for client and admin review panels to ensure functional UI state management.
+- Corrected CSS class typo (`segment-btn` -> `segmented-btn`) restoring proper segmented tab styling for Treino/Osteopatia modes.
+- Fixed verified client SVG badges erroneously inheriting black color overrides on `.testimonial-card-gold h4` containers by explicitly setting inline SVG fills, strokes, and CSS priorities.
+
+chore(release): Globally bumped footer version across all HTML footprints to v1.4.0.

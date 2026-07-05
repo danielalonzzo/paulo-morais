@@ -1,0 +1,108 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // === Funciones de ayuda reutilizables ===
+
+    // Comprueba si el usuario autenticado es admin (por rol en Firestore o por email fijo)
+    function isAdmin() {
+      return request.auth != null && (
+        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin' ||
+        request.auth.token.email == 'pt@pmorais.pt'
+      );
+    }
+
+    // Comprueba si el usuario es el propietario del documento
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+
+    // === Formulario de contacto ===
+    // Los campos exactos que envía el formulario son: nome, apelido, email, descricao
+    match /contactos/{document} {
+      // Solo permite crear si los 4 campos obligatorios existen y son texto
+      allow create: if request.resource.data.keys().hasAll(['nome', 'apelido', 'email', 'descricao'])
+                    && request.resource.data.nome is string
+                    && request.resource.data.apelido is string
+                    && request.resource.data.email is string
+                    && request.resource.data.descricao is string;
+      // Solo el admin puede leer la bandeja de contactos
+      allow read: if isAdmin();
+      // Nadie puede editar ni borrar un contacto enviado
+      allow update, delete: if false;
+    }
+
+    // === Usuarios registrados ===
+    match /users/{userId} {
+      // Lectura: el propio usuario o el admin
+      allow read: if isOwner(userId) || isAdmin();
+
+      // Creación: solo el usuario autenticado puede crear su propio documento
+      // y NO puede asignarse el rol 'admin' en el momento de la creación
+      allow create: if request.auth != null
+                    && request.auth.uid == userId
+                    && (!('role' in request.resource.data)
+                        || request.resource.data.role == 'client');
+
+      // Actualización: el usuario puede editar sus datos, pero NO puede cambiar su 'role'
+      //               El admin puede editar cualquier campo (incluido 'role')
+      allow update: if (isOwner(userId)
+                        && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['role']))
+                    || isAdmin();
+
+      // Borrado: solo el admin puede borrar usuarios
+      allow delete: if isAdmin();
+    }
+
+    // === Perfil público ===
+    match /publicProfiles/{userId} {
+      allow read: if true;
+      allow create, update: if isOwner(userId);
+      allow delete: if isOwner(userId) || isAdmin();
+    }
+
+    // === Calendario de reservas ===
+    match /weekly_schedules/{weekId} {
+      // Cualquier usuario autenticado puede leer el calendario
+      allow read: if request.auth != null;
+
+      // El historial personal de cada usuario (doc: user_{uid}) — solo el propio usuario puede escribirlo
+      allow create, update, delete: if request.auth != null
+                                    && weekId == ('user_' + request.auth.uid);
+
+      // Los documentos de semana (doc: YYYY-MM-DD) solo los crea/borra el admin,
+      // pero cualquier cliente autenticado puede actualizar (update) slots al reservar/cancelar
+      allow create, delete: if isAdmin();
+      allow update: if isAdmin() || (request.auth != null && !weekId.matches('^user_.*'));
+    }
+
+    // === Sistema de Reseñas ===
+    match /reviews/{reviewId} {
+      // Cualquier persona puede leer las reseñas (para mostrarlas en la web pública)
+      allow read: if true;
+      
+      // Solo usuarios autenticados pueden crear una reseña, y deben asignar su propio userId
+      allow create: if request.auth != null 
+                    && request.resource.data.userId == request.auth.uid
+                    && request.resource.data.keys().hasAll(['userId', 'userName', 'text', 'service', 'timestamp'])
+                    && request.resource.data.text is string;
+      
+      // Solo el propietario o el admin pueden editar o borrar la reseña
+      allow update, delete: if isOwner(resource.data.userId) || isAdmin();
+    }
+
+    // === Envíos de Emails (Trigger Email Extension) ===
+    match /mail/{document} {
+      // El admin puede leer todos los emails.
+      allow read: if isAdmin();
+      // Cualquier usuario autenticado puede encolar un email.
+      allow create: if request.auth != null;
+      allow update, delete: if false;
+    }
+    // === Gestão do Blog ===
+    match /blog_posts/{postId} {
+      allow read: if resource == null || resource.data.published == true || isAdmin();
+      allow create, update, delete: if isAdmin();
+    }
+  }
+}

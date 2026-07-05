@@ -2,9 +2,110 @@
 <html lang="pt">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
+    <style nonce="pmorais-2026" id="critical-css">
+    :root {
+        /* Colors */
+        --color-bg: #0B0B0B;
+        --color-surface: #111111;
+        --color-primary: #E6AE17;
+        /* Updated to match target */
+        --color-primary-hover: #d5a015;
+        --color-light-gray: #F2F2F2;
+        /* New split section color */
+        --color-text: #ffffff;
+        --color-text-dim: #cccccc;
+        --color-accent: #ffffff;
+        --color-brand-primary: #ffffff;
+        --color-brand-secondary: var(--color-primary);
+        --color-brand-tertiary: #0A6FE8;
+    
+        /* Typography */
+        --font-heading: 'Patron', sans-serif;
+        --font-body: 'Patron', sans-serif;
+        /* Clean, modern sans-serif */
+    
+        /* Spacing */
+        --container-width: 1200px;
+        --section-padding: clamp(60px, 10vw, 100px) 20px;
+        /* Fluid section padding */
+    
+        /* Transitions */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        overflow-x: hidden;
+        /* Scrollbar natural del sistema, sin personalización */
+    }
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #F4B618;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .loader-content {
+        position: relative;
+        width: 250px;
+        /* Ajustado para el logo */
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .loader-logo {
+        width: 100%;
+        height: auto;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+    .shimmer-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    
+        /* Mask the shimmer to the logo shape */
+        -webkit-mask-image: url('images/logo/logo_bw_loading.png');
+        mask-image: url('images/logo/logo_bw_loading.png');
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    
+        /* The Moving Light Gradient */
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.7) 50%,
+                rgba(255, 255, 255, 0) 70%);
+        background-size: 200% 100%;
+        background-position: 150% 0;
+        animation: lightSweep 2s infinite ease-in-out;
+    }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Área de Cliente · Login e Agendamento | Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css?v=1.5.1" as="style">
+
     <link rel="shortcut icon" type="image/png" href="images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="images/logo/logo_ios_android.png">
     <meta name="description" content="Aceda à sua área de cliente: agende sessões de treino personalizado ou osteopatia, consulte o seu histórico e gira os seus dados. Paulo Morais · Lisboa.">
@@ -16,10 +117,10 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" integrity="sha384-ieG+IKD0d/ZPXyCBTMVAbqsQdns8QGJR/e26WMw7M4fkaI/rHcS/YIoi+ah9WGge" crossorigin="anonymous" defer></script>
 
     <!-- Custom Style -->
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/style.css?v=1.5.1">
 
     <!-- SEO Meta Tags -->
     <link rel="canonical" href="https://pmorais.pt/perfil.html">
@@ -46,15 +147,18 @@
     <meta name="theme-color" content="#E6AE17">
     <link rel="apple-touch-icon" href="/images/logo/logo_ios_android.png">
     
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body class="page-auth">
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <img src="images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <picture>
+    <source srcset="images/logo/logo_bw_loading.webp" type="image/webp">
+    <img src="images/logo/logo_bw_loading.png" width="500" height="411" fetchpriority="high" alt="Paulo Morais" class="loader-logo">
+</picture>
             <div class="shimmer-effect"></div>
         </div>
     </div>
@@ -63,26 +167,26 @@
     <!-- Social FAB -->
     <div class="fab-container">
         <div class="fab-trigger">
-            <i data-lucide="plus"></i>
+            <i data-lucide="plus" aria-hidden="true"></i>
         </div>
         <div class="fab-options">
             <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
-                rel="noopener noreferrer">
-                <i data-lucide="message-circle"></i>
+                rel="noopener noreferrer" aria-label="WhatsApp">
+                <i data-lucide="message-circle" aria-hidden="true"></i>
             </a>
             <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email">
-                <i data-lucide="mail"></i>
+            <a href="mailto:pt@pmorais.pt?subject=Informação" class="fab-action-btn email" title="Email" aria-label="Email">
+                <i data-lucide="mail" aria-hidden="true"></i>
             </a>
-            <a href="javascript:void(0)" id="lang-toggle" class="fab-action-btn lang-toggle" title="Mudar Idioma" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
-                <i data-lucide="globe"></i>
-            </a>
-            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Mudar Tema" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
-                <i data-lucide="sun-moon"></i>
-            </a>
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Mudar Idioma" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+                <i data-lucide="globe" aria-hidden="true"></i>
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Mudar Tema" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+                <i data-lucide="sun-moon" aria-hidden="true"></i>
+            </button>
         </div>
     </div>
 
@@ -90,18 +194,19 @@
     <header id="header">
         <div class="container header-container">
             <a href="index.html">
-                <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+                <img src="images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
             </a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
-                    <li><a href="perfil.html" class="active">Perfil</a></li>
-                    <li><a href="osteopatia.html">OSTEOPATIA</a></li>
-                </ul>
+<li><a href="index.html" data-i18n="nav.home">Início</a></li>
+<li><a href="sobre-mim.html" data-i18n="nav.about">Sobre Mim</a></li>
+<li><a href="osteopatia.html" data-i18n="nav.osteo">OSTEOPATIA</a></li>
+<li><a href="perfil.html" class="active" data-i18n="nav.profile">Perfil</a></li>
+<li><a href="blog.html" data-i18n="nav.blog">Blog</a></li>
+</ul>
             </nav>
-            <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
-                <i data-lucide="menu"></i>
+            <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" aria-expanded="false" role="button" tabindex="0">
+                <i data-lucide="menu" aria-hidden="true"></i>
             </div>
         </div>
     </header>
@@ -140,6 +245,7 @@
                             <a href="#" class="forgot-link">Esqueci-me da palavra-passe</a>
                         </div>
                         <button type="submit" id="btn-login" class="btn btn-primary btn-block">Entrar</button>
+                        <div id="login-error" class="form-error-msg" role="alert" aria-live="polite"></div>
                     </form>
 
                     <!-- Register Form -->
@@ -156,7 +262,22 @@
                             <label for="reg-password">Palavra-passe</label>
                             <input type="password" id="reg-password" placeholder="Mínimo 6 caracteres" required>
                         </div>
+                        <!-- RGPD Art. 9 — Consentimento explícito para dados de saúde -->
+                        <div class="form-group consent-group">
+                            <label class="checkbox-container consent-label">
+                                <input type="checkbox" id="reg-consent-health" required>
+                                <span>Consinto o tratamento dos meus dados de saúde (historial clínico) pela Consciênciavaliativa Unipessoal Lda, nos termos do <strong>Artigo 9.º do RGPD</strong>, para a gestão de sessões de osteopatia e treino personalizado. Consulte a nossa <a href="politica-privacidade.html" target="_blank" rel="noopener">Política de Privacidade</a>.</span>
+                            </label>
+                        </div>
+                        <!-- Termos e Condições -->
+                        <div class="form-group consent-group">
+                            <label class="checkbox-container consent-label">
+                                <input type="checkbox" id="reg-consent-terms" required>
+                                <span>Li e aceito os <a href="termos-e-condicoes.html" target="_blank" rel="noopener">Termos e Condições</a> do serviço.</span>
+                            </label>
+                        </div>
                         <button type="submit" id="btn-register" class="btn btn-primary btn-block">Criar Conta</button>
+                        <div id="register-error" class="form-error-msg" role="alert" aria-live="polite"></div>
                     </form>
 
                 </div>
@@ -165,14 +286,14 @@
             <!-- Dashboard (Hidden by default) -->
             <div id="user-dashboard" class="user-dashboard hidden fade-in">
                 <div class="help-icon-trigger" id="dashboard-help-icon" onclick="openRoleTutorial()" title="Ajuda / Tutorial">
-                    <i data-lucide="help-circle"></i>
+                    <i data-lucide="help-circle" aria-hidden="true"></i>
                 </div>
                 <h2 id="user-welcome">Olá!</h2>
                 
                 <!-- Dashboard Preview (Upcoming Bookings / Agenda) -->
                 <div id="dashboard-preview-section" class="dashboard-preview fade-in hidden" style="margin-top: 25px; border-radius: 20px; padding: 25px;">
                     <h3 id="preview-title" style="margin-top: 0; margin-bottom: 20px; font-size: 1.1rem; font-weight: 800; color: var(--color-primary); text-transform: uppercase; letter-spacing: 0.1em; display: flex; align-items: center; gap: 10px;">
-                        <i data-lucide="layout-dashboard" style="width: 20px;"></i>
+                        <i data-lucide="layout-dashboard" style="width: 20px;" aria-hidden="true"></i>
                         <span>Resumo da Agenda</span>
                     </h3>
                     <div id="preview-list" class="preview-list">
@@ -181,19 +302,73 @@
                 </div>
 
                 <div id="dashboard-main-actions" class="dashboard-actions" style="margin-top: 30px;">
-                    <button id="btn-show-wizard" class="btn btn-primary"><i data-lucide="user-cog"></i> <span class="btn-text">Editar Perfil</span></button>
-                    <a href="historico.html" class="btn btn-outline" style="text-decoration: none;"><i data-lucide="calendar"></i> <span class="btn-text">Histórico</span></a>
-                    <button id="btn-start-booking" class="btn btn-primary btn-premium-metallic"><i data-lucide="calendar-plus"></i> <span class="btn-text">Nova Marcação</span></button>
-                    <button id="btn-show-profiles" class="btn btn-primary hidden"><i data-lucide="users"></i> <span class="btn-text">Perfis</span></button>
-                    <button id="btn-show-forms" class="btn btn-primary hidden"><i data-lucide="file-text"></i> <span class="btn-text">Formulários</span></button>
-                    <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out"></i> <span class="btn-text">Terminar Sessão</span></button>
+                    <button id="btn-show-wizard" class="btn btn-primary"><i data-lucide="user-cog" aria-hidden="true"></i> <span class="btn-text">Editar Perfil</span></button>
+                    <a href="historico.html" class="btn btn-outline" style="text-decoration: none;"><i data-lucide="calendar" aria-hidden="true"></i> <span class="btn-text">Histórico</span></a>
+                    <button id="btn-start-booking" class="btn btn-primary btn-premium-metallic"><i data-lucide="calendar-plus" aria-hidden="true"></i> <span class="btn-text">Nova Marcação</span></button>
+                    <button id="btn-show-profiles" class="btn btn-primary hidden"><i data-lucide="users" aria-hidden="true"></i> <span class="btn-text">Perfis</span></button>
+                    <button id="btn-show-forms" class="btn btn-primary hidden"><i data-lucide="file-text" aria-hidden="true"></i> <span class="btn-text">Formulários</span></button>
+                    <button id="btn-show-blog-admin" class="btn btn-primary hidden" onclick="window.location.href='admin-blog.html'"><i data-lucide="file-edit" aria-hidden="true"></i> <span class="btn-text">Gestão de Blog</span></button>
+                    <button id="btn-show-reviews" class="btn btn-primary" onclick="window.openClientReviews()"><i data-lucide="star" aria-hidden="true"></i> <span class="btn-text">Avaliações</span></button>
+                    <button id="btn-admin-reviews" class="btn btn-primary hidden" onclick="window.openAdminReviews()"><i data-lucide="star" aria-hidden="true"></i> <span class="btn-text">Gerir Avaliações</span></button>
+                    <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out" aria-hidden="true"></i> <span class="btn-text">Terminar Sessão</span></button>
+                </div>
+
+                <!-- Client Reviews Section -->
+                <div id="client-reviews-section" class="calendar-section border-top-fade hidden">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <h2 class="premium-title">AS MINHAS AVALIAÇÕES</h2>
+                        <div class="glass-panel" style="padding: 20px; border-radius: 20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                                <button onclick="window.backToLobby()" class="btn btn-outline" style="padding: 5px 15px; font-size: 0.9rem;"><i data-lucide="arrow-left" aria-hidden="true"></i> Voltar</button>
+                                <div class="segmented-control">
+                                    <button id="tab-review-treino" class="segmented-btn active" onclick="window.switchReviewTab('treino')">Treino</button>
+                                    <button id="tab-review-osteo" class="segmented-btn" onclick="window.switchReviewTab('osteopatia')">Osteopatia</button>
+                                </div>
+                            </div>
+
+                            <div class="glass-review-form" style="margin-bottom: 30px;">
+                                <h3>Nova Avaliação — <span id="review-service-name">Treino</span></h3>
+                                <p style="font-size:0.9rem; color: var(--color-text-dim); margin-bottom:15px;">Partilhe a sua experiência.</p>
+                                <div style="display:flex; gap: 5px; margin-bottom: 15px;" id="new-review-rating">
+                                    <svg data-val="1" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="2" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="3" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="4" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="5" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </div>
+                                <textarea id="new-review-text" rows="4" placeholder="Escreva aqui a sua experiência..." style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:var(--color-text); resize:vertical;"></textarea>
+                                <button id="btn-submit-review" onclick="window.submitReview()" class="btn btn-header-premium" style="width: 100%; margin-top: 10px;">Submeter Avaliação</button>
+                                <p id="review-feedback-msg" style="font-size: 0.9rem; margin-top: 10px;"></p>
+                            </div>
+
+                            <h3>Histórico</h3>
+                            <div id="my-reviews-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Reviews Section -->
+                <div id="admin-reviews-section" class="calendar-section border-top-fade hidden">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <h2 class="premium-title">GESTÃO DE AVALIAÇÕES</h2>
+                        <div class="glass-panel" style="padding: 20px; border-radius: 20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                                <button onclick="window.backToLobby()" class="btn btn-outline" style="padding: 5px 15px; font-size: 0.9rem;"><i data-lucide="arrow-left" aria-hidden="true"></i> Voltar</button>
+                                <div class="segmented-control">
+                                    <button id="tab-admin-treino" class="segmented-btn active" onclick="window.loadAdminReviews('treino')">Treino</button>
+                                    <button id="tab-admin-osteo" class="segmented-btn" onclick="window.loadAdminReviews('osteopatia')">Osteopatia</button>
+                                </div>
+                            </div>
+                            <div id="admin-reviews-list"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Client Booking Wizard Section -->
                 <div id="booking-wizard-section" class="calendar-section border-top-fade hidden">
                     <div class="booking-container">
                         <div class="help-icon-trigger" onclick="openTutorial()" title="Ajuda / Tutorial">
-                            <i data-lucide="help-circle"></i>
+                            <i data-lucide="help-circle" aria-hidden="true"></i>
                         </div>
                         <div class="breadcrumbs" id="booking-breadcrumbs">
                             <!-- Injected via JS -->
@@ -202,17 +377,17 @@
                         <!-- Step 1: Category -->
                         <div id="step-1" class="booking-step active">
                             <h2 class="step-title" style="display: flex; align-items: center; justify-content: center; gap: 15px;">
-                                <i data-lucide="chevron-left" onclick="closeBookingWizard()" style="cursor:pointer; width: 24px; color: var(--color-text-dim);" title="Voltar ao Lobby"></i>
+                                <i data-lucide="chevron-left" onclick="closeBookingWizard()" style="cursor:pointer; width: 24px; color: var(--color-text-dim);" title="Voltar ao Lobby" aria-hidden="true"></i>
                                 <span>Que tipo de serviço procura hoje?</span>
                             </h2>
                             <div class="options-grid">
                                 <div class="option-card" data-category="osteopatia" onclick="selectCategory('osteopatia')">
-                                    <div class="option-icon"><i data-lucide="activity"></i></div>
+                                    <div class="option-icon"><i data-lucide="activity" aria-hidden="true"></i></div>
                                     <h3 class="option-title">Osteopatia</h3>
                                     <p class="color-text-dim">Tratamento clínico e reabilitação física.</p>
                                 </div>
                                 <div class="option-card" data-category="treino" onclick="selectCategory('treino')">
-                                    <div class="option-icon"><i data-lucide="dumbbell"></i></div>
+                                    <div class="option-icon"><i data-lucide="dumbbell" aria-hidden="true"></i></div>
                                     <h3 class="option-title">Treino</h3>
                                     <p class="color-text-dim">Condicionamento, força e saúde preventiva.</p>
                                 </div>
@@ -276,7 +451,7 @@
                                 
                                 <div class="controls">
                                     <button type="button" class="btn btn-outline" onclick="goToStep(3)">Voltar</button>
-                                    <button type="submit" class="btn btn-primary btn-premium-metallic">Confirmar Marcação</button>
+                                    <button type="submit" id="btn-submit-booking" class="btn btn-primary btn-premium-metallic">Confirmar Marcação</button>
                                 </div>
                             </form>
                         </div>
@@ -284,13 +459,18 @@
                         <!-- Step 5: Success -->
                         <div id="step-5" class="booking-step text-center">
                             <div style="color: var(--color-primary); margin-bottom: 20px;">
-                                <i data-lucide="check-circle" style="width: 80px; height: 80px; margin:0 auto;"></i>
+                                <i data-lucide="check-circle" style="width: 80px; height: 80px; margin:0 auto;" aria-hidden="true"></i>
                             </div>
                             <h2 class="step-title">Marcação Confirmada!</h2>
-                            <p>Adicionámos esta sessão ao teu Histórico.</p>
-                            
-                            <div id="calendar-sync-container" style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                                  <div id="calendar-sync-container" style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
                                 <!-- Calendar buttons injected by JS -->
+                            </div>
+                            
+                            <div style="margin-top: 15px; display: flex; flex-direction: column; align-items: center;">
+                                <button onclick="window.location.reload()" class="btn btn-primary btn-premium-metallic" style="width: 100%; justify-content: center;">
+                                    <i data-lucide="calendar-plus"></i>
+                                    <span class="btn-text">Fazer nova marcação</span>
+                                </button>
                             </div>
 
                             <div style="margin-top:40px;">
@@ -306,7 +486,7 @@
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                             <h2 class="step-title" style="margin: 0;">Agenda Global</h2>
                             <button onclick="window.closeGlobalAgenda()" class="btn btn-outline" style="padding: 5px 15px;">
-                                <i data-lucide="arrow-left"></i> Voltar ao Lobby
+                                <i data-lucide="arrow-left" aria-hidden="true"></i> Voltar ao Lobby
                             </button>
                         </div>
                         <div class="calendar-wrapper">
@@ -332,16 +512,16 @@
                             <h2 class="step-title" style="margin: 0;">Gestão da Agenda</h2>
                             <div style="display: flex; align-items: center; gap: 20px;">
                                 <div onclick="openAdminTutorial()" title="Ajuda / Tutorial" style="cursor: pointer; color: var(--color-text-dim); opacity: 0.6; transition: all 0.3s; display: flex; align-items: center;" onmouseover="this.style.opacity='1'; this.style.color='var(--color-primary)'" onmouseout="this.style.opacity='0.6'; this.style.color='var(--color-text-dim)'">
-                                    <i data-lucide="help-circle" style="width: 22px;"></i>
+                                    <i data-lucide="help-circle" style="width: 22px;" aria-hidden="true"></i>
                                 </div>
                                 <button onclick="window.closeBookingWizard()" class="btn btn-outline" style="padding: 5px 15px;">
-                                    <i data-lucide="arrow-left"></i> Voltar ao Lobby
+                                    <i data-lucide="arrow-left" aria-hidden="true"></i> Voltar ao Lobby
                                 </button>
                             </div>
                         </div>
                         <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
                             <button id="btn-resend-broadcast" onclick="if(window.resendWeeklyBroadcast) window.resendWeeklyBroadcast(currentLoadedWeekId)" class="btn btn-outline" style="padding: 5px 15px; font-size: 13px; opacity: 0.8; display: none;">
-                                <i data-lucide="send" style="width: 16px; height: 16px;"></i> Notificar libertação de agenda novamente
+                                <i data-lucide="send" style="width: 16px; height: 16px;" aria-hidden="true"></i> Notificar libertação de agenda novamente
                             </button>
                         </div>
                         <p class="text-center color-text-dim" style="margin-bottom: 30px;">
@@ -370,13 +550,13 @@
 
                             <div class="controls" style="justify-content: center; gap: 15px; flex-wrap: wrap;">
                                 <button class="btn btn-outline" id="btn-block-all-day" style="display: none;" onclick="window.blockAllDay()">
-                                    <i data-lucide="lock"></i> Bloquear todo o dia
+                                    <i data-lucide="lock" aria-hidden="true"></i> Bloquear todo o dia
                                 </button>
                                 <button class="btn btn-outline" id="btn-clear-blocks" style="display: none;" onclick="window.clearAdminDay()">
-                                    <i data-lucide="trash-2"></i> Limpar Bloqueios do Dia
+                                    <i data-lucide="trash-2" aria-hidden="true"></i> Limpar Bloqueios do Dia
                                 </button>
                                 <button id="btn-publish-week" class="btn btn-primary btn-premium-metallic" style="display: none;" onclick="window.publishAdminWeek()">
-                                    <i data-lucide="send"></i> Publicar
+                                    <i data-lucide="send" aria-hidden="true"></i> Publicar
                                 </button>
                             </div>
                         </div>
@@ -481,7 +661,7 @@
     <div id="booking-tutorial-overlay" class="booking-tutorial-overlay">
         <div class="tutorial-card">
             <button class="tutorial-close-btn" onclick="closeTutorial()" title="Fechar tutorial">
-                <i data-lucide="x"></i>
+                <i data-lucide="x" aria-hidden="true"></i>
             </button>
 
             <!-- Step indicators -->
@@ -495,7 +675,7 @@
                 <div class="tutorial-slide active" data-slide="0">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="sparkles"></i>
+                            <i data-lucide="sparkles" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Bem-vindo</span>
                         <h3 class="tutorial-slide-title">Como fazer a sua Marcação</h3>
@@ -510,7 +690,7 @@
                 <div class="tutorial-slide" data-slide="1">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="calendar-days"></i>
+                            <i data-lucide="calendar-days" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 1</span>
                         <h3 class="tutorial-slide-title">Selecione o Dia</h3>
@@ -525,7 +705,7 @@
                 <div class="tutorial-slide" data-slide="2">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="clock"></i>
+                            <i data-lucide="clock" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 2</span>
                         <h3 class="tutorial-slide-title">Selecione a Hora</h3>
@@ -533,7 +713,7 @@
                             Ao selecionar um dia, aparecerão os <strong>horários disponíveis</strong> para esse dia. Toque no horário que lhe convém para o selecionar.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="info"></i>
+                            <i data-lucide="info" aria-hidden="true"></i>
                             <span>Os horários bloqueados pelo Paulo não aparecerão. Só verá os que estão realmente livres.</span>
                         </div>
                     </div>
@@ -543,7 +723,7 @@
                 <div class="tutorial-slide" data-slide="3">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="calendar-plus"></i>
+                            <i data-lucide="calendar-plus" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 3</span>
                         <h3 class="tutorial-slide-title">Múltiplas Sessões</h3>
@@ -551,7 +731,7 @@
                             Pode reservar <strong>várias sessões de uma só vez</strong>! Selecione diferentes dias e horários — cada seleção fica guardada automaticamente.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="lightbulb"></i>
+                            <i data-lucide="lightbulb" aria-hidden="true"></i>
                             <span>Os dias com sessões selecionadas ficam marcados com a cor dourada no calendário. Pode tocar novamente num horário para o desselecionar.</span>
                         </div>
                     </div>
@@ -561,7 +741,7 @@
                 <div class="tutorial-slide" data-slide="4">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="file-check"></i>
+                            <i data-lucide="file-check" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 4</span>
                         <h3 class="tutorial-slide-title">Confirme a Reserva</h3>
@@ -569,7 +749,7 @@
                             Antes de confirmar, verá um <strong>resumo</strong> com todas as sessões selecionadas. Pode também adicionar uma <strong>nota opcional</strong> com observações para o Paulo.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="message-square"></i>
+                            <i data-lucide="message-square" aria-hidden="true"></i>
                             <span>Use as notas para informar sobre lesões, preferências ou qualquer detalhe relevante para a sessão.</span>
                         </div>
                     </div>
@@ -579,7 +759,7 @@
                 <div class="tutorial-slide" data-slide="5">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="check-circle"></i>
+                            <i data-lucide="check-circle" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 5</span>
                         <h3 class="tutorial-slide-title">Reserva Confirmada!</h3>
@@ -593,7 +773,7 @@
                 <div class="tutorial-slide" data-slide="6">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="layout-dashboard"></i>
+                            <i data-lucide="layout-dashboard" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Painel</span>
                         <h3 class="tutorial-slide-title">Gerir as suas Reservas</h3>
@@ -601,7 +781,7 @@
                             No <strong>Lobby</strong> encontrará o seu <strong>Dashboard</strong> com todas as reservas ativas. A partir daí pode <strong>cancelar</strong> qualquer sessão, se necessário.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="shield-check"></i>
+                            <i data-lucide="shield-check" aria-hidden="true"></i>
                             <span>O Paulo é notificado automaticamente sobre todas as marcações e cancelamentos.</span>
                         </div>
                     </div>
@@ -612,7 +792,7 @@
             <div class="tutorial-nav" id="tutorial-nav">
                 <button class="tutorial-btn tutorial-btn-skip" onclick="closeTutorial()">Saltar</button>
                 <button class="tutorial-btn tutorial-btn-next" id="tutorial-btn-next" onclick="nextTutorialSlide()">
-                    Seguinte <i data-lucide="arrow-right"></i>
+                    Seguinte <i data-lucide="arrow-right" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -632,7 +812,7 @@
     <div id="admin-tutorial-overlay" class="booking-tutorial-overlay">
         <div class="tutorial-card">
             <button class="tutorial-close-btn" onclick="closeAdminTutorial()" title="Fechar tutorial">
-                <i data-lucide="x"></i>
+                <i data-lucide="x" aria-hidden="true"></i>
             </button>
 
             <!-- Step indicators -->
@@ -647,7 +827,7 @@
                 <div class="admin-tutorial-slide active" data-slide="0">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="crown"></i>
+                            <i data-lucide="crown" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Painel Admin</span>
                         <h3 class="tutorial-slide-title">Bem-vindo ao seu Painel</h3>
@@ -662,7 +842,7 @@
                 <div class="admin-tutorial-slide" data-slide="1">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="calendar-cog"></i>
+                            <i data-lucide="calendar-cog" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 1</span>
                         <h3 class="tutorial-slide-title">Gestão da Agenda</h3>
@@ -677,7 +857,7 @@
                 <div class="admin-tutorial-slide" data-slide="2">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="lock"></i>
+                            <i data-lucide="lock" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 2</span>
                         <h3 class="tutorial-slide-title">Bloquear Horários</h3>
@@ -686,7 +866,7 @@
                             Pode bloquear <strong>vários dias e horários</strong> de uma só vez antes de publicar.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="mouse-pointer-click"></i>
+                            <i data-lucide="mouse-pointer-click" aria-hidden="true"></i>
                             <span>Para remover um bloqueio, basta <strong>clicar novamente</strong> no horário bloqueado. O bloqueio será revertido.</span>
                         </div>
                     </div>
@@ -696,7 +876,7 @@
                 <div class="admin-tutorial-slide" data-slide="3">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="zap"></i>
+                            <i data-lucide="zap" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 3</span>
                         <h3 class="tutorial-slide-title">Ferramentas Rápidas</h3>
@@ -704,11 +884,11 @@
                             Dois botões de ação rápida facilitam a gestão diária:
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="lock"></i>
+                            <i data-lucide="lock" aria-hidden="true"></i>
                             <span><strong>Bloquear todo o dia</strong> — Marca todos os horários de um dia como indisponíveis com um clique.</span>
                         </div>
                         <div class="tutorial-tip" style="margin-top: 10px;">
-                            <i data-lucide="trash-2"></i>
+                            <i data-lucide="trash-2" aria-hidden="true"></i>
                             <span><strong>Limpar Bloqueios do Dia</strong> — Remove todos os bloqueios de um dia já publicado. Depois, publique novamente para aplicar.</span>
                         </div>
                     </div>
@@ -718,7 +898,7 @@
                 <div class="admin-tutorial-slide" data-slide="4">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="send"></i>
+                            <i data-lucide="send" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 4</span>
                         <h3 class="tutorial-slide-title">Publicar a Agenda</h3>
@@ -726,7 +906,7 @@
                             Quando terminar de configurar os bloqueios, toque em <strong>"Publicar Agenda da Semana"</strong>. A semana inteira ficará <strong>aberta para reservas</strong> dos clientes.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="mail"></i>
+                            <i data-lucide="mail" aria-hidden="true"></i>
                             <span>Ao publicar, todos os alunos receberão um <strong>email automático</strong> a informar que a semana está disponível para agendamento.</span>
                         </div>
                     </div>
@@ -736,7 +916,7 @@
                 <div class="admin-tutorial-slide" data-slide="5">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="users"></i>
+                            <i data-lucide="users" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 5</span>
                         <h3 class="tutorial-slide-title">Perfis e Formulários</h3>
@@ -744,11 +924,11 @@
                             No Lobby tem dois botões adicionais:
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="user-check"></i>
+                            <i data-lucide="user-check" aria-hidden="true"></i>
                             <span><strong>Perfis</strong> — Veja a ficha completa de cada aluno: tarjeta de saúde, dados pessoais e histórico individual de reservas.</span>
                         </div>
                         <div class="tutorial-tip" style="margin-top: 10px;">
-                            <i data-lucide="file-text"></i>
+                            <i data-lucide="file-text" aria-hidden="true"></i>
                             <span><strong>Formulários</strong> — Consulte os formulários de contacto enviados pelos visitantes a partir da página de Osteopatia.</span>
                         </div>
                     </div>
@@ -758,7 +938,7 @@
                 <div class="admin-tutorial-slide" data-slide="6">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="history"></i>
+                            <i data-lucide="history" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Passo 6</span>
                         <h3 class="tutorial-slide-title">Histórico Global</h3>
@@ -773,7 +953,7 @@
                 <div class="admin-tutorial-slide" data-slide="7">
                     <div style="text-align:center;">
                         <div class="tutorial-slide-icon">
-                            <i data-lucide="bell-ring"></i>
+                            <i data-lucide="bell-ring" aria-hidden="true"></i>
                         </div>
                         <span class="tutorial-step-badge">Notificações</span>
                         <h3 class="tutorial-slide-title">Emails Automáticos</h3>
@@ -781,7 +961,7 @@
                             Sempre que um cliente <strong>fizer uma reserva</strong> ou <strong>cancelar uma sessão</strong>, receberá automaticamente um <strong>email de notificação</strong> com todos os detalhes.
                         </p>
                         <div class="tutorial-tip">
-                            <i data-lucide="shield-check"></i>
+                            <i data-lucide="shield-check" aria-hidden="true"></i>
                             <span>Não precisa de verificar a agenda constantemente. O sistema mantém-no sempre atualizado em tempo real por email.</span>
                         </div>
                     </div>
@@ -793,7 +973,7 @@
             <div class="tutorial-nav" id="admin-tutorial-nav">
                 <button class="tutorial-btn tutorial-btn-skip" onclick="closeAdminTutorial()">Saltar</button>
                 <button class="tutorial-btn tutorial-btn-next" onclick="nextAdminTutorialSlide()">
-                    Seguinte <i data-lucide="arrow-right"></i>
+                    Seguinte <i data-lucide="arrow-right" aria-hidden="true"></i>
                 </button>
             </div>
         </div>
@@ -804,7 +984,7 @@
         <div class="footer-container-new">
             <div class="footer-col branding-col">
                 <a href="index.html" class="footer-logo-link">
-                    <img src="images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                    <img loading="lazy" src="images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
                 </a>
                 <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
                 <p class="brand-sub">O verdadeiro treino personalizado que se adapta à tua vida.</p>
@@ -812,10 +992,10 @@
 
             <div class="footer-col">
                 <ul class="footer-links-list">
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="sobre-mim.html">Sobre Mim</a></li>
+                    <li><a href="index.html" data-i18n="nav.home">Início</a></li>
+                    <li><a href="sobre-mim.html" data-i18n="nav.about">Sobre Mim</a></li>
                     <li><a href="osteopatia.html">Osteopatia</a></li>
-                    <li><a href="perfil.html">Perfil</a></li>
+                    <li><a href="perfil.html" data-i18n="nav.profile">Perfil</a></li>
                 </ul>
             </div>
 
@@ -824,11 +1004,19 @@
                     <li>
                         <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
                             rel="noopener noreferrer" class="complaint-book-elysium">
-                            <img src="images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                            <img loading="lazy" src="images/livro-de-reclamacoes.png" width="224" height="80" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
                         </a>
                     </li>
                     <li><a href="politica-privacidade.html">Política de Privacidade</a></li>
                     <li><a href="termos-e-condicoes.html">Termos e Condições</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" class="active" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" title="English">EN</a>
+                        </div>
+                    </li>
+                    
                 </ul>
             </div>
 
@@ -845,14 +1033,15 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Desenvolvido por Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/agendamento.js"></script>
-    <script src="js/script.js"></script>
-    <script type="module" src="js/auth.js"></script>
+    <script nonce="pmorais-2026" src="js/agendamento.js" defer></script>
+    <script nonce="pmorais-2026" src="js/script.js?v=1.5.1" defer></script>
+    <script nonce="pmorais-2026" type="module" src="js/auth.js?v=1.5.1"></script>
+<script nonce="pmorais-2026" src="js/fcm.js"></script>
 </body>
 
 </html>

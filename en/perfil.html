@@ -2,9 +2,14 @@
 <html lang="en-GB">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Area · Login &amp; Booking | Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css?v=1.5.1" as="style">
+
     <link rel="shortcut icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="../images/logo/logo_ios_android.png">
     <meta name="description" content="Access your client area: book personal training or osteopathy sessions, view your history and manage your account. Paulo Morais · Lisbon.">
@@ -16,10 +21,10 @@
         href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@latest" defer></script>
 
     <!-- Custom Style -->
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../css/style.css?v=1.5.1">
 
     <!-- SEO Meta Tags -->
     <link rel="canonical" href="https://pmorais.pt/en/perfil.html">
@@ -46,15 +51,15 @@
     <meta name="theme-color" content="#E6AE17">
     <link rel="apple-touch-icon" href="/images/logo/logo_ios_android.png">
     
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
 </head>
 
 <body class="page-auth">
     <!-- Preloader -->
     <div id="preloader">
         <div class="loader-content">
-            <img src="../images/logo/logo_bw_loading.png" alt="Paulo Morais" class="loader-logo">
+            <img src="../images/logo/logo_bw_loading.png" width="3487" height="2867" alt="Paulo Morais" class="loader-logo">
             <div class="shimmer-effect"></div>
         </div>
     </div>
@@ -67,22 +72,22 @@
         </div>
         <div class="fab-options">
             <a href="https://wa.me/351960471537" class="fab-action-btn whatsapp" title="WhatsApp" target="_blank"
-                rel="noopener noreferrer">
+                rel="noopener noreferrer" aria-label="WhatsApp">
                 <i data-lucide="message-circle"></i>
             </a>
             <a href="https://www.instagram.com/pt.paulomorais" class="fab-action-btn social-ig" title="Instagram"
-                target="_blank" rel="noopener noreferrer">
+                target="_blank" rel="noopener noreferrer" aria-label="Instagram">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-instagram"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>
             </a>
-            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email">
+            <a href="mailto:pt@pmorais.pt?subject=Information" class="fab-action-btn email" title="Email" aria-label="Email">
                 <i data-lucide="mail"></i>
             </a>
-            <a href="javascript:void(0)" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
+            <button type="button" id="lang-toggle" class="fab-action-btn lang-toggle" title="Change Language" onclick="event.preventDefault(); event.stopPropagation(); window.toggleLanguage();">
                 <i data-lucide="globe"></i>
-            </a>
-            <a href="javascript:void(0)" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
+            </button>
+            <button type="button" id="theme-toggle" class="fab-action-btn theme-toggle" title="Toggle Theme" onclick="event.preventDefault(); event.stopPropagation(); window.toggleThemeMode();">
                 <i data-lucide="sun-moon"></i>
-            </a>
+            </button>
         </div>
     </div>
 
@@ -90,15 +95,16 @@
     <header id="header">
         <div class="container header-container">
             <a href="index.html">
-                <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="logo-img">
+                <img src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="logo-img">
             </a>
             <nav class="nav-menu">
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="sobre-mim.html">About Me</a></li>
-                    <li><a href="perfil.html" class="active">Profile</a></li>
-                    <li><a href="osteopatia.html">OSTEOPATHY</a></li>
-                </ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="sobre-mim.html">About Me</a></li>
+<li><a href="osteopatia.html">OSTEOPATHY</a></li>
+<li><a href="perfil.html" class="active">Profile</a></li>
+<li><a href="blog.html">Blog</a></li>
+</ul>
             </nav>
             <div class="mobile-menu-toggle" aria-label="Abrir menu de navegação" role="button" tabindex="0">
                 <i data-lucide="menu"></i>
@@ -186,7 +192,60 @@
                     <button id="btn-start-booking" class="btn btn-primary btn-premium-metallic"><i data-lucide="calendar-plus"></i> <span class="btn-text">New Booking</span></button>
                     <button id="btn-show-profiles" class="btn btn-primary hidden"><i data-lucide="users"></i> <span class="btn-text">Profiles</span></button>
                     <button id="btn-show-forms" class="btn btn-primary hidden"><i data-lucide="file-text"></i> <span class="btn-text">Forms</span></button>
+                                        <button id="btn-show-reviews" class="btn btn-primary" onclick="window.openClientReviews()"><i data-lucide="star"></i> <span class="btn-text">Avaliações</span></button>
+                    <button id="btn-admin-reviews" class="btn btn-primary hidden" onclick="window.openAdminReviews()"><i data-lucide="star"></i> <span class="btn-text">Gerir Avaliações</span></button>
                     <button id="btn-logout" class="btn btn-outline"><i data-lucide="log-out"></i> <span class="btn-text">Log Out</span></button>
+                </div>
+
+                                <!-- Client Reviews Section -->
+                <div id="client-reviews-section" class="calendar-section border-top-fade hidden">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <h2 class="premium-title">MY REVIEWS</h2>
+                        <div class="glass-panel" style="padding: 20px; border-radius: 20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                                <button onclick="window.backToLobby()" class="btn btn-outline" style="padding: 5px 15px; font-size: 0.9rem;"><i data-lucide="arrow-left" aria-hidden="true"></i> Back</button>
+                                <div class="segmented-control">
+                                    <button id="tab-review-treino" class="segmented-btn active" onclick="window.switchReviewTab('treino')">Training</button>
+                                    <button id="tab-review-osteo" class="segmented-btn" onclick="window.switchReviewTab('osteopatia')">Osteopathy</button>
+                                </div>
+                            </div>
+                            
+                            <div class="glass-review-form" style="margin-bottom: 30px;">
+                                <h3>New Review — <span id="review-service-name">Personal Training</span></h3>
+                                <p style="font-size:0.9rem; color: var(--color-text-dim); margin-bottom:15px;">Share your experience.</p>
+                                <div style="display:flex; gap: 5px; margin-bottom: 15px;" id="new-review-rating">
+                                    <svg data-val="1" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="2" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="3" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="4" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                    <svg data-val="5" class="review-star" style="cursor:pointer; width:24px; color:#555; fill:none;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                                </div>
+                                <textarea id="new-review-text" rows="4" placeholder="Write your experience here..." style="width:100%; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.15); background:rgba(255,255,255,0.05); color:var(--color-text); resize:vertical;"></textarea>
+                                <button id="btn-submit-review" onclick="window.submitReview()" class="btn btn-header-premium" style="width: 100%; margin-top: 10px;">Submit Review</button>
+                                <p id="review-feedback-msg" style="font-size: 0.9rem; margin-top: 10px;"></p>
+                            </div>
+
+                            <h3>History</h3>
+                            <div id="my-reviews-list"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Admin Reviews Section -->
+                <div id="admin-reviews-section" class="calendar-section border-top-fade hidden">
+                    <div style="max-width: 800px; margin: 0 auto;">
+                        <h2 class="premium-title">GESTÃO DE AVALIAÇÕES</h2>
+                        <div class="glass-panel" style="padding: 20px; border-radius: 20px;">
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 20px;">
+                                <button onclick="window.backToLobby()" class="btn btn-outline" style="padding: 5px 15px; font-size: 0.9rem;"><i data-lucide="arrow-left"></i> Voltar</button>
+                                <div class="segmented-control">
+                                    <button id="tab-admin-treino" class="segmented-btn active" onclick="window.loadAdminReviews('treino')">Treino</button>
+                                    <button id="tab-admin-osteo" class="segmented-btn" onclick="window.loadAdminReviews('osteopatia')">Osteopatia</button>
+                                </div>
+                            </div>
+                            <div id="admin-reviews-list"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Client Booking Wizard Section -->
@@ -276,7 +335,7 @@
                                 
                                 <div class="controls">
                                     <button type="button" class="btn btn-outline" onclick="goToStep(3)">Back</button>
-                                    <button type="submit" class="btn btn-primary btn-premium-metallic">Confirm Booking</button>
+                                    <button type="submit" id="btn-submit-booking" class="btn btn-primary btn-premium-metallic">Confirm Booking</button>
                                 </div>
                             </form>
                         </div>
@@ -291,6 +350,13 @@
                             
                             <div id="calendar-sync-container" style="margin-top: 30px; display: flex; flex-direction: column; gap: 15px; align-items: center;">
                                 <!-- Calendar buttons injected by JS -->
+                            </div>
+                            
+                            <div style="margin-top: 15px; display: flex; flex-direction: column; align-items: center;">
+                                <button onclick="window.location.reload()" class="btn btn-primary btn-premium-metallic" style="width: 100%; justify-content: center;">
+                                    <i data-lucide="calendar-plus"></i>
+                                    <span class="btn-text">Make a new booking</span>
+                                </button>
                             </div>
 
                             <div style="margin-top:40px;">
@@ -808,7 +874,7 @@
         <div class="footer-container-new">
             <div class="footer-col branding-col">
                 <a href="index.html" class="footer-logo-link">
-                    <img src="../images/logo/logo_amarelo_alpha.png" alt="Paulo Morais" class="footer-logo-elysium">
+                    <img loading="lazy" src="../images/logo/logo_amarelo_alpha.png" width="3563" height="2930" alt="Paulo Morais" class="footer-logo-elysium">
                 </a>
                 <p class="brand-desc">Paulo Morais<br>Lisboa, Portugal</p>
                 <p class="brand-sub">The true personal training that adapts to your life.</p>
@@ -819,6 +885,7 @@
                     <li><a href="index.html">Home</a></li>
                     <li><a href="sobre-mim.html">About Me</a></li>
                     <li><a href="osteopatia.html">Osteopathy</a></li>
+                    <li><a href="blog.html">Blog</a></li>
                     <li><a href="perfil.html">Profile</a></li>
                 </ul>
             </div>
@@ -828,11 +895,18 @@
                     <li>
                         <a href="https://www.livroreclamacoes.pt/pedido/reclamacao" target="_blank"
                             rel="noopener noreferrer" class="complaint-book-elysium">
-                            <img src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações">
+                            <img loading="lazy" src="../images/livro-de-reclamacoes.png" alt="Livro de Reclamações" style="height: 40px; width: auto; display: block;">
                         </a>
                     </li>
                     <li><a href="politica-privacidade.html">Privacy Policy</a></li>
                     <li><a href="termos-e-condicoes.html">Terms and Conditions</a></li>
+                    <li>
+                        <div class="footer-lang-switcher">
+                            <a href="/" title="Português">PT</a>
+                            <span class="lang-divider">|</span>
+                            <a href="/en/" class="active" title="English">EN</a>
+                        </div>
+                    </li>
                 </ul>
             </div>
 
@@ -849,14 +923,14 @@
         </div>
 
         <div class="footer-bar-elysium">
-            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a></div>
+            <div class="crafted-text"><a href="https://elysiumdr.eu" target="_blank" rel="noopener noreferrer">Developed by Elysium λ Development & Research.</a><br><span style="font-size: 0.8rem; opacity: 0.7; color: #a0a0a0;">V1.5.6</span></div>
         </div>
     </footer>
 
     <!-- Scripts -->
-    <script src="js/agendamento.js"></script>
-    <script src="js/script.js"></script>
-    <script type="module" src="js/auth.js"></script>
+    <script nonce="pmorais-2026" src="js/agendamento.js" defer></script>
+    <script nonce="pmorais-2026" src="js/script.js?v=1.5.1" defer></script>
+    <script nonce="pmorais-2026" type="module" src="js/auth.js?v=1.5.1"></script>
 </body>
 
 </html>

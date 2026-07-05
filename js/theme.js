@@ -61,7 +61,7 @@ function applyDynamicTheme() {
     document.documentElement.style.setProperty('--color-text', `rgb(${textRGB.join(',')})`);
     document.documentElement.style.setProperty('--color-text-dim', `rgb(${textDimRGB.join(',')})`);
     document.documentElement.style.setProperty('--color-accent', `rgb(${accentRGB.join(',')})`);
-    document.documentElement.style.setProperty('--color-osteo', `rgb(${osteoRGB.join(',')})`);
+    document.documentElement.style.setProperty('--color-brand-primary', `rgb(${osteoRGB.join(',')})`);
     document.documentElement.style.setProperty('--hero-legal-overlay', heroLegalOverlay);
     
     // Inject smooth transition styles gracefully (if not present)
@@ -645,6 +645,15 @@ if ('serviceWorker' in navigator) {
       .catch(err => {
         console.log('ServiceWorker registration failed: ', err);
       });
+      
+    // Auto-reload when new service worker takes control
+    let refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (!refreshing) {
+        refreshing = true;
+        window.location.reload();
+      }
+    });
   });
 }
 

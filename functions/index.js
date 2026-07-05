@@ -4,6 +4,7 @@ admin.initializeApp();
 const nodemailer = require("nodemailer");
 const { defineSecret } = require("firebase-functions/params");
 const { google } = require("googleapis");
+const crypto = require("crypto");
 
 
 // ===== Google Calendar Integration =====
@@ -20,11 +21,26 @@ const auth = new google.auth.GoogleAuth({
 const calendar = google.calendar({ version: 'v3', auth });
 const CALENDAR_ID = 'pt.pmorais.agenda@gmail.com';
 
-// Definir los secretos que se almacenarán en Google Cloud Secret Manager
+// Define secrets stored in Google Cloud Secret Manager
 const emailUser = defineSecret("EMAIL_USER");
 const emailPass = defineSecret("EMAIL_PASS");
 const emailHost = defineSecret("EMAIL_HOST");
 const emailPort = defineSecret("EMAIL_PORT");
+const unsubSecret = defineSecret("UNSUB_SECRET");
+
+// ===== HMAC Token Helpers (unsubscribe tokens) =====
+function generateUnsubToken(email, secret) {
+  return crypto.createHmac('sha256', secret).update(email.toLowerCase()).digest('hex');
+}
+
+function verifyUnsubToken(token, email, secret) {
+  const expected = generateUnsubToken(email, secret);
+  try {
+    return crypto.timingSafeEqual(Buffer.from(token, 'hex'), Buffer.from(expected, 'hex'));
+  } catch (e) {
+    return false;
+  }
+}
 
 // ===== Shared Branded Email Template Builder =====
 // Generates a professional HTML email with the Paulo Morais branding.
@@ -159,7 +175,7 @@ function buildEmailHtml({ title, bodyHtml, ctaText, ctaUrl, unsubscribeUrl }) {
 }
 
 exports.onWeeklyScheduleUpdated = functions
-  .runWith({ secrets: [emailUser, emailPass, emailHost, emailPort] })
+  .runWith({ secrets: [emailUser, emailPass, emailHost, emailPort, unsubSecret] })
   .firestore
   .document("weekly_schedules/{weekId}")
   .onWrite(async (change, context) => {
@@ -216,20 +232,20 @@ exports.onWeeklyScheduleUpdated = functions
           const startMonth = monthNames[startDate.getMonth()];
           const endMonth = monthNames[endDate.getMonth()];
 
-          let dateRangeText = `del ${startDay} al ${endDay} de ${endMonth} del ${endDate.getFullYear()}`;
+          let dateRangeText = `de ${startDay} a ${endDay} de ${endMonth} de ${endDate.getFullYear()}`;
           if (startDate.getMonth() !== endDate.getMonth()) {
-            dateRangeText = `del ${startDay} de ${startMonth} al ${endDay} de ${endMonth} del ${endDate.getFullYear()}`;
+            dateRangeText = `de ${startDay} de ${startMonth} a ${endDay} de ${endMonth} de ${endDate.getFullYear()}`;
           }
 
           const bodyHtml = `
-              <p style="margin:0 0 20px 0;">Estimados,</p>
+              <p style="margin:0 0 20px 0;">Caros clientes,</p>
               <p style="margin:0 0 20px 0;">Informamos que a agenda da semana <strong style="color:#1a1a1a;">${dateRangeText}</strong> já se encontra aberta para novas marcações.</p>
-              <p style="margin:0 0 4px 0;">Para garantir o seu horário de preferência, por favor, aceda à sua área reservada através da sua conta:</p>`;
+              <p style="margin:0 0 4px 0;">Para garantir o seu horário preferido, aceda à sua área reservada através da sua conta:</p>`;
 
           // Send individually so each user gets their own unsubscribe link
           for (const clientEmail of bccList) {
-            const token = Buffer.from(clientEmail).toString("base64");
-            const unsubUrl = `https://pmorais.pt/desinscrever.html?token=${encodeURIComponent(token)}`;
+            const token = generateUnsubToken(clientEmail, unsubSecret.value());
+            const unsubUrl = `https://pmorais.pt/desinscrever.html?email=${encodeURIComponent(clientEmail)}&token=${encodeURIComponent(token)}`;
             const mailOptions = {
               from: `"Paulo Morais" <${emailUser.value()}>`,
               to: clientEmail,
@@ -297,13 +313,19 @@ exports.onWeeklyScheduleUpdated = functions
 
       if (isPersonalCanc || isGroupCanc) {
         let name = beforeSlot.bookedName;
-        if (isGroupCanc && !name) {
+        let clientUid = beforeSlot.bookedBy;
+        if (isGroupCanc) {
           const beforeUsers = beforeSlot.bookedUsers || [];
           const afterUsers = afterSlot.bookedUsers || [];
           const leaver = beforeUsers.find(bu => !afterUsers.some(au => au.uid === bu.uid));
-          name = leaver ? leaver.name : "Aluno";
+          if (leaver) {
+             name = leaver.name;
+             clientUid = leaver.uid;
+          } else if (!name) {
+             name = "Aluno";
+          }
         }
-        newCancellations.push({ slotId, data: beforeSlot, clientName: name });
+        newCancellations.push({ slotId, data: beforeSlot, clientName: name, clientUid });
       }
     }
 
@@ -356,14 +378,13 @@ exports.onWeeklyScheduleUpdated = functions
           const endMoment = new Date(startDateTime);
           endMoment.setMinutes(endMoment.getMinutes() + durationMinutes);
 
-          try {
-            // Format to YYYY-MM-DDTHH:mm:ss
-            const endDateTime = endMoment.getFullYear() + "-" + 
-                                String(endMoment.getMonth() + 1).padStart(2, '0') + "-" + 
-                                String(endMoment.getDate()).padStart(2, '0') + "T" + 
-                                String(endMoment.getHours()).padStart(2, '0') + ":" + 
-                                String(endMoment.getMinutes()).padStart(2, '0') + ":00";
+          const endDateTime = endMoment.getFullYear() + "-" + 
+                              String(endMoment.getMonth() + 1).padStart(2, '0') + "-" + 
+                              String(endMoment.getDate()).padStart(2, '0') + "T" + 
+                              String(endMoment.getHours()).padStart(2, '0') + ":" + 
+                              String(endMoment.getMinutes()).padStart(2, '0') + ":00";
 
+          try {
             const event = {
               summary: `Reserva: ${b.clientName} (${b.data.serviceType || 'Serviço'})`,
               description: `Cliente: ${b.clientName}\nServiço: ${b.data.serviceType || 'N/A'}\nNotas: ${clientNotes}`,
@@ -459,8 +480,8 @@ exports.onWeeklyScheduleUpdated = functions
                 <p style="margin:0 0 20px 0;">Em anexo encontra um ficheiro para adicionar rapidamente as sessões ao seu calendário digital.</p>
               `;
 
-              const token = Buffer.from(clientData.email).toString("base64");
-              const unsubUrl = `https://pmorais.pt/desinscrever.html?token=${encodeURIComponent(token)}`;
+              const token = generateUnsubToken(clientData.email, unsubSecret.value());
+              const unsubUrl = `https://pmorais.pt/desinscrever.html?email=${encodeURIComponent(clientData.email)}&token=${encodeURIComponent(token)}`;
 
               const clientMailOptions = {
                 from: `"Paulo Morais" <${emailUser.value()}>`,
@@ -571,6 +592,51 @@ exports.onWeeklyScheduleUpdated = functions
         })
       };
       await transporter.sendMail(mailOptions).catch(console.error);
+
+      // --- Send Client Cancellation Email ---
+      const clientUid = newCancellations[0].clientUid;
+      if (clientUid) {
+        try {
+          const clientSnap = await admin.firestore().collection("users").doc(clientUid).get();
+          if (clientSnap.exists) {
+            const clientData = clientSnap.data();
+            if (clientData.email && clientData.unsubscribed !== true) {
+              const clientBodyHtml = `
+                <p style="margin:0 0 20px 0;">Olá ${mainClientName.split(' ')[0]},</p>
+                <p style="margin:0 0 20px 0;">A sua reserva foi <strong>cancelada</strong> com sucesso.</p>
+                <p style="margin:0 0 8px 0;"><strong>Resumo das Sessões Canceladas:</strong></p>
+                <ul style="margin:0 0 20px 0; padding-left:18px;">${sessionItemsHtml}</ul>
+                <p style="margin:0 0 20px 0;">Se foi um engano ou pretender reagendar, por favor, aceda à sua área de cliente.</p>
+              `;
+
+              const token = generateUnsubToken(clientData.email, unsubSecret.value());
+              const unsubUrl = `https://pmorais.pt/desinscrever.html?email=${encodeURIComponent(clientData.email)}&token=${encodeURIComponent(token)}`;
+
+              const clientMailOptions = {
+                from: `"Paulo Morais" <${emailUser.value()}>`,
+                to: clientData.email,
+                subject: `Reserva Cancelada`,
+                html: buildEmailHtml({
+                  title: "Reserva Cancelada",
+                  bodyHtml: clientBodyHtml,
+                  ctaText: "Aceder à minha Conta",
+                  ctaUrl: "https://pmorais.pt/perfil.html",
+                  unsubscribeUrl: unsubUrl
+                }),
+                headers: {
+                  "List-Unsubscribe": `<${unsubUrl}>`,
+                  "List-Unsubscribe-Post": "List-Unsubscribe=One-Click"
+                }
+              };
+
+              await transporter.sendMail(clientMailOptions);
+              console.log(`Cancellation email sent to client: ${clientData.email}`);
+            }
+          }
+        } catch (e) {
+          console.error("Error sending client cancellation email:", e);
+        }
+      }
     }
 
     return null;
@@ -580,7 +646,7 @@ exports.onWeeklyScheduleUpdated = functions
 // Handles GET requests from the unsubscribe link in emails.
 // Sets unsubscribed:true on the user's Firestore document.
 exports.handleUnsubscribe = functions
-  .runWith({ secrets: [] })
+  .runWith({ secrets: [unsubSecret] })
   .https
   .onRequest(async (req, res) => {
     // Enable CORS
@@ -594,13 +660,20 @@ exports.handleUnsubscribe = functions
 
     try {
       const token = req.query.token || req.body.token;
-      if (!token) {
-        return res.status(400).json({ success: false, error: "Token em falta." });
+      const email = (req.query.email || req.body.email || "").toLowerCase().trim();
+
+      if (!token || !email) {
+        return res.status(400).json({ success: false, error: "Token ou email em falta." });
       }
 
-      const email = Buffer.from(token, "base64").toString("utf-8");
-      if (!email || !email.includes("@")) {
-        return res.status(400).json({ success: false, error: "Token inválido." });
+      if (!email.includes("@")) {
+        return res.status(400).json({ success: false, error: "Email inválido." });
+      }
+
+      // Verify HMAC token
+      const isValid = verifyUnsubToken(token, email, unsubSecret.value());
+      if (!isValid) {
+        return res.status(400).json({ success: false, error: "Token inválido ou expirado." });
       }
 
       // Find user document by email
@@ -611,17 +684,187 @@ exports.handleUnsubscribe = functions
         .get();
 
       if (usersSnap.empty) {
-        // Still return success to not leak information
+        // Return success to not leak user existence information
         return res.status(200).json({ success: true });
       }
 
       const userDoc = usersSnap.docs[0];
       await userDoc.ref.update({ unsubscribed: true });
 
-      console.log(`User ${email} has unsubscribed from email notifications.`);
       return res.status(200).json({ success: true });
     } catch (error) {
       console.error("Error processing unsubscribe:", error);
       return res.status(500).json({ success: false, error: "Erro interno." });
+    }
+  });
+
+
+// ===== Firebase Custom Claims — Admin Role =====
+// Sets admin custom claim on a Firebase Auth user.
+// Only callable by an already-authenticated admin (verified via Firestore role + ADMIN_EMAIL).
+// This replaces the insecure client-side email-based admin check (VULN-02).
+exports.setAdminClaim = functions
+  .runWith({ secrets: [] })
+  .https
+  .onCall(async (data, context) => {
+    // Must be authenticated
+    if (!context.auth) {
+      throw new functions.https.HttpsError('unauthenticated', 'Autenticação necessária.');
+    }
+
+    const ADMIN_EMAIL = 'pt@pmorais.pt';
+    const callerUid = context.auth.uid;
+    const callerEmail = (context.auth.token.email || '').toLowerCase();
+
+    // Verify caller is the admin by both email AND Firestore role
+    const callerSnap = await admin.firestore().collection('users').doc(callerUid).get();
+    const callerData = callerSnap.exists ? callerSnap.data() : {};
+    const callerIsAdmin = callerEmail === ADMIN_EMAIL && callerData.role === 'admin';
+
+    if (!callerIsAdmin) {
+      throw new functions.https.HttpsError('permission-denied', 'Acesso não autorizado.');
+    }
+
+    const targetUid = data.uid;
+    const makeAdmin = data.admin === true;
+
+    if (!targetUid) {
+      throw new functions.https.HttpsError('invalid-argument', 'UID do utilizador em falta.');
+    }
+
+    // Set or remove admin custom claim
+    await admin.auth().setCustomUserClaims(targetUid, makeAdmin ? { admin: true } : {});
+
+    // Also update Firestore role for consistency
+    await admin.firestore().collection('users').doc(targetUid).update({
+      role: makeAdmin ? 'admin' : 'client'
+    });
+
+    return { success: true, uid: targetUid, admin: makeAdmin };
+  });
+
+
+// ===== RGPD Art. 17 — Data Retention & Purge (Scheduled) =====
+// Runs weekly. Anonymizes users whose last activity was > 5 years ago (health data)
+// and > 10 years ago (fiscal data). Respects RGPD retention periods defined in the privacy policy.
+// Schedule: every Sunday at 02:00 AM Lisbon time.
+exports.purgeInactiveUsers = functions
+  .runWith({ secrets: [] })
+  .pubsub.schedule('0 2 * * 0')
+  .timeZone('Europe/Lisbon')
+  .onRun(async (context) => {
+    const now = new Date();
+    const FIVE_YEARS_AGO = new Date(now);
+    FIVE_YEARS_AGO.setFullYear(FIVE_YEARS_AGO.getFullYear() - 5);
+
+    const TEN_YEARS_AGO = new Date(now);
+    TEN_YEARS_AGO.setFullYear(TEN_YEARS_AGO.getFullYear() - 10);
+
+    console.log(`[RGPD Purge] Running retention check. 5yr cutoff: ${FIVE_YEARS_AGO.toISOString()}`);
+
+    let healthAnonymized = 0;
+    let fullAnonymized = 0;
+
+    try {
+      // Fetch all users
+      const usersSnap = await admin.firestore().collection('users').get();
+
+      for (const userDoc of usersSnap.docs) {
+        const data = userDoc.data();
+        const uid = userDoc.id;
+
+        // Determine last activity date (use createdAt as fallback)
+        const lastActivityStr = data.lastActivityAt || data.createdAt;
+        if (!lastActivityStr) continue;
+
+        const lastActivity = new Date(lastActivityStr);
+
+        // Full anonymization for users inactive > 10 years (fiscal data retention period)
+        if (lastActivity < TEN_YEARS_AGO && data.role !== 'admin') {
+          await userDoc.ref.update({
+            name: '[Anonimizado]',
+            email: `anon_${uid}@deleted.local`,
+            phone: null,
+            clinicalHistory: null,
+            consentHealthData: null,
+            purgedAt: now.toISOString(),
+            purgeReason: 'RGPD Art.17 — inativo >10 anos'
+          });
+          // Also delete from Firebase Auth
+          try { await admin.auth().deleteUser(uid); } catch (e) { /* user may already be deleted */ }
+          fullAnonymized++;
+          console.log(`[RGPD Purge] Full anonymization: ${uid}`);
+
+        // Health data anonymization for users inactive > 5 years
+        } else if (lastActivity < FIVE_YEARS_AGO && data.role !== 'admin') {
+          // Keep account active but anonymize sensitive health data
+          const updates = {};
+          if (data.clinicalHistory) updates.clinicalHistory = '[Anonimizado]';
+          if (data.healthNotes) updates.healthNotes = null;
+          if (data.medicalData) updates.medicalData = null;
+          if (Object.keys(updates).length > 0) {
+            updates.healthDataPurgedAt = now.toISOString();
+            updates.healthPurgeReason = 'RGPD Art.17 — dados de sa\u00fade >5 anos';
+            await userDoc.ref.update(updates);
+            healthAnonymized++;
+            console.log(`[RGPD Purge] Health data anonymized: ${uid}`);
+          }
+        }
+      }
+
+      console.log(`[RGPD Purge] Done. Health anonymized: ${healthAnonymized}, Full anonymized: ${fullAnonymized}`);
+    } catch (error) {
+      console.error('[RGPD Purge] Error:', error);
+    }
+
+    return null;
+  });
+
+// ===== Mail Queue Processor =====
+// Listens for new documents in the 'mail' collection and sends them using nodemailer.
+exports.processMailQueue = functions
+  .runWith({ secrets: [emailUser, emailPass, emailHost, emailPort] })
+  .firestore
+  .document("mail/{documentId}")
+  .onCreate(async (snap, context) => {
+    const mailData = snap.data();
+    if (!mailData.to || !mailData.message) return null;
+
+    const transporter = nodemailer.createTransport({
+      host: emailHost.value(),
+      port: parseInt(emailPort.value()),
+      secure: parseInt(emailPort.value()) === 465,
+      auth: {
+        user: emailUser.value(),
+        pass: emailPass.value(),
+      },
+    });
+
+    const mailOptions = {
+      from: `"Paulo Morais" <${emailUser.value()}>`,
+      to: mailData.to,
+      subject: mailData.message.subject,
+      html: mailData.message.html,
+    };
+
+    try {
+      const info = await transporter.sendMail(mailOptions);
+      console.log(`Email sent to ${mailData.to} (ID: ${context.params.documentId}): ${info.messageId}`);
+      await snap.ref.update({
+        delivery: {
+          state: 'SUCCESS',
+          startTime: admin.firestore.FieldValue.serverTimestamp(),
+          endTime: admin.firestore.FieldValue.serverTimestamp(),
+          info: info.messageId,
+        }
+      });
+    } catch (error) {
+      console.error(`Error sending email to ${mailData.to}:`, error);
+      await snap.ref.update({
+        delivery: {
+          state: 'ERROR',
+          error: error.message,
+        }
+      });
     }
   });

@@ -2,9 +2,110 @@
 <html lang="pt">
 
 <head>
+    <meta name="view-transition" content="same-origin" />
+    <style nonce="pmorais-2026" id="critical-css">
+    :root {
+        /* Colors */
+        --color-bg: #0B0B0B;
+        --color-surface: #111111;
+        --color-primary: #E6AE17;
+        /* Updated to match target */
+        --color-primary-hover: #d5a015;
+        --color-light-gray: #F2F2F2;
+        /* New split section color */
+        --color-text: #ffffff;
+        --color-text-dim: #cccccc;
+        --color-accent: #ffffff;
+        --color-brand-primary: #ffffff;
+        --color-brand-secondary: var(--color-primary);
+        --color-brand-tertiary: #0A6FE8;
+    
+        /* Typography */
+        --font-heading: 'Patron', sans-serif;
+        --font-body: 'Patron', sans-serif;
+        /* Clean, modern sans-serif */
+    
+        /* Spacing */
+        --container-width: 1200px;
+        --section-padding: clamp(60px, 10vw, 100px) 20px;
+        /* Fluid section padding */
+    
+        /* Transitions */
+        --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    body {
+        background-color: var(--color-bg);
+        color: var(--color-text);
+        font-family: var(--font-body);
+        line-height: 1.6;
+        overflow-x: hidden;
+        /* Scrollbar natural del sistema, sin personalización */
+    }
+    #preloader {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: #F4B618;
+        z-index: 9999;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        transition: opacity 0.5s ease, visibility 0.5s ease;
+    }
+    .loader-content {
+        position: relative;
+        width: 250px;
+        /* Ajustado para el logo */
+        height: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .loader-logo {
+        width: 100%;
+        height: auto;
+        display: block;
+        position: relative;
+        z-index: 1;
+    }
+    .shimmer-effect {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 2;
+        pointer-events: none;
+    
+        /* Mask the shimmer to the logo shape */
+        -webkit-mask-image: url('images/logo/logo_bw_loading.png');
+        mask-image: url('images/logo/logo_bw_loading.png');
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+    
+        /* The Moving Light Gradient */
+        background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0) 30%,
+                rgba(255, 255, 255, 0.7) 50%,
+                rgba(255, 255, 255, 0) 70%);
+        background-size: 200% 100%;
+        background-position: 150% 0;
+        animation: lightSweep 2s infinite ease-in-out;
+    }
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Desinscrever-se — Paulo Morais</title>
+    <!-- Preloads -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;600;700;800&family=Poppins:wght@300;400;500;600;700&display=swap" as="style">
+    <link rel="preload" href="css/style.css" as="style">
+
     <link rel="shortcut icon" type="image/png" href="images/logo/logo_ios_android.png">
     <link rel="icon" type="image/png" href="images/logo/logo_ios_android.png">
     <meta name="robots" content="noindex">
@@ -14,12 +115,12 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@100;200;300;400;500;600;700;800;900&display=swap"
         rel="stylesheet">
     <!-- Icons -->
-    <script src="https://unpkg.com/lucide@latest"></script>
+    <script nonce="pmorais-2026" src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js" integrity="sha384-ieG+IKD0d/ZPXyCBTMVAbqsQdns8QGJR/e26WMw7M4fkaI/rHcS/YIoi+ah9WGge" crossorigin="anonymous" defer></script>
     <!-- Style -->
     <link rel="stylesheet" href="css/style.css">
-    <script src="js/lang.js"></script>
-    <script src="js/theme.js"></script>
-    <style>
+    <script nonce="pmorais-2026" src="js/lang.js" defer></script>
+    <script nonce="pmorais-2026" src="js/theme.js" defer></script>
+    <style nonce="pmorais-2026">
         .unsub-wrapper {
             display: flex;
             align-items: center;
@@ -146,7 +247,7 @@
 
     <div class="unsub-wrapper">
         <div class="unsub-card">
-            <img src="images/logo/logo_ios_android.png" alt="Paulo Morais" class="logo">
+            <img src="images/logo/logo_ios_android.png" width="180" height="180" alt="Paulo Morais" class="logo">
             <h1 id="unsub-title">Desinscrever-se</h1>
             <p id="unsub-desc">Ao confirmar, deixará de receber notificações por e-mail da parte de Paulo Morais.
                 A sua conta permanecerá ativa.</p>
@@ -158,21 +259,24 @@
         </div>
     </div>
 
-    <script>
-        // Get the Cloud Function URL (adjust region if needed)
+    <script nonce="pmorais-2026">
+        // Get the Cloud Function URL
         const CF_URL = 'https://us-central1-paulo-morais.cloudfunctions.net/handleUnsubscribe';
 
-        function getTokenFromUrl() {
+        function getParamsFromUrl() {
             const params = new URLSearchParams(window.location.search);
-            return params.get('token');
+            return {
+                token: params.get('token'),
+                email: params.get('email')
+            };
         }
 
         async function processUnsubscribe() {
-            const token = getTokenFromUrl();
+            const { token, email } = getParamsFromUrl();
             const btn = document.getElementById('unsub-btn');
             const status = document.getElementById('unsub-status');
 
-            if (!token) {
+            if (!token || !email) {
                 status.className = 'unsub-status error';
                 status.textContent = 'Link inválido. Por favor, utilize o link enviado no seu e-mail.';
                 return;
@@ -184,7 +288,7 @@
             status.innerHTML = '<span class="spinner"></span> A processar...';
 
             try {
-                const resp = await fetch(`${CF_URL}?token=${encodeURIComponent(token)}`, {
+                const resp = await fetch(`${CF_URL}?email=${encodeURIComponent(email)}&token=${encodeURIComponent(token)}`, {
                     method: 'GET',
                     headers: { 'Accept': 'application/json' }
                 });
@@ -209,9 +313,10 @@
             }
         }
 
-        // If token exists, show ready state; if not, show error immediately
+        // If token + email exist, show ready state; if not, show error immediately
         (function () {
-            if (!getTokenFromUrl()) {
+            const { token, email } = getParamsFromUrl();
+            if (!token || !email) {
                 const status = document.getElementById('unsub-status');
                 status.className = 'unsub-status error';
                 status.textContent = 'Link inválido. Por favor, utilize o link recebido no seu e-mail.';

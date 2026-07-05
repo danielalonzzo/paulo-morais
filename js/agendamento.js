@@ -695,7 +695,12 @@ async function submitBooking(e) {
     
     if (window.submitWizardBooking) {
         try {
-            await window.submitWizardBooking(payload, durationSlots);
+            const bookingsAdded = await window.submitWizardBooking(payload, durationSlots);
+            
+            if (bookingsAdded && bookingsAdded.length > 0) {
+                generateCalendarSyncButtons(bookingsAdded);
+            }
+            
             goToStep(5);
             // Clear selections after success
             bookingData.selections = [];
@@ -1089,3 +1094,76 @@ window.blockAllDay = function() {
     selectAdminDay(adminSelectedDay);
     syncPublishButton();
 };
+
+// --- Calendar Sync Button Integration ---
+function generateCalendarSyncButtons(bookings) {
+    const container = document.getElementById('calendar-sync-container');
+    if (!container) return;
+    container.innerHTML = '';
+
+    if (!bookings || bookings.length === 0) return;
+
+    let vEvents = '';
+    const now = new Date();
+    const nowICS = now.toISOString().replace(/[-:]/g, '').split('.')[0] + "Z";
+    
+    bookings.forEach((b, index) => {
+        const dateStr = b.date;
+        const timeStr = b.time;
+        const duration = b.serviceType === 'osteopatia' ? 60 : 30;
+        
+        const startMoment = new Date(`${dateStr}T${timeStr}:00`);
+        const endMoment = new Date(startMoment.getTime() + duration * 60000);
+        
+        const dtStartICSLocal = `${dateStr.replace(/-/g, '')}T${timeStr.replace(':', '')}00`;
+        const dtEndICSLocal = `${endMoment.getFullYear()}${String(endMoment.getMonth()+1).padStart(2,'0')}${String(endMoment.getDate()).padStart(2,'0')}T${String(endMoment.getHours()).padStart(2,'0')}${String(endMoment.getMinutes()).padStart(2,'0')}00`;
+        
+        vEvents += `BEGIN:VEVENT\r\n` +
+                   `UID:${dateStr}T${timeStr}-${index}@pmorais.pt\r\n` +
+                   `DTSTAMP:${nowICS}\r\n` +
+                   `DTSTART;TZID=Europe/Lisbon:${dtStartICSLocal}\r\n` +
+                   `DTEND;TZID=Europe/Lisbon:${dtEndICSLocal}\r\n` +
+                   `SUMMARY:Paulo Morais - ${b.serviceName || b.serviceType}\r\n` +
+                   `DESCRIPTION:Sessão de ${b.serviceName || b.serviceType}.\r\n` +
+                   `END:VEVENT\r\n`;
+    });
+
+    const icsContent = `BEGIN:VCALENDAR\r\n` +
+                       `VERSION:2.0\r\n` +
+                       `PRODID:-//Paulo Morais//Agendamento//PT\r\n` +
+                       `BEGIN:VTIMEZONE\r\n` +
+                       `TZID:Europe/Lisbon\r\n` +
+                       `BEGIN:STANDARD\r\n` +
+                       `DTSTART:19961027T020000\r\n` +
+                       `RRULE:FREQ=YEARLY;BYMONTH=10;BYDAY=-1SU\r\n` +
+                       `TZOFFSETFROM:+0100\r\n` +
+                       `TZOFFSETTO:+0000\r\n` +
+                       `TZNAME:WET\r\n` +
+                       `END:STANDARD\r\n` +
+                       `BEGIN:DAYLIGHT\r\n` +
+                       `DTSTART:19970330T010000\r\n` +
+                       `RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=-1SU\r\n` +
+                       `TZOFFSETFROM:+0000\r\n` +
+                       `TZOFFSETTO:+0100\r\n` +
+                       `TZNAME:WEST\r\n` +
+                       `END:DAYLIGHT\r\n` +
+                       `END:VTIMEZONE\r\n` +
+                       vEvents +
+                       `END:VCALENDAR`;
+
+    const blob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const fileUrl = URL.createObjectURL(blob);
+    
+    const isEn = window.location.pathname.includes('/en/');
+    const btnText = isEn ? "Sync Calendar" : "Sincronizar Calendário";
+
+    container.innerHTML = `
+        <a href="${fileUrl}" download="Sessoes_Paulo_Morais.ics" class="btn btn-outline" style="width: 100%; justify-content: center; text-decoration:none; display:flex; align-items:center;">
+            <i data-lucide="calendar"></i>
+            <span class="btn-text" style="margin-left: 8px;">${btnText}</span>
+        </a>
+    `;
+
+    if (window.lucide) window.lucide.createIcons();
+}
+

@@ -1042,12 +1042,13 @@ window.submitWizardBooking = async function(payload, durationSlots) {
         
         historyToAdd.forEach(h => existingBookings.push(h));
         
-        await setDoc(bookingDocRef, {
+        const safePayload = JSON.parse(JSON.stringify({
             uid: user.uid,
-            name: realName,
-            email: user.email,
+            name: realName || "Utilizador",
+            email: user.email || "",
             bookings: existingBookings
-        }, { merge: true });
+        }));
+        await setDoc(bookingDocRef, safePayload, { merge: true });
         
         return true;
     } catch (e) {
